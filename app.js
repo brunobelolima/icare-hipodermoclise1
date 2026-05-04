@@ -26,7 +26,11 @@ function activateTab(tab) {
     panel.classList.toggle("active", panel.id === targetId);
   });
 
-  if (targetId === "tecnica" && techniqueVideo) {
+  if (
+    targetId === "tecnica" &&
+    techniqueVideo &&
+    techniqueVideo.getAttribute("src") === "about:blank"
+  ) {
     techniqueVideo.src = techniqueVideo.dataset.src;
   }
 
@@ -368,12 +372,6 @@ function generatePrescription() {
     "",
     `Número orientado: ${groups.length} ${punctureWord}`,
     ...groupLines,
-    "",
-    "Compatibilidade entre os itens:",
-    ...prescriptionCompatibilityLines(items),
-    "",
-    "Fontes usadas: tabela-base de medicamentos/soluções para dose, diluição, tempo e comentários; documento de compatibilidade para agrupamento por punção.",
-    "Orientações: separar em punções diferentes os pares incompatíveis ou não testados; confirmar prescrição final, diluição, volume, velocidade e protocolo local antes da administração; registrar sítio e monitorar precipitação, dor, edema progressivo, secreção, febre ou piora clínica.",
   ].join("\n");
 }
 

@@ -147,7 +147,12 @@ h1 {
   gap: 16px;
 }
 
-.welcome-grid,
+.welcome-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 16px;
+}
+
 .idealizer-grid {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -199,6 +204,8 @@ h1 {
 .video-frame {
   position: relative;
   overflow: hidden;
+  width: min(100%, 760px);
+  margin: 0 auto;
   border: 1px solid var(--line);
   border-radius: 8px;
   background: #082f49;
@@ -808,6 +815,8 @@ details.references summary {
   .module-grid,
   .tech-grid,
   .drug-grid,
+  .indication-grid,
+  .site-list,
   .form-grid,
   .toolbar,
   .dashboard-grid,
@@ -829,5 +838,22 @@ details.references summary {
 
   .card-content {
     padding: 18px;
+  }
+
+  #indicacoes .status-panel {
+    padding: 14px;
+  }
+
+  #indicacoes .status-panel h2 {
+    font-size: 1.18rem;
+    line-height: 1.25;
+  }
+
+  #indicacoes .site-item {
+    padding: 11px;
+  }
+
+  #indicacoes .quick-list {
+    padding-left: 18px;
   }
 }
