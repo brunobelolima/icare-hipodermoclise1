@@ -189,6 +189,55 @@ h1 {
   gap: 16px;
 }
 
+.document-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 16px;
+}
+
+.document-card {
+  display: grid;
+  gap: 10px;
+  align-content: start;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: #fbffff;
+  padding: 16px;
+}
+
+.document-card h3,
+.document-card p {
+  margin: 0;
+}
+
+.document-card h3 {
+  color: var(--accent-2);
+}
+
+.document-tab-trigger {
+  min-height: 48px;
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  background: white;
+  color: var(--accent-2);
+  cursor: pointer;
+  font: inherit;
+  font-weight: 800;
+  padding: 0 14px;
+  text-align: left;
+}
+
+.document-tab-trigger[aria-expanded="true"] {
+  background: var(--accent);
+  color: white;
+  box-shadow: 0 8px 18px rgba(8, 145, 178, 0.22);
+}
+
+.document-card .secondary-button {
+  margin-top: 4px;
+  text-decoration: none;
+}
+
 .drug-grid {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -684,7 +733,7 @@ button:focus-visible {
 
 .indication-grid {
   display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
+  grid-template-columns: 1fr;
   gap: 16px;
 }
 
@@ -767,6 +816,15 @@ details.references summary {
   gap: 18px;
 }
 
+.embedded-checklist {
+  border-top: 1px solid var(--line);
+  padding-top: 18px;
+}
+
+.embedded-checklist[hidden] {
+  display: none;
+}
+
 .checklist-progress {
   display: grid;
   gap: 8px;
@@ -831,6 +889,13 @@ details.references summary {
   color: var(--muted);
   padding: 12px;
   line-height: 1.45;
+}
+
+.voice-hint {
+  margin: 0;
+  color: var(--muted);
+  font-size: 0.92rem;
+  line-height: 1.4;
 }
 
 .progress-track {
@@ -941,9 +1006,9 @@ details.references summary {
   }
 
   .visit-counter {
-    left: 50%;
-    top: 104px;
-    transform: translateX(-50%);
+    left: 0;
+    top: 0;
+    transform: none;
   }
 
   .module-grid,
@@ -956,6 +1021,7 @@ details.references summary {
   .toolbar,
   .dashboard-grid,
   .welcome-grid,
+  .document-grid,
   .idealizer-grid {
     grid-template-columns: 1fr;
   }
@@ -963,6 +1029,20 @@ details.references summary {
   .voice-assistant-header {
     align-items: stretch;
     flex-direction: column;
+  }
+
+  .voice-assistant {
+    padding: 12px;
+  }
+
+  .voice-assistant .primary-button {
+    width: 100%;
+    min-height: 52px;
+  }
+
+  .voice-status,
+  .voice-transcript {
+    font-size: 0.96rem;
   }
 }
 

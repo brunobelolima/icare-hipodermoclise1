@@ -16,10 +16,14 @@ const visitCounter = document.querySelector("#visitCounter");
 const voiceChecklistToggle = document.querySelector("#voiceChecklistToggle");
 const voiceChecklistStatus = document.querySelector("#voiceChecklistStatus");
 const voiceChecklistTranscript = document.querySelector("#voiceChecklistTranscript");
+const documentChecklistTrigger = document.querySelector("#documentChecklistTrigger");
+const documentChecklistPanel = document.querySelector("#checklist");
 const contactEmail = "icarehipodermoclise@gmail.com";
 const storageKey = "icare-model-checklist";
 const visitCounterUrl = "https://abacus.jasoncameron.dev/hit/icare-hipodermoclise1/visitas";
 const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+const isMobileVoiceDevice =
+  window.matchMedia("(pointer: coarse)").matches || window.matchMedia("(max-width: 820px)").matches;
 let checklistRecognition = null;
 let checklistVoiceActive = false;
 
@@ -44,28 +48,37 @@ function activateTab(tab) {
     panel.classList.toggle("active", panel.id === targetId);
   });
 
-  if (
-    targetId === "tecnica" &&
-    techniqueVideo &&
-    techniqueVideo.getAttribute("src") === "about:blank"
-  ) {
-    techniqueVideo.src = techniqueVideo.dataset.src;
+  if (targetId === "tecnica") {
+    loadTechniqueVideo();
   }
 
   history.replaceState(null, "", `#${targetId}`);
+}
+
+function loadTechniqueVideo() {
+  if (!techniqueVideo || techniqueVideo.getAttribute("src") !== "about:blank") return;
+  techniqueVideo.src = techniqueVideo.dataset.src;
+}
+
+function openDocumentChecklist() {
+  if (!documentChecklistTrigger || !documentChecklistPanel) return;
+  documentChecklistPanel.hidden = false;
+  documentChecklistTrigger.setAttribute("aria-expanded", "true");
 }
 
 function openHashTab() {
   const aliases = {
     avaliacao: "indicacoes",
     plano: "prescricao",
-    monitoramento: "checklist",
+    checklist: "documentos",
+    monitoramento: "documentos",
     cuidador: "contato",
   };
   const rawHash = window.location.hash.replace("#", "");
   const target = aliases[rawHash] || rawHash || "boas-vindas";
   const tab = tabs.find((item) => item.dataset.tab === target);
   if (tab) activateTab(tab);
+  if (rawHash === "checklist") openDocumentChecklist();
 }
 
 function readChecklist() {
@@ -216,8 +229,8 @@ function startChecklistVoice() {
   if (!checklistRecognition) {
     checklistRecognition = new SpeechRecognition();
     checklistRecognition.lang = "pt-BR";
-    checklistRecognition.continuous = true;
-    checklistRecognition.interimResults = true;
+    checklistRecognition.continuous = !isMobileVoiceDevice;
+    checklistRecognition.interimResults = !isMobileVoiceDevice;
 
     checklistRecognition.addEventListener("result", (event) => {
       let spokenText = "";
@@ -238,6 +251,12 @@ function startChecklistVoice() {
 
     checklistRecognition.addEventListener("end", () => {
       if (!checklistVoiceActive) return;
+      if (isMobileVoiceDevice) {
+        checklistVoiceActive = false;
+        voiceChecklistToggle.textContent = "Iniciar voz";
+        setVoiceStatus("Fala processada. Toque em iniciar voz para ditar outro item.", "warning");
+        return;
+      }
       try {
         checklistRecognition.start();
       } catch {
@@ -249,7 +268,12 @@ function startChecklistVoice() {
 
   checklistVoiceActive = true;
   voiceChecklistToggle.textContent = "Parar voz";
-  setVoiceStatus("Ouvindo. Fale os itens conferidos do checklist.", "listening");
+  setVoiceStatus(
+    isMobileVoiceDevice
+      ? "Ouvindo. Fale uma frase curta com os itens conferidos."
+      : "Ouvindo. Fale os itens conferidos do checklist.",
+    "listening",
+  );
   try {
     checklistRecognition.start();
   } catch {
@@ -424,18 +448,30 @@ function compatibilityKey(first, second) {
   return [first, second].sort().join("::");
 }
 
+function syncCompatibilityOptions() {
+  [compatItemA, compatItemB].forEach((control) => {
+    const other = control === compatItemA ? compatItemB : compatItemA;
+    Array.from(control.options).forEach((option) => {
+      option.disabled = option.value !== control.value && option.value === other.value;
+    });
+  });
+}
+
 function renderCompatibilityResult() {
+  if (compatItemA.value === compatItemB.value) {
+    const fallback = Array.from(compatItemB.options).find(
+      (option) => option.value && option.value !== compatItemA.value,
+    );
+    if (fallback) compatItemB.value = fallback.value;
+  }
+
+  syncCompatibilityOptions();
+
   const first = compatItemA.value;
   const second = compatItemB.value;
   let result;
 
-  if (first === second) {
-    result = {
-      status: "compatível",
-      className: "success",
-      detail: "Mesmo item selecionado; não há mistura de fármacos diferentes.",
-    };
-  } else if (first === "sf" || second === "sf") {
+  if (first === "sf" || second === "sf") {
     result = {
       status: "compatível",
       className: "success",
@@ -587,6 +623,12 @@ function generatePrescription() {
 tabs.forEach((tab) => {
   tab.addEventListener("click", () => activateTab(tab));
 });
+
+window.addEventListener("hashchange", openHashTab);
+
+if (documentChecklistTrigger) {
+  documentChecklistTrigger.addEventListener("click", openDocumentChecklist);
+}
 
 [compatItemA, compatItemB].forEach((control) => {
   control.addEventListener("change", renderCompatibilityResult);

@@ -1,6 +1,6 @@
 # iCare - hipodermóclise
 
-Aplicação web sobre o uso da hipodermóclise em cuidados de fim de vida no domicílio.
+Aplicação web sobre o uso da hipodermóclise em cuidados de fim de vida.
 
 ## Publicação no GitHub Pages
 
