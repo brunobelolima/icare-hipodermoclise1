@@ -13,6 +13,10 @@
   <body>
     <main class="app">
       <header class="masthead">
+        <div class="visit-counter" aria-live="polite">
+          <span>Visitas ao site</span>
+          <strong id="visitCounter">0</strong>
+        </div>
         <img class="brand-mark" src="assets/icare-logo.png" alt="Logotipo iCare hipodermóclise" />
         <h1>iCare - hipodermóclise</h1>
         <p class="subtitle">uso da hipodermóclise em cuidados de fim de vida no domicílio</p>
@@ -40,6 +44,9 @@
           </button>
           <button class="tab-trigger" role="tab" aria-selected="false" data-tab="tecnica">
             Técnica de punção
+          </button>
+          <button class="tab-trigger" role="tab" aria-selected="false" data-tab="cuidados">
+            Cuidados pós-punção
           </button>
           <button class="tab-trigger" role="tab" aria-selected="false" data-tab="checklist">
             Checklist pré visita domiciliar
@@ -247,8 +254,8 @@
               <h2>Medicamentos e soluções</h2>
               <p>
                 Dados extraídos da tabela-base, restritos aos itens solicitados: Morfina,
-                Escopolamina, Clorpromazina, Dipirona, Dexametasona, Haloperidol e Soro fisiológico
-                0,9%.
+                Escopolamina, Clorpromazina, Dipirona, Dexametasona, Haloperidol, Midazolam e
+                Soro fisiológico 0,9%.
               </p>
               <div class="drug-grid">
                 <section class="card">
@@ -382,6 +389,25 @@
                 <section class="card">
                   <div class="card-content medicine-card">
                     <header>
+                      <h3>Midazolam</h3>
+                      <span class="tag">Referência 1, 4</span>
+                    </header>
+                    <div class="field-grid">
+                      <div class="field"><strong>Dose</strong><span>1 a 5mg em bolus ou infusão contínua ACM</span></div>
+                      <div class="field"><strong>Diluição</strong><span>SF 5mL (bolus); 1mg/mL = 100mg de midazolam + SF qsp 100mL (infusão contínua)</span></div>
+                      <div class="field"><strong>Tempo de infusão</strong><span>ACM</span></div>
+                    </div>
+                    <div class="clinical-note">
+                      Pode causar irritação local. Velocidade de infusão de 0,5mL/h a 20mL/h.
+                      Primeira escolha como sedativo. Titular a dose de acordo com os sintomas.
+                    </div>
+                    <p><strong>Observações:</strong> Ok. Fazemos sem diluição.</p>
+                  </div>
+                </section>
+
+                <section class="card">
+                  <div class="card-content medicine-card">
+                    <header>
                       <h3>Soro fisiológico 0,9% (SF)</h3>
                       <span class="tag">Referência 1.0</span>
                     </header>
@@ -452,6 +478,7 @@
                         <option value="dipirona">Dipirona</option>
                         <option value="dexametasona">Dexametasona</option>
                         <option value="haloperidol">Haloperidol</option>
+                        <option value="midazolam">Midazolam</option>
                         <option value="sf">Soro fisiológico 0,9% (SF)</option>
                       </select>
                     </label>
@@ -464,6 +491,7 @@
                         <option value="dipirona">Dipirona</option>
                         <option value="dexametasona">Dexametasona</option>
                         <option value="haloperidol">Haloperidol</option>
+                        <option value="midazolam">Midazolam</option>
                         <option value="sf">Soro fisiológico 0,9% (SF)</option>
                       </select>
                     </label>
@@ -475,54 +503,17 @@
                 </div>
               </div>
               <div class="table-wrap">
-                <table class="compat-table">
-                  <thead>
-                    <tr>
-                      <th>Combinação em SF 0,9%</th>
-                      <th>Via / tempo</th>
-                      <th>Situação de compatibilidade</th>
-                      <th>Fonte</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    <tr>
-                      <td>Tramadol + haloperidol + hyoscine butilbrometo</td>
-                      <td>SC, 15 dias</td>
-                      <td><span class="status-pill ok">Estável</span> Sem reação local relatada em avaliação clínica retrospectiva.</td>
-                      <td>Negro et al., 2010</td>
-                    </tr>
-                    <tr>
-                      <td>Dihidrocodeína + hyoscine butilbrometo</td>
-                      <td>SC, até 72h</td>
-                      <td><span class="status-pill ok">Compatível visualmente</span> Reforça estabilidade do anticolinérgico em salina.</td>
-                      <td>Isherwood et al., 2021</td>
-                    </tr>
-                    <tr>
-                      <td>Morfina + haloperidol (+/– octreotídeo, clorpromazina)</td>
-                      <td>EV, 24h</td>
-                      <td><span class="status-pill warn">Inferência útil</span> Sem precipitação e com estabilidade visual em SF 0,9%.</td>
-                      <td>Fusi-Schmidhauser et al., 2016</td>
-                    </tr>
-                    <tr>
-                      <td>Morfina + haloperidol + escopolamina + clorpromazina + dipirona + dexametasona</td>
-                      <td>SC, mesma seringa</td>
-                      <td><span class="status-pill bad">Sem dado direto</span> Não há estudo laboratorial específico para o coquetel completo.</td>
-                      <td>Síntese do documento</td>
-                    </tr>
-                  </tbody>
-                </table>
-              </div>
-              <div class="table-wrap">
                 <table class="compat-table compatibility-matrix">
                   <caption>
                     Compatibilidade entre Morfina, Escopolamina, Clorpromazina, Dipirona,
-                    Dexametasona, Haloperidol e SF 0,9%
+                    Dexametasona, Haloperidol, Midazolam e SF 0,9%
                   </caption>
                   <thead>
                     <tr>
                       <th>Par avaliado</th>
                       <th>Situação</th>
                       <th>Interpretação prática</th>
+                      <th>Referência</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -530,51 +521,85 @@
                       <td>Morfina + Escopolamina</td>
                       <td><span class="status-pill ok">Compatibilidade provável</span></td>
                       <td>Há suporte indireto para opioides com hyoscine butilbrometo em contexto paliativo.</td>
+                      <td>Dickman et al., 2017; Isherwood, Forsyth, & Wilson, 2021</td>
+                    </tr>
+                    <tr>
+                      <td>Morfina + Midazolam</td>
+                      <td><span class="status-pill ok">Compatibilidade provável</span></td>
+                      <td>Uma das combinações CSCI mais comuns em cuidados paliativos; midazolam SC com opioide foi bem tolerado localmente.</td>
+                      <td>Dickman et al., 2017; Bottomley & Hanks, 1990</td>
                     </tr>
                     <tr>
                       <td>Morfina + Haloperidol</td>
                       <td><span class="status-pill ok">Compatibilidade provável</span></td>
                       <td>Combinação frequente; há dados parenterais em SF 0,9% sem precipitação.</td>
+                      <td>Fusi-Schmidhauser, Caronzolo, & Gamondi, 2016; Dickman et al., 2017</td>
+                    </tr>
+                    <tr>
+                      <td>Morfina + Haloperidol + Midazolam</td>
+                      <td><span class="status-pill ok">Uso frequente em CSCI</span></td>
+                      <td>Combinação descrita como frequente em serviços de cuidados paliativos.</td>
+                      <td>Dickman et al., 2017; Fusi-Schmidhauser, Caronzolo, & Gamondi, 2016</td>
                     </tr>
                     <tr>
                       <td>Morfina + Clorpromazina</td>
                       <td><span class="status-pill warn">Inferência</span></td>
                       <td>Aparece em coquetéis parenterais com morfina e haloperidol, mas o dado citado não é SC direto.</td>
+                      <td>Fusi-Schmidhauser, Caronzolo, & Gamondi, 2016</td>
+                    </tr>
+                    <tr>
+                      <td>Escopolamina + Midazolam</td>
+                      <td><span class="status-pill ok">Compatibilidade provável</span></td>
+                      <td>Combinações com hioscina/escopolamina e midazolam são muito usadas em CSCI, inclusive associadas a opioides.</td>
+                      <td>Dickman et al., 2017; Isherwood, Forsyth, & Wilson, 2021</td>
                     </tr>
                     <tr>
                       <td>Escopolamina + Haloperidol</td>
                       <td><span class="status-pill ok">Compatibilidade com dado SC</span></td>
                       <td>Hyoscine butilbrometo + haloperidol em SF 0,9% aparece em mistura ternária SC estável.</td>
+                      <td>Negro et al., 2010</td>
                     </tr>
                     <tr>
                       <td>Clorpromazina + Haloperidol</td>
                       <td><span class="status-pill warn">Inferência</span></td>
                       <td>Sem precipitação em coquetel parenteral com morfina e haloperidol; não há dado SC direto para o par isolado.</td>
+                      <td>Fusi-Schmidhauser, Caronzolo, & Gamondi, 2016</td>
                     </tr>
                     <tr>
                       <td>Dexametasona + Morfina</td>
                       <td><span class="status-pill warn">Sem dado direto no documento</span></td>
                       <td>Combinação usada na prática, mas a fonte destaca falta de apoio laboratorial formal para muitas associações.</td>
+                      <td>Ingielewicz et al., 2025; síntese do documento de compatibilidade</td>
                     </tr>
                     <tr>
                       <td>Dexametasona + Haloperidol</td>
-                      <td><span class="status-pill bad">Evitar sem validação</span></td>
-                      <td>A fonte não apresenta dado direto com haloperidol; priorize sítio separado ou confirmação farmacêutica.</td>
+                      <td><span class="status-pill warn">Sem dado direto no documento</span></td>
+                      <td>A dexametasona aparece como usada por via SC, mas não foi estudada nessas combinações específicas.</td>
+                      <td>Ingielewicz et al., 2025</td>
+                    </tr>
+                    <tr>
+                      <td>Dexametasona + Midazolam</td>
+                      <td><span class="status-pill warn">Sem dado direto no documento</span></td>
+                      <td>Não há detalhamento de compatibilidade em mistura com midazolam nas fontes citadas.</td>
+                      <td>Ingielewicz et al., 2025; síntese do documento de compatibilidade</td>
                     </tr>
                     <tr>
                       <td>Dipirona + qualquer um dos demais</td>
                       <td><span class="status-pill bad">Zona cinzenta</span></td>
                       <td>O documento informa lacuna específica para compatibilidade da dipirona nessas misturas.</td>
+                      <td>Síntese do documento de compatibilidade</td>
                     </tr>
                     <tr>
                       <td>SF 0,9% com as combinações citadas</td>
                       <td><span class="status-pill ok">Diluente preferencial nos dados</span></td>
                       <td>As combinações com melhor suporte foram descritas em soro fisiológico 0,9%.</td>
+                      <td>Negro et al., 2010; Isherwood, Forsyth, & Wilson, 2021; Fusi-Schmidhauser, Caronzolo, & Gamondi, 2016</td>
                     </tr>
                     <tr>
                       <td>Todos juntos na mesma seringa</td>
                       <td><span class="status-pill bad">Sem respaldo direto</span></td>
-                      <td>Não há estudo laboratorial específico para o coquetel completo por hipodermóclise.</td>
+                      <td>Não há estudo avaliando uma única mistura contendo morfina, escopolamina, clorpromazina, dipirona, dexametasona, haloperidol e midazolam em SF.</td>
+                      <td>Síntese do documento de compatibilidade</td>
                     </tr>
                   </tbody>
                 </table>
@@ -585,10 +610,10 @@
                   <li>Negro et al. (2010). Compatibility and stability of ternary admixtures of tramadol, haloperidol, and hyoscine N-butyl bromide.</li>
                   <li>Isherwood, Forsyth, & Wilson (2021). Subcutaneous dihydrocodeine tartrate compatibility in syringe pump.</li>
                   <li>Fusi-Schmidhauser, Caronzolo, & Gamondi (2016). Multidrug infusions in a Swiss palliative care unit.</li>
-                  <li>Anderson, Halford, & Mackay (2015). Stability of diphenhydramine, lorazepam and dexamethasone in 0.9% sodium chloride.</li>
+                  <li>Bottomley, D., & Hanks, G. (1990). Subcutaneous midazolam infusion in palliative care.</li>
                   <li>Dickman et al. (2017). Drug combinations administered by continuous subcutaneous infusion requiring compatibility analysis.</li>
-                  <li>Baker et al. (2020). Evaluation of continuous subcutaneous infusions across seven acute hospitals.</li>
-                  <li>Leong, Michael, & Wojnar (2024). Compatibility of medication admixtures in continuous subcutaneous infusions.</li>
+                  <li>Ingielewicz et al. (2025). Palliative patients who may benefit from intranasal delivery of symptomatic drugs.</li>
+                  <li>Johnson, I., & Patterson, S. (1992). Drugs used in combination in the syringe driver: a survey of hospice practice.</li>
                 </ul>
               </details>
             </div>
@@ -611,6 +636,7 @@
                       <option value="dipirona">Dipirona</option>
                       <option value="dexametasona">Dexametasona</option>
                       <option value="haloperidol">Haloperidol</option>
+                      <option value="midazolam">Midazolam</option>
                       <option value="sf">Soro fisiológico 0,9% (SF)</option>
                     </select>
                   </label>
@@ -624,6 +650,7 @@
                       <option value="dipirona">Dipirona</option>
                       <option value="dexametasona">Dexametasona</option>
                       <option value="haloperidol">Haloperidol</option>
+                      <option value="midazolam">Midazolam</option>
                       <option value="sf">Soro fisiológico 0,9% (SF)</option>
                     </select>
                   </label>
@@ -637,6 +664,7 @@
                       <option value="dipirona">Dipirona</option>
                       <option value="dexametasona">Dexametasona</option>
                       <option value="haloperidol">Haloperidol</option>
+                      <option value="midazolam">Midazolam</option>
                       <option value="sf">Soro fisiológico 0,9% (SF)</option>
                     </select>
                   </label>
@@ -650,6 +678,7 @@
                       <option value="dipirona">Dipirona</option>
                       <option value="dexametasona">Dexametasona</option>
                       <option value="haloperidol">Haloperidol</option>
+                      <option value="midazolam">Midazolam</option>
                       <option value="sf">Soro fisiológico 0,9% (SF)</option>
                     </select>
                   </label>
@@ -663,6 +692,7 @@
                       <option value="dipirona">Dipirona</option>
                       <option value="dexametasona">Dexametasona</option>
                       <option value="haloperidol">Haloperidol</option>
+                      <option value="midazolam">Midazolam</option>
                       <option value="sf">Soro fisiológico 0,9% (SF)</option>
                     </select>
                   </label>
@@ -680,9 +710,7 @@
                   <p>Selecione os itens para gerar a prescrição automaticamente.</p>
                 </div>
                 <div class="puncture-groups" id="punctureGroups" aria-live="polite"></div>
-                <textarea id="prescriptionOutput" readonly></textarea>
                 <div class="copy-actions">
-                  <button class="secondary-button" id="copyPrescription" type="button">Copiar texto</button>
                   <button class="secondary-button" id="clearPrescription" type="button">Limpar</button>
                 </div>
               </div>
@@ -692,62 +720,67 @@
 
         <article id="tecnica" class="tab-panel" role="tabpanel">
           <div class="stack">
+            <div class="tech-media-grid">
+              <div class="card">
+                <div class="card-content stack">
+                  <h2>Técnica de punção</h2>
+                  <div class="video-frame">
+                    <iframe
+                      id="techniqueVideo"
+                      src="about:blank"
+                      data-src="https://drive.google.com/file/d/1IUzsUktltswjAkH3vSTkLi1Jzs-QoMsk/preview?autoplay=1&mute=1"
+                      title="Vídeo técnica de punção por hipodermóclise"
+                      allow="autoplay; fullscreen"
+                      loading="lazy"
+                      allowfullscreen
+                    ></iframe>
+                  </div>
+                </div>
+              </div>
+              <section class="status-panel success volume-panel">
+                <h2>Volume por sítio de punção</h2>
+                <div class="site-list compact-site-list">
+                  <div class="site-item"><strong>Infraclavicular</strong><span>Até 250mL/24h.</span></div>
+                  <div class="site-item"><strong>Deltoidea</strong><span>Até 250mL/24h.</span></div>
+                  <div class="site-item"><strong>Interescapular</strong><span>Até 1000mL/24h.</span></div>
+                  <div class="site-item"><strong>Abdome</strong><span>Até 1000mL/24h.</span></div>
+                  <div class="site-item"><strong>Vasto lateral da coxa</strong><span>Até 1500mL/24h.</span></div>
+                </div>
+                <p>Volume total por múltiplos sítios: até 3000mL em 24 horas.</p>
+              </section>
+            </div>
             <div class="card">
               <div class="card-content stack">
-                <h2>Técnica de punção</h2>
-                <div class="video-frame">
-                  <iframe
-                    id="techniqueVideo"
-                    src="about:blank"
-                    data-src="https://drive.google.com/file/d/1IUzsUktltswjAkH3vSTkLi1Jzs-QoMsk/preview?autoplay=1&mute=1"
-                    title="Vídeo técnica de punção por hipodermóclise"
-                    allow="autoplay; fullscreen"
-                    loading="lazy"
-                    allowfullscreen
-                  ></iframe>
-                </div>
+                <h2>Material necessário</h2>
+                <ul class="quick-list">
+                  <li>Bandeja e luvas de procedimento.</li>
+                  <li>Solução antisséptica: clorexidina alcoólica, PVPI a 10%, PVPI ou álcool 70%.</li>
+                  <li>Gaze não estéril ou bola de algodão.</li>
+                  <li>Cateter agulhado: jelco 21 a 25G ou íntima 22 a 24G.</li>
+                  <li>Agulha para aspiração de medicação 40x1,2mm e seringa de 10mL.</li>
+                  <li>Flaconete de 10mL de soro fisiológico 0,9%.</li>
+                  <li>Equipo duas vias quando for utilizado jelco.</li>
+                  <li>Cobertura semipermeável estéril e transparente para fixação.</li>
+                  <li>Fita microporosa para fixação do circuito intermediário e identificação.</li>
+                </ul>
               </div>
             </div>
-            <section class="status-panel success">
-              <h2>Volume por sítio de punção</h2>
-              <div class="site-list">
-                <div class="site-item"><strong>Infraclavicular</strong><span>Até 250mL/24h.</span></div>
-                <div class="site-item"><strong>Deltoidea</strong><span>Até 250mL/24h.</span></div>
-                <div class="site-item"><strong>Interescapular</strong><span>Até 1000mL/24h.</span></div>
-                <div class="site-item"><strong>Abdome</strong><span>Até 1000mL/24h.</span></div>
-                <div class="site-item"><strong>Vasto lateral da coxa</strong><span>Até 1500mL/24h.</span></div>
+          </div>
+        </article>
+
+        <article id="cuidados" class="tab-panel" role="tabpanel">
+          <div class="stack">
+            <div class="card">
+              <div class="card-content stack">
+                <h2>Cuidados pós-punção</h2>
+                <ul class="quick-list">
+                  <li>Halo hiperemiado de até 5mm pode ocorrer. Observar; se aumentar, retirar o cateter e repuncionar a pelo menos 5cm.</li>
+                  <li>Após a punção, injetar 3mL de SF 0,9%; pode surgir soroma discreto, absorvido pelo tecido subcutâneo.</li>
+                  <li>Edema progressivo sugere que a velocidade de infusão excedeu a absorção; reduzir ou cessar a infusão.</li>
+                  <li>Troca: jelco até 11 dias; íntima até 21 dias.</li>
+                  <li>Não é recomendado o uso de dispositivos agulhados com cânula metálica, como scalp.</li>
+                </ul>
               </div>
-              <p>Volume total por múltiplos sítios: até 3000mL em 24 horas.</p>
-            </section>
-            <div class="tech-grid">
-              <section class="card">
-                <div class="card-content stack">
-                  <h2>Material necessário</h2>
-                  <ul class="quick-list">
-                    <li>Bandeja e luvas de procedimento.</li>
-                    <li>Solução antisséptica: clorexidina alcoólica, PVPI a 10%, PVPI ou álcool 70%.</li>
-                    <li>Gaze não estéril ou bola de algodão.</li>
-                    <li>Cateter agulhado: jelco 21 a 25G ou íntima 22 a 24G.</li>
-                    <li>Agulha para aspiração de medicação 40x1,2mm e seringa de 10mL.</li>
-                    <li>Flaconete de 10mL de soro fisiológico 0,9%.</li>
-                    <li>Equipo duas vias quando for utilizado jelco.</li>
-                    <li>Cobertura semipermeável estéril e transparente para fixação.</li>
-                    <li>Fita microporosa para fixação do circuito intermediário e identificação.</li>
-                  </ul>
-                </div>
-              </section>
-              <section class="card">
-                <div class="card-content stack">
-                  <h2>Após a punção</h2>
-                  <ul class="quick-list">
-                    <li>Halo hiperemiado de até 5mm pode ocorrer. Observar; se aumentar, retirar o cateter e repuncionar a pelo menos 5cm.</li>
-                    <li>Após a punção, injetar 3mL de SF 0,9%; pode surgir soroma discreto, absorvido pelo tecido subcutâneo.</li>
-                    <li>Edema progressivo sugere que a velocidade de infusão excedeu a absorção; reduzir ou cessar a infusão.</li>
-                    <li>Troca: jelco até 11 dias; íntima até 21 dias.</li>
-                    <li>Não é recomendado o uso de dispositivos agulhados com cânula metálica, como scalp.</li>
-                  </ul>
-                </div>
-              </section>
             </div>
             <div class="card">
               <div class="card-content stack">
@@ -784,6 +817,23 @@
                 <strong id="checklistCount">0 de 10 itens marcados</strong>
                 <div class="progress-track"><div class="progress-bar" id="checklistProgress"></div></div>
               </div>
+              <section class="voice-assistant" aria-live="polite">
+                <div class="voice-assistant-header">
+                  <div>
+                    <h3>IA por comando de voz</h3>
+                    <p>Fale os itens conferidos durante a visita para marcar o checklist automaticamente.</p>
+                  </div>
+                  <button class="primary-button" id="voiceChecklistToggle" type="button">
+                    Iniciar voz
+                  </button>
+                </div>
+                <div class="voice-status" id="voiceChecklistStatus">
+                  Assistente de voz pronto para iniciar.
+                </div>
+                <div class="voice-transcript" id="voiceChecklistTranscript">
+                  A transcrição aparecerá aqui enquanto você fala.
+                </div>
+              </section>
               <div class="check-section" id="visitChecklist">
                 <h3>Prescrição e plano terapêutico</h3>
                 <label class="check-item"><input type="checkbox" /> <span>Prescrição atual conferida.</span></label>

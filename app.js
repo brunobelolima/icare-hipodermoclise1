@@ -12,8 +12,26 @@ const punctureGroups = document.querySelector("#punctureGroups");
 const contactForm = document.querySelector("#contactForm");
 const contactResult = document.querySelector("#contactResult");
 const techniqueVideo = document.querySelector("#techniqueVideo");
+const visitCounter = document.querySelector("#visitCounter");
+const voiceChecklistToggle = document.querySelector("#voiceChecklistToggle");
+const voiceChecklistStatus = document.querySelector("#voiceChecklistStatus");
+const voiceChecklistTranscript = document.querySelector("#voiceChecklistTranscript");
 const contactEmail = "icarehipodermoclise@gmail.com";
 const storageKey = "icare-model-checklist";
+const visitCounterUrl = "https://abacus.jasoncameron.dev/hit/icare-hipodermoclise1/visitas";
+const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+let checklistRecognition = null;
+let checklistVoiceActive = false;
+
+async function updateVisitCounter() {
+  try {
+    const response = await fetch(visitCounterUrl, { cache: "no-store" });
+    const data = await response.json();
+    visitCounter.textContent = String(data.value);
+  } catch {
+    visitCounter.textContent = "--";
+  }
+}
 
 function activateTab(tab) {
   const targetId = tab.dataset.tab;
@@ -78,6 +96,169 @@ function restoreChecklist() {
   updateChecklistProgress();
 }
 
+function normalizeSpeechText(text) {
+  return text
+    .toLowerCase()
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .replace(/[^\w\s]/g, " ")
+    .replace(/\s+/g, " ")
+    .trim();
+}
+
+function setVoiceStatus(message, className = "") {
+  if (!voiceChecklistStatus) return;
+  voiceChecklistStatus.className = `voice-status${className ? ` ${className}` : ""}`;
+  voiceChecklistStatus.textContent = message;
+}
+
+function markChecklistByVoice(index) {
+  const item = checklistItems[index];
+  if (!item || item.checked) return false;
+  item.checked = true;
+  return true;
+}
+
+const checklistVoiceTargets = [
+  {
+    index: 0,
+    label: "prescrição atual",
+    terms: ["prescricao atual", "prescricao conferida", "receita conferida"],
+  },
+  {
+    index: 1,
+    label: "compatibilidades",
+    terms: ["compatibilidade", "compatibilidades revisadas", "fonte segura"],
+  },
+  {
+    index: 2,
+    label: "plano de retorno",
+    terms: ["plano de retorno", "telemonitoramento", "retorno definido"],
+  },
+  {
+    index: 3,
+    label: "medicamentos e diluentes",
+    terms: ["medicamentos", "solucoes", "diluentes", "medicacoes"],
+  },
+  {
+    index: 4,
+    label: "materiais de punção",
+    terms: ["materiais de puncao", "fixacao", "cateter", "material de puncao"],
+  },
+  {
+    index: 5,
+    label: "descarte",
+    terms: ["descarte", "perfurocortante", "perfurocortantes"],
+  },
+  {
+    index: 6,
+    label: "endereço e cuidador",
+    terms: ["endereco", "cuidador", "cuidadora", "referencia confirmada"],
+  },
+  {
+    index: 7,
+    label: "telefone de suporte",
+    terms: ["telefone", "suporte validado", "contato validado"],
+  },
+  {
+    index: 8,
+    label: "sinais de alerta",
+    terms: ["sinais de alerta", "alertas revisados", "sinais revisados"],
+  },
+  {
+    index: 9,
+    label: "registro clínico",
+    terms: ["registro clinico", "registro preparado", "preenchimento"],
+  },
+];
+
+function processChecklistVoice(text) {
+  const normalized = normalizeSpeechText(text);
+  if (!normalized) return;
+
+  if (normalized.includes("limpar checklist") || normalized.includes("limpar marcacoes")) {
+    checklistItems.forEach((item) => {
+      item.checked = false;
+    });
+    saveChecklist();
+    updateChecklistProgress();
+    setVoiceStatus("Checklist limpo por comando de voz.", "warning");
+    return;
+  }
+
+  const matchedLabels = [];
+  checklistVoiceTargets.forEach((target) => {
+    if (target.terms.some((term) => normalized.includes(term)) && markChecklistByVoice(target.index)) {
+      matchedLabels.push(target.label);
+    }
+  });
+
+  if (matchedLabels.length) {
+    saveChecklist();
+    updateChecklistProgress();
+    setVoiceStatus(`Marcado por voz: ${matchedLabels.join(", ")}.`, "listening");
+  }
+}
+
+function stopChecklistVoice() {
+  checklistVoiceActive = false;
+  if (checklistRecognition) checklistRecognition.stop();
+  if (voiceChecklistToggle) voiceChecklistToggle.textContent = "Iniciar voz";
+  setVoiceStatus("Assistente de voz pausado.");
+}
+
+function startChecklistVoice() {
+  if (!SpeechRecognition || !voiceChecklistToggle) {
+    setVoiceStatus("Reconhecimento de voz indisponível neste navegador.", "warning");
+    return;
+  }
+
+  if (!checklistRecognition) {
+    checklistRecognition = new SpeechRecognition();
+    checklistRecognition.lang = "pt-BR";
+    checklistRecognition.continuous = true;
+    checklistRecognition.interimResults = true;
+
+    checklistRecognition.addEventListener("result", (event) => {
+      let spokenText = "";
+      for (let index = event.resultIndex; index < event.results.length; index += 1) {
+        spokenText += event.results[index][0].transcript;
+      }
+      if (voiceChecklistTranscript) {
+        voiceChecklistTranscript.textContent = spokenText || "Aguardando fala...";
+      }
+      processChecklistVoice(spokenText);
+    });
+
+    checklistRecognition.addEventListener("error", () => {
+      checklistVoiceActive = false;
+      voiceChecklistToggle.textContent = "Iniciar voz";
+      setVoiceStatus("Não foi possível captar o áudio. Verifique a permissão do microfone.", "warning");
+    });
+
+    checklistRecognition.addEventListener("end", () => {
+      if (!checklistVoiceActive) return;
+      try {
+        checklistRecognition.start();
+      } catch {
+        checklistVoiceActive = false;
+        voiceChecklistToggle.textContent = "Iniciar voz";
+      }
+    });
+  }
+
+  checklistVoiceActive = true;
+  voiceChecklistToggle.textContent = "Parar voz";
+  setVoiceStatus("Ouvindo. Fale os itens conferidos do checklist.", "listening");
+  try {
+    checklistRecognition.start();
+  } catch {
+    checklistVoiceActive = false;
+    voiceChecklistToggle.textContent = "Iniciar voz";
+    setVoiceStatus("Não foi possível iniciar a escuta. Tente novamente.", "warning");
+  }
+}
+
 const compatibilityLabels = {
   morfina: "Morfina",
   escopolamina: "Escopolamina",
@@ -85,6 +266,7 @@ const compatibilityLabels = {
   dipirona: "Dipirona",
   dexametasona: "Dexametasona",
   haloperidol: "Haloperidol",
+  midazolam: "Midazolam",
   sf: "Soro fisiológico 0,9% (SF)",
 };
 
@@ -107,6 +289,24 @@ const compatibilityPairs = {
     detail:
       "Há dado SC para mistura com haloperidol e hyoscine butilbrometo em SF 0,9%.",
   },
+  "midazolam::morfina": {
+    status: "compatível",
+    className: "success",
+    detail:
+      "Combinação muito usada em infusão subcutânea contínua; há relato de boa tolerabilidade local.",
+  },
+  "haloperidol::midazolam": {
+    status: "compatível",
+    className: "success",
+    detail:
+      "A combinação morfina + haloperidol + midazolam é descrita como frequente em CSCI em cuidados paliativos.",
+  },
+  "escopolamina::midazolam": {
+    status: "compatível",
+    className: "success",
+    detail:
+      "Combinações com hioscina/escopolamina e midazolam são muito usadas em CSCI, inclusive com opioides.",
+  },
   "clorpromazina::morfina": {
     status: "não testado",
     className: "warning",
@@ -119,6 +319,12 @@ const compatibilityPairs = {
     detail:
       "Sem precipitação em coquetel parenteral com morfina e haloperidol, mas não há dado SC direto para o par isolado.",
   },
+  "clorpromazina::midazolam": {
+    status: "não testado",
+    className: "warning",
+    detail:
+      "Não há dado específico para via SC/hipodermóclise; a clorpromazina é descrita como potencialmente irritante por via subcutânea.",
+  },
   "dexametasona::morfina": {
     status: "não testado",
     className: "warning",
@@ -126,10 +332,16 @@ const compatibilityPairs = {
       "Combinação usada na prática, mas a fonte destaca falta de apoio laboratorial formal para muitas associações.",
   },
   "dexametasona::haloperidol": {
-    status: "incompatível",
-    className: "danger",
+    status: "não testado",
+    className: "warning",
     detail:
-      "Evitar sem validação. A fonte não apresenta dado direto com haloperidol e recomenda confirmação farmacêutica ou sítio separado.",
+      "A dexametasona aparece como usada por via SC, mas não foi estudada nessas combinações específicas.",
+  },
+  "dexametasona::midazolam": {
+    status: "não testado",
+    className: "warning",
+    detail:
+      "A dexametasona aparece como usada por via SC, mas não há detalhamento de compatibilidade com midazolam nas misturas citadas.",
   },
 };
 
@@ -186,6 +398,16 @@ const prescriptionData = {
     comments:
       "Pode-se administrar em bolus único diário. Recomenda-se metade da dose para idosos. Diluir em água, pois altas doses podem precipitar com SF. Concentração máxima 2mg/mL. Administrar em sítio exclusivo.",
     reference: "2.0",
+  },
+  midazolam: {
+    dose: "1 a 5mg em bolus ou infusão contínua ACM",
+    dilution:
+      "SF 5mL (bolus); 1mg/mL = 100mg de midazolam + SF qsp 100mL (infusão contínua)",
+    time: "ACM",
+    minVolume: "",
+    comments:
+      "Pode causar irritação local. Velocidade de infusão de 0,5mL/h a 20mL/h. Primeira escolha como sedativo. Titular a dose de acordo com os sintomas.",
+    reference: "1, 4",
   },
   sf: {
     dose: "Máximo 1500mL em 24h por sítio",
@@ -274,15 +496,17 @@ function groupItemsByCompatibility(items) {
 }
 
 function selectedPrescriptionItems() {
-  const used = new Set();
-  return prescriptionItemControls
-    .map((control) => control.value)
-    .filter(Boolean)
-    .filter((value) => {
-      if (used.has(value)) return false;
-      used.add(value);
-      return true;
+  return prescriptionItemControls.map((control) => control.value).filter(Boolean);
+}
+
+function syncPrescriptionOptions() {
+  const selected = selectedPrescriptionItems();
+  prescriptionItemControls.forEach((control) => {
+    Array.from(control.options).forEach((option) => {
+      option.disabled =
+        Boolean(option.value) && option.value !== control.value && selected.includes(option.value);
     });
+  });
 }
 
 function prescriptionCompatibilityLines(items) {
@@ -341,8 +565,6 @@ function renderPunctureGroups(groups) {
 function generatePrescription() {
   const items = selectedPrescriptionItems();
   if (!items.length) {
-    document.querySelector("#prescriptionOutput").value =
-      "Selecione pelo menos um item para gerar a prescrição orientada por compatibilidade.";
     punctureHighlight.className = "status-panel prescription-highlight warning";
     punctureHighlight.innerHTML = `
       <h2>Número orientado</h2>
@@ -354,25 +576,12 @@ function generatePrescription() {
 
   const groups = groupItemsByCompatibility(items);
   const punctureWord = groups.length === 1 ? "punção por hipodermóclise" : "punções por hipodermóclise";
-  const groupLines = groups.flatMap((group, index) => [
-    `Punção ${index + 1}: ${group.map((item) => compatibilityLabels[item]).join(" + ")}`,
-    "  - Via: subcutânea",
-    ...group.flatMap((item) => prescriptionItemLines(item)),
-  ]);
   punctureHighlight.className = "status-panel prescription-highlight success";
   punctureHighlight.innerHTML = `
     <h2>Número orientado: ${groups.length}</h2>
     <p>${groups.length} ${punctureWord} para ${items.length} item(ns) selecionado(s).</p>
   `;
   renderPunctureGroups(groups);
-
-  document.querySelector("#prescriptionOutput").value = [
-    "Prescrição por hipodermóclise",
-    `Itens selecionados (${items.length}/5): ${items.map((item) => compatibilityLabels[item]).join(", ")}`,
-    "",
-    `Número orientado: ${groups.length} ${punctureWord}`,
-    ...groupLines,
-  ].join("\n");
 }
 
 tabs.forEach((tab) => {
@@ -384,24 +593,17 @@ tabs.forEach((tab) => {
 });
 
 prescriptionItemControls.forEach((control) => {
-  control.addEventListener("change", generatePrescription);
+  control.addEventListener("change", () => {
+    syncPrescriptionOptions();
+    generatePrescription();
+  });
 });
 
-document.querySelector("#copyPrescription").addEventListener("click", async () => {
-  const output = document.querySelector("#prescriptionOutput");
-  if (!output.value) generatePrescription();
-  try {
-    await navigator.clipboard.writeText(output.value);
-  } catch {
-    output.focus();
-    output.select();
-  }
-});
 document.querySelector("#clearPrescription").addEventListener("click", () => {
-  document.querySelector("#prescriptionOutput").value = "";
   prescriptionItemControls.forEach((control) => {
     control.value = "";
   });
+  syncPrescriptionOptions();
   punctureHighlight.className = "status-panel prescription-highlight";
   punctureHighlight.innerHTML = `
     <h2>Número orientado</h2>
@@ -424,6 +626,21 @@ document.querySelector("#clearChecklist").addEventListener("click", () => {
   saveChecklist();
   updateChecklistProgress();
 });
+
+if (voiceChecklistToggle) {
+  if (!SpeechRecognition) {
+    voiceChecklistToggle.disabled = true;
+    setVoiceStatus("Reconhecimento de voz indisponível neste navegador.", "warning");
+  }
+
+  voiceChecklistToggle.addEventListener("click", () => {
+    if (checklistVoiceActive) {
+      stopChecklistVoice();
+    } else {
+      startChecklistVoice();
+    }
+  });
+}
 
 contactForm.addEventListener("submit", (event) => {
   event.preventDefault();
@@ -448,4 +665,6 @@ contactForm.addEventListener("submit", (event) => {
 
 restoreChecklist();
 renderCompatibilityResult();
+syncPrescriptionOptions();
+updateVisitCounter();
 openHashTab();

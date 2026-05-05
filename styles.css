@@ -69,6 +69,36 @@ textarea {
   object-fit: cover;
 }
 
+.visit-counter {
+  display: grid;
+  gap: 2px;
+  align-content: center;
+  position: absolute;
+  top: 0;
+  left: 0;
+  min-width: 96px;
+  min-height: 58px;
+  border: 1px solid rgba(255, 255, 255, 0.72);
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.82);
+  box-shadow: var(--shadow);
+  padding: 10px 12px;
+  text-align: left;
+}
+
+.visit-counter span {
+  color: var(--muted);
+  font-size: 0.72rem;
+  font-weight: 800;
+  text-transform: uppercase;
+}
+
+.visit-counter strong {
+  color: var(--accent-2);
+  font-size: 1.35rem;
+  line-height: 1;
+}
+
 h1 {
   max-width: 980px;
   margin: 0;
@@ -92,7 +122,7 @@ h1 {
 
 .tab-list {
   display: grid;
-  grid-template-columns: repeat(9, minmax(0, 1fr));
+  grid-template-columns: repeat(5, minmax(0, 1fr));
   gap: 6px;
   padding: 6px;
   border: 1px solid var(--line);
@@ -201,10 +231,17 @@ h1 {
   align-items: start;
 }
 
+.tech-media-grid {
+  display: grid;
+  grid-template-columns: minmax(360px, 1fr) minmax(280px, 0.78fr);
+  gap: 16px;
+  align-items: start;
+}
+
 .video-frame {
   position: relative;
   overflow: hidden;
-  width: min(100%, 760px);
+  width: 100%;
   margin: 0 auto;
   border: 1px solid var(--line);
   border-radius: 8px;
@@ -679,6 +716,39 @@ details.references summary {
   gap: 10px;
 }
 
+.compact-site-list {
+  grid-template-columns: 1fr;
+}
+
+.volume-panel {
+  align-self: start;
+  gap: 8px;
+  min-height: auto;
+  padding: 12px;
+}
+
+.volume-panel h2 {
+  font-size: 1.1rem;
+}
+
+.volume-panel p {
+  margin: 0;
+  font-size: 0.9rem;
+  line-height: 1.35;
+}
+
+.volume-panel .compact-site-list {
+  gap: 6px;
+}
+
+.volume-panel .site-item {
+  padding: 8px 10px;
+}
+
+.volume-panel .site-item strong {
+  margin-bottom: 2px;
+}
+
 .site-item {
   border: 1px solid var(--line);
   border-radius: 8px;
@@ -703,6 +773,64 @@ details.references summary {
   border-radius: 8px;
   background: var(--surface-2);
   padding: 14px;
+}
+
+.voice-assistant {
+  display: grid;
+  gap: 12px;
+  border: 1px solid #bae6fd;
+  border-radius: 8px;
+  background: #f0f9ff;
+  padding: 14px;
+}
+
+.voice-assistant-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+}
+
+.voice-assistant h3,
+.voice-assistant p {
+  margin: 0;
+}
+
+.voice-assistant h3 {
+  color: var(--accent-2);
+}
+
+.voice-assistant p {
+  margin-top: 4px;
+  color: var(--muted);
+}
+
+.voice-status {
+  border-radius: 8px;
+  background: white;
+  color: var(--accent-2);
+  padding: 10px 12px;
+  font-weight: 800;
+}
+
+.voice-status.listening {
+  background: #dcfce7;
+  color: #14532d;
+}
+
+.voice-status.warning {
+  background: #fff7ed;
+  color: #7c2d12;
+}
+
+.voice-transcript {
+  min-height: 64px;
+  border: 1px dashed #7dd3fc;
+  border-radius: 8px;
+  background: white;
+  color: var(--muted);
+  padding: 12px;
+  line-height: 1.45;
 }
 
 .progress-track {
@@ -812,7 +940,14 @@ details.references summary {
     transform: translateX(50%);
   }
 
+  .visit-counter {
+    left: 50%;
+    top: 104px;
+    transform: translateX(-50%);
+  }
+
   .module-grid,
+  .tech-media-grid,
   .tech-grid,
   .drug-grid,
   .indication-grid,
@@ -823,6 +958,11 @@ details.references summary {
   .welcome-grid,
   .idealizer-grid {
     grid-template-columns: 1fr;
+  }
+
+  .voice-assistant-header {
+    align-items: stretch;
+    flex-direction: column;
   }
 }
 
