@@ -18,6 +18,7 @@ const voiceChecklistStatus = document.querySelector("#voiceChecklistStatus");
 const voiceChecklistTranscript = document.querySelector("#voiceChecklistTranscript");
 const documentChecklistTrigger = document.querySelector("#documentChecklistTrigger");
 const documentChecklistPanel = document.querySelector("#checklist");
+const closeChecklistButton = document.querySelector("#closeChecklist");
 const contactEmail = "icarehipodermoclise@gmail.com";
 const storageKey = "icare-model-checklist";
 const visitCounterUrl = "https://abacus.jasoncameron.dev/hit/icare-hipodermoclise1/visitas";
@@ -64,6 +65,20 @@ function openDocumentChecklist() {
   if (!documentChecklistTrigger || !documentChecklistPanel) return;
   documentChecklistPanel.hidden = false;
   documentChecklistTrigger.setAttribute("aria-expanded", "true");
+}
+
+function closeDocumentChecklist() {
+  if (!documentChecklistTrigger || !documentChecklistPanel) return;
+  documentChecklistPanel.hidden = true;
+  documentChecklistTrigger.setAttribute("aria-expanded", "false");
+}
+
+function toggleDocumentChecklist() {
+  if (documentChecklistPanel?.hidden) {
+    openDocumentChecklist();
+  } else {
+    closeDocumentChecklist();
+  }
 }
 
 function openHashTab() {
@@ -298,72 +313,84 @@ const compatibilityPairs = {
   "escopolamina::morfina": {
     status: "compatível",
     className: "success",
+    source: "Compatibilidade refs. 2, 5",
     detail:
       "Compatibilidade provável por suporte indireto para opioides com hyoscine butilbrometo em contexto paliativo.",
   },
   "haloperidol::morfina": {
     status: "compatível",
     className: "success",
+    source: "Compatibilidade refs. 3, 5",
     detail:
       "Combinação frequente; há dados parenterais em SF 0,9% sem precipitação.",
   },
   "escopolamina::haloperidol": {
     status: "compatível",
     className: "success",
+    source: "Compatibilidade ref. 1",
     detail:
       "Há dado SC para mistura com haloperidol e hyoscine butilbrometo em SF 0,9%.",
   },
   "midazolam::morfina": {
     status: "compatível",
     className: "success",
+    source: "Compatibilidade refs. 4, 5",
     detail:
       "Combinação muito usada em infusão subcutânea contínua; há relato de boa tolerabilidade local.",
   },
   "haloperidol::midazolam": {
     status: "compatível",
     className: "success",
+    source: "Compatibilidade refs. 3, 5",
     detail:
       "A combinação morfina + haloperidol + midazolam é descrita como frequente em CSCI em cuidados paliativos.",
   },
   "escopolamina::midazolam": {
     status: "compatível",
     className: "success",
+    source: "Compatibilidade refs. 2, 5",
     detail:
       "Combinações com hioscina/escopolamina e midazolam são muito usadas em CSCI, inclusive com opioides.",
   },
   "clorpromazina::morfina": {
     status: "não testado",
     className: "warning",
+    source: "Compatibilidade ref. 3",
     detail:
       "Há inferência por coquetéis parenterais, mas não dado SC direto para o par isolado.",
   },
   "clorpromazina::haloperidol": {
     status: "não testado",
     className: "warning",
+    source: "Compatibilidade ref. 3",
     detail:
       "Sem precipitação em coquetel parenteral com morfina e haloperidol, mas não há dado SC direto para o par isolado.",
   },
   "clorpromazina::midazolam": {
     status: "não testado",
     className: "warning",
+    source: "Síntese da aba Compatibilidade",
     detail:
       "Não há dado específico para via SC/hipodermóclise; a clorpromazina é descrita como potencialmente irritante por via subcutânea.",
   },
   "dexametasona::morfina": {
     status: "não testado",
     className: "warning",
+    source: "Compatibilidade ref. 6 e síntese da aba",
     detail:
       "Combinação usada na prática, mas a fonte destaca falta de apoio laboratorial formal para muitas associações.",
   },
   "dexametasona::haloperidol": {
     status: "não testado",
     className: "warning",
+    source: "Compatibilidade ref. 6",
     detail:
       "A dexametasona aparece como usada por via SC, mas não foi estudada nessas combinações específicas.",
   },
   "dexametasona::midazolam": {
     status: "não testado",
     className: "warning",
+    source: "Compatibilidade ref. 6 e síntese da aba",
     detail:
       "A dexametasona aparece como usada por via SC, mas não há detalhamento de compatibilidade com midazolam nas misturas citadas.",
   },
@@ -371,23 +398,23 @@ const compatibilityPairs = {
 
 const prescriptionData = {
   morfina: {
-    dose: "Dose inicial: 2-3mg 4/4h (bolus) ou infusão contínua ACM",
+    dose: "Bolus SC: 2-3mg a cada 4 horas; infusão contínua: 10-20mg/dia, com ajuste individualizado",
     dilution:
-      "Não requer diluição (bolus); 1mg/mL = 100mg de morfina + SF qsp 100mL (infusão contínua)",
-    time: "Bolus ou infusão contínua",
+      "Preferir soro fisiológico 0,9%; diluir a dose prescrita em SF 0,9% conforme volume planejado",
+    time: "Bolus ou infusão contínua; velocidade usual entre 20-100mL/h, sem exceder 100mL/h",
     minVolume: "",
     comments:
-      "Não existe dose máxima. Iniciar com a menor dose possível em pacientes muito idosos, frágeis ou com doença renal crônica.",
-    reference: "1, 2",
+      "Não existe dose máxima definida. Iniciar com doses menores em idosos, pacientes frágeis ou com doença renal.",
+    reference: "1, 2, 3, 4",
   },
   escopolamina: {
-    dose: "20mg 8/8h até 60mg 6/6h",
-    dilution: "SF 50mL (intermitente); SF 100mL (infusão contínua)",
-    time: "50min ou infusão contínua",
-    minVolume: "SF 1:1mL, infusão lenta em bolus",
+    dose: "20mg 8/8h até 60mg 6/6h; estudo descreve bolus SC de 20mg e manutenção 60mg/24h",
+    dilution: "SF 0,9% 1mL para bolus; volume de diluição para infusão contínua não especificado nas fontes",
+    time: "Bolus ou infusão contínua; manutenção descrita como 10mg SC a cada 4h ou infusão contínua SC",
+    minVolume: "",
     comments:
-      "Seguir padrão de 1mL/min ou 62,5mL/h. Pode produzir boca seca, confusão e sedação.",
-    reference: "1, 2, 4",
+      "Não confundir com apresentação combinada com dipirona. A fonte também descreve scopolamine hydrobromide 0,25mg SC em bolus e 1,5mg/24h em manutenção.",
+    reference: "5, 6",
   },
   clorpromazina: {
     dose: "12,5 a 50mg até de 6/6h (dose máxima 150mg/dia)",
@@ -395,43 +422,44 @@ const prescriptionData = {
     time: "30min ou infusão contínua",
     minVolume: "",
     comments: "Se infusão contínua, usar frasco sem PVC.",
-    reference: "6, 7, 8",
+    reference: "21, 22, 23",
   },
   dipirona: {
-    dose: "1 a 2g até 6/6h",
-    dilution: "SF 1:1mL",
-    time: "Aplicação lenta em bolus",
+    dose: "1 a 2g até 6/6h, conforme protocolo local",
+    dilution: "Sem dado específico robusto para volume/diluição por hipodermóclise nas fontes revisadas",
+    time: "Sem recomendação específica para dipirona por hipodermóclise; práticas gerais de CSCI usam infusões de 24h quando indicado",
     minVolume: "",
-    comments: "Seguir padrão de 1mL/min.",
-    reference: "1, 2",
+    comments:
+      "A base adicional não encontrou estudos com parâmetros específicos de volume, diluição ou taxa de infusão para metamizol/dipirona por hipodermóclise.",
+    reference: "7, 8, 16",
   },
   dexametasona: {
     dose: "2 a 16mg a cada 24h",
-    dilution: "SF 50mL",
-    time: "60min",
-    minVolume: "SF 1:1mL, aplicação lenta",
+    dilution: "Água para injeção ou SF 0,9%; volume final e concentração não especificados nas fontes",
+    time: "Bolus ou infusão contínua; práticas gerais de CSCI costumam usar 24h",
+    minVolume: "",
     comments:
-      "Sítio exclusivo, devido incompatibilidade com outras drogas e risco de irritação local.",
-    reference: "1, 4",
+      "Estudos descrevem uso subcutâneo frequente em cuidados paliativos, mas não trazem volume, concentração ou taxa em mL/h específicos para dexametasona.",
+    reference: "9, 10, 18",
   },
   haloperidol: {
-    dose: "0,5 a 30mg/dia",
-    dilution: "AD 1:1mL",
-    time: "Bolus: infusão lenta",
+    dose: "Em CSCI, mediana aproximada de 2,5 a 3mg/24h; faixa observada de 0,5 a 10mg/24h",
+    dilution:
+      "Os estudos de CSCI não especificam receita padrão de diluição, volume final ou taxa em mL/h para haloperidol isolado",
+    time: "Bolus lento ou infusão subcutânea contínua, geralmente em 24h",
     minVolume: "",
     comments:
-      "Pode-se administrar em bolus único diário. Recomenda-se metade da dose para idosos. Diluir em água, pois altas doses podem precipitar com SF. Concentração máxima 2mg/mL. Administrar em sítio exclusivo.",
-    reference: "2.0",
+      "O haloperidol aparece com frequência em CSCI de cuidados paliativos, inclusive em combinações com opioides, midazolam, ciclizina ou hyoscine butilbrometo. Ajustar dose e diluição conforme protocolo local.",
+    reference: "11, 12, 13, 16, 17, 18",
   },
   midazolam: {
-    dose: "1 a 5mg em bolus ou infusão contínua ACM",
-    dilution:
-      "SF 5mL (bolus); 1mg/mL = 100mg de midazolam + SF qsp 100mL (infusão contínua)",
-    time: "ACM",
+    dose: "1 a 5mg em bolus ou infusão contínua, titulando conforme sintomas",
+    dilution: "SF 0,9% 5mL para bolus; em CSCI, ajustar volume final conforme protocolo local e dispositivo disponível",
+    time: "Bolus ou infusão subcutânea contínua, geralmente em 24h",
     minVolume: "",
     comments:
-      "Pode causar irritação local. Velocidade de infusão de 0,5mL/h a 20mL/h. Primeira escolha como sedativo. Titular a dose de acordo com os sintomas.",
-    reference: "1, 4",
+      "Pode causar irritação local. Velocidade de infusão de 0,5mL/h a 20mL/h. É usado em CSCI de cuidados paliativos, frequentemente em combinação com opioides, anticolinérgicos ou haloperidol.",
+    reference: "14, 15, 16, 17",
   },
   sf: {
     dose: "Máximo 1500mL em 24h por sítio",
@@ -439,8 +467,8 @@ const prescriptionData = {
     time: "Infusão contínua conforme prescrição e tolerância local",
     minVolume: "",
     comments:
-      "Volume de infusão máximo 62,5mL/h. Coxa é preferencial para volumes maiores. Volume máximo somando todos os sítios: 3000mL/24h.",
-    reference: "1.0",
+      "Volume de infusão máximo 62,5mL/h. Considerar o limite de volume conforme o sítio de punção escolhido.",
+    reference: "19, 20",
   },
 };
 
@@ -475,12 +503,14 @@ function renderCompatibilityResult() {
     result = {
       status: "compatível",
       className: "success",
+      source: "Compatibilidade refs. 1, 2, 3",
       detail: "SF 0,9% é o diluente presente nas combinações com melhor suporte descritas na fonte.",
     };
   } else if (first === "dipirona" || second === "dipirona") {
     result = {
       status: "não testado",
       className: "warning",
+      source: "Síntese da aba Compatibilidade",
       detail: "A fonte informa lacuna específica para compatibilidade da dipirona nessas misturas.",
     };
   } else {
@@ -501,15 +531,16 @@ function renderCompatibilityResult() {
 
 function getCompatibility(first, second) {
   if (first === second || first === "sf" || second === "sf") {
-    return { status: "compatível", className: "success" };
+    return { status: "compatível", className: "success", source: "Compatibilidade refs. 1, 2, 3" };
   }
   if (first === "dipirona" || second === "dipirona") {
-    return { status: "não testado", className: "warning" };
+    return { status: "não testado", className: "warning", source: "Síntese da aba Compatibilidade" };
   }
   return (
     compatibilityPairs[compatibilityKey(first, second)] || {
       status: "não testado",
       className: "warning",
+      source: "Síntese da aba Compatibilidade",
     }
   );
 }
@@ -567,7 +598,7 @@ function prescriptionItemLines(item) {
   ];
   if (data.minVolume) lines.push(`    Menor volume: ${data.minVolume}`);
   lines.push(`    Comentários: ${data.comments}`);
-  lines.push(`    Referência da tabela-base: ${data.reference}`);
+  lines.push(`    Referências da aba Medicamentos e soluções: ${data.reference}`);
   return lines;
 }
 
@@ -627,7 +658,11 @@ tabs.forEach((tab) => {
 window.addEventListener("hashchange", openHashTab);
 
 if (documentChecklistTrigger) {
-  documentChecklistTrigger.addEventListener("click", openDocumentChecklist);
+  documentChecklistTrigger.addEventListener("click", toggleDocumentChecklist);
+}
+
+if (closeChecklistButton) {
+  closeChecklistButton.addEventListener("click", closeDocumentChecklist);
 }
 
 [compatItemA, compatItemB].forEach((control) => {

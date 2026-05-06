@@ -6,7 +6,7 @@
     <title>iCare - hipodermóclise</title>
     <meta
       name="description"
-      content="iCare - hipodermóclise: uso da hipodermóclise em cuidados de fim de vida."
+      content="iCare - hipodermóclise: uso de hipodermóclise baseado em evidências."
     />
     <link rel="stylesheet" href="styles.css" />
   </head>
@@ -19,7 +19,7 @@
         </div>
         <img class="brand-mark" src="assets/icare-logo.png" alt="Logotipo iCare hipodermóclise" />
         <h1>iCare - hipodermóclise</h1>
-        <p class="subtitle">uso da hipodermóclise em cuidados de fim de vida</p>
+        <p class="subtitle">uso de hipodermóclise baseado em evidências</p>
       </header>
 
       <section class="tabs">
@@ -28,7 +28,7 @@
             Boas-vindas
           </button>
           <button class="tab-trigger" role="tab" aria-selected="false" data-tab="historia">
-            História
+            Definição e história
           </button>
           <button class="tab-trigger" role="tab" aria-selected="false" data-tab="indicacoes">
             Indicações e contraindicações
@@ -60,11 +60,19 @@
           <div class="card">
             <div class="card-content stack">
               <h2>Boas-vindas ao iCare</h2>
-              <p>
-                Olá. Este material foi criado para apoiar o uso da hipodermóclise em cuidados de
-                fim de vida no domicílio, reunindo informações práticas para consulta, organização
-                da visita e tomada de decisão clínica.
-              </p>
+              <div class="welcome-copy">
+                <p>
+                  Olá. Este material foi criado para apoiar o uso da hipodermóclise em cuidados de
+                  fim de vida, reunindo informações práticas para consulta, organização
+                  da visita e tomada de decisão clínica.
+                </p>
+                <p>
+                  Foi dada preferência a artigos originais (RCT, não-RCT e estudos observacionais)
+                  realizados em humanos. Quando essas informações não eram suficientes, elas foram
+                  complementadas com dados de manuais e guias. Todas as informações são
+                  referenciadas.
+                </p>
+              </div>
               <div class="dashboard-grid welcome-grid">
                 <section class="status-panel success">
                   <h2>Sobre este material</h2>
@@ -122,13 +130,23 @@
           <div class="card">
             <div class="card-content stack">
               <h2>História da hipodermóclise: de técnica antiga ao ressurgimento atual</h2>
-              <p>
-                A hipodermóclise, ou infusão subcutânea de fluidos e medicamentos, atravessou
-                fases de ampla utilização, descrédito e retomada parcial. Seu abandono histórico se
-                relaciona principalmente a uso inadequado, eventos adversos associados a volumes ou
-                soluções impróprias e preconceito profissional, mais do que a falhas intrínsecas da
-                técnica.
-              </p>
+              <div class="history-intro-grid">
+                <p>
+                  A hipodermóclise, ou utilização da hipoderme para administração de soluções e medicamentos, atravessou
+                  fases de ampla utilização, descrédito e retomada parcial. Seu abandono histórico se
+                  relaciona principalmente a uso inadequado, eventos adversos associados a volumes ou
+                  soluções impróprias e preconceito profissional, mais do que a falhas intrínsecas da
+                  técnica.
+                </p>
+                <figure class="history-image">
+                  <img
+                    src="https://drive.google.com/thumbnail?id=1vC6yWIfiAi4zmTRvc51RE8i6Fc28wjwx&sz=w1200"
+                    alt="Imagem ilustrativa relacionada à história da hipodermóclise"
+                    loading="lazy"
+                  />
+                </figure>
+              </div>
+              <h2>Linha do tempo</h2>
               <div class="timeline">
                 <section class="timeline-item">
                   <strong>1865 ao início dos anos 1900</strong>
@@ -177,11 +195,11 @@
               <details class="references">
                 <summary>Fontes usadas nesta aba</summary>
                 <ul class="reference-list">
-                  <li>Barua, P., & Bhowmick, B. (2005). Hypodermoclysis: a victim of historical prejudice.</li>
-                  <li>Silva, P., & Santos, E. (2018). Cuidados paliativos: hipodermóclise, uma técnica do passado com futuro.</li>
-                  <li>Vasconcellos, C., & Milão, D. (2019). Hipodermóclise: alternativa para infusão de medicamentos em idosos e cuidados paliativos.</li>
-                  <li>De Souza et al. (2022). The state of the art on hypodermoclysis in child health care.</li>
-                  <li>De Andrade Pereira De Brito, W. (2016). Hipodermóclise no idoso: uma terapia para a autonomia no cuidado.</li>
+                  <li><a href="https://academic.oup.com/ageing/article-abstract/34/3/215/40413" target="_blank" rel="noopener">Barua, P., & Bhowmick, B. (2005). Hypodermoclysis: a victim of historical prejudice.</a></li>
+                  <li><a href="https://www.recien.com.br/index.php/Recien/article/view/153" target="_blank" rel="noopener">Silva, P., & Santos, E. (2018). Cuidados paliativos: hipodermóclise, uma técnica do passado com futuro.</a></li>
+                  <li><a href="https://revistaseletronicas.pucrs.br/pajar/article/view/32559" target="_blank" rel="noopener">Vasconcellos, C., & Milão, D. (2019). Hipodermóclise: alternativa para infusão de medicamentos em idosos e cuidados paliativos.</a></li>
+                  <li><a href="https://www.periodicos.ufc.br/rene/article/view/77955" target="_blank" rel="noopener">De Souza et al. (2022). The state of the art on hypodermoclysis in child health care.</a></li>
+                  <li><a href="https://app.uff.br/riuff/handle/1/3999" target="_blank" rel="noopener">De Andrade Pereira De Brito, W. (2016). Hipodermóclise no idoso: uma terapia para a autonomia no cuidado.</a></li>
                 </ul>
               </details>
             </div>
@@ -232,12 +250,12 @@
               <details class="references">
                 <summary>Fontes usadas nesta aba</summary>
                 <ul class="reference-list">
-                  <li>Vasconcellos, C., & Milão, D. (2019). Hipodermóclise: alternativa para infusão de medicamentos em idosos e cuidados paliativos.</li>
-                  <li>Brugnolli, A., Bevilacqua, A., & Pedrotti, D. (2025). Indications to the use of subcutaneous route for fluids and drugs administration.</li>
-                  <li>Coelho, T., Wainstein, A., & Drummond-Lage, A. (2020). Hypodermoclysis as a strategy for end-of-life cancer in home care.</li>
-                  <li>Sasson, M., Shvartzman, P., & Ben-Gurion, M. (2001). Hypodermoclysis: an alternative infusion technique.</li>
-                  <li>López, J., & Reyes-Ortiz, C. (2010). Subcutaneous hydration by hypodermoclysis.</li>
-                  <li>Silva, P., & Santos, E. (2018). Hipodermóclise: técnica do passado com futuro.</li>
+                  <li><a href="https://revistaseletronicas.pucrs.br/pajar/article/view/32559" target="_blank" rel="noopener">Vasconcellos, C., & Milão, D. (2019). Hipodermóclise: alternativa para infusão de medicamentos em idosos e cuidados paliativos.</a></li>
+                  <li><a href="https://pubmed.ncbi.nlm.nih.gov/40470855/" target="_blank" rel="noopener">Brugnolli, A., Bevilacqua, A., & Pedrotti, D. (2025). Indications to the use of subcutaneous route for fluids and drugs administration.</a></li>
+                  <li><a href="https://journals.sagepub.com/doi/10.1177/1049909119897401" target="_blank" rel="noopener">Coelho, T., Wainstein, A., & Drummond-Lage, A. (2020). Hypodermoclysis as a strategy for end-of-life cancer in home care.</a></li>
+                  <li><a href="https://www.aafp.org/pubs/afp/issues/2001/1101/p1575.html" target="_blank" rel="noopener">Sasson, M., Shvartzman, P., & Ben-Gurion, M. (2001). Hypodermoclysis: an alternative infusion technique.</a></li>
+                  <li><a href="https://www.cambridge.org/core/journals/reviews-in-clinical-gerontology/article/subcutaneous-hydration-by-hypodermoclysis/5184646C0C48D6C69FC9722B026AAFED" target="_blank" rel="noopener">López, J., & Reyes-Ortiz, C. (2010). Subcutaneous hydration by hypodermoclysis.</a></li>
+                  <li><a href="https://www.recien.com.br/index.php/Recien/article/view/153" target="_blank" rel="noopener">Silva, P., & Santos, E. (2018). Hipodermóclise: técnica do passado com futuro.</a></li>
                 </ul>
               </details>
             </div>
@@ -249,7 +267,7 @@
             <div class="card-content stack">
               <h2>Medicamentos e soluções</h2>
               <p>
-                Dados extraídos da tabela-base, restritos aos itens solicitados: Morfina,
+                Dados extraídos das fontes referenciadas, restritos aos itens solicitados: Morfina,
                 Escopolamina, Clorpromazina, Dipirona, Dexametasona, Haloperidol, Midazolam e
                 Soro fisiológico 0,9%.
               </p>
@@ -258,18 +276,17 @@
                   <div class="card-content medicine-card">
                     <header>
                       <h3>Morfina</h3>
-                      <span class="tag">Referência 1, 2</span>
+                      <span class="tag">Referências 1, 2, 3, 4</span>
                     </header>
                     <div class="field-grid">
-                      <div class="field"><strong>Dose</strong><span>Dose inicial: 2-3mg 4/4h (bolus) ou infusão contínua ACM</span></div>
-                      <div class="field"><strong>Diluição</strong><span>Não requer diluição (bolus); 1mg/mL = 100mg de morfina + SF qsp 100mL (infusão contínua)</span></div>
-                      <div class="field"><strong>Tempo de infusão</strong><span>Bolus ou infusão contínua</span></div>
+                      <div class="field"><strong>Dose</strong><span>Bolus SC: 2-3mg a cada 4 horas; infusão contínua: 10-20mg/dia, com ajuste individualizado.</span></div>
+                      <div class="field"><strong>Diluição</strong><span>Preferir soro fisiológico 0,9%; diluir a dose prescrita em SF 0,9% conforme volume planejado.</span></div>
+                      <div class="field"><strong>Tempo de infusão</strong><span>Bolus ou infusão contínua; velocidade usual entre 20-100mL/h, sem exceder 100mL/h.</span></div>
                     </div>
                     <div class="clinical-note">
-                      Não existe dose máxima. Iniciar com a menor dose possível em pacientes muito
-                      idosos, frágeis ou com doença renal crônica. Pode produzir prurido por
-                      dilatação dos vasos sanguíneos ao liberar histaminas. O intervalo entre as
-                      aplicações pode ser aumentado em pacientes com insuficiência hepática ou renal.
+                      Não existe dose máxima definida. Iniciar com doses menores em idosos,
+                      pacientes frágeis ou com doença renal, monitorando sedação, depressão
+                      respiratória, edema, irritação, hematoma ou infecção local.
                     </div>
                   </div>
                 </section>
@@ -278,17 +295,17 @@
                   <div class="card-content medicine-card">
                     <header>
                       <h3>Escopolamina</h3>
-                      <span class="tag">Referência 1, 2, 3</span>
+                      <span class="tag">Referências 5, 6</span>
                     </header>
                     <div class="field-grid">
-                      <div class="field"><strong>Dose</strong><span>20mg 8/8h até 60mg 6/6h</span></div>
-                      <div class="field"><strong>Diluição</strong><span>SF 50mL (intermitente); SF 100mL (infusão contínua)</span></div>
-                      <div class="field"><strong>Tempo de infusão</strong><span>50min ou infusão contínua</span></div>
-                      <div class="field"><strong>Menor volume</strong><span>SF 1:1mL, infusão lenta em bolus</span></div>
+                      <div class="field"><strong>Dose</strong><span>20mg 8/8h até 60mg 6/6h; estudo descreve bolus SC de 20mg e manutenção 60mg/24h.</span></div>
+                      <div class="field"><strong>Diluição</strong><span>SF 0,9% 1mL para bolus; volume de diluição para infusão contínua não especificado nas fontes.</span></div>
+                      <div class="field"><strong>Tempo de infusão</strong><span>Infusão em bolus ou contínua; manutenção descrita como 10mg SC a cada 4h ou infusão contínua SC.</span></div>
                     </div>
                     <div class="clinical-note">
-                      Pode produzir boca seca e confusão. Pode causar sedação, por ultrapassar a
-                      barreira hemato-encefálica.
+                      Não confundir com a apresentação combinada com dipirona. O estudo de
+                      referência também descreve scopolamine hydrobromide 0,25mg SC em bolus e
+                      1,5mg/24h em manutenção.
                     </div>
                   </div>
                 </section>
@@ -297,7 +314,7 @@
                   <div class="card-content medicine-card">
                     <header>
                       <h3>Clorpromazina</h3>
-                      <span class="tag">Referência 4, 5, 6</span>
+                      <span class="tag">Referências 21, 22, 23</span>
                     </header>
                     <div class="field-grid">
                       <div class="field"><strong>Dose</strong><span>12,5 a 50mg até de 6/6h (dose máxima 150mg/dia)</span></div>
@@ -312,12 +329,16 @@
                   <div class="card-content medicine-card">
                     <header>
                       <h3>Dipirona</h3>
-                      <span class="tag">Referência 1, 2</span>
+                      <span class="tag">Referências 7, 8, 16</span>
                     </header>
                     <div class="field-grid">
-                      <div class="field"><strong>Dose</strong><span>1 a 2g até 6/6h</span></div>
-                      <div class="field"><strong>Diluição</strong><span>SF 1:1mL</span></div>
-                      <div class="field"><strong>Tempo de infusão</strong><span>Aplicação lenta em bolus</span></div>
+                      <div class="field"><strong>Dose</strong><span>1 a 2g até 6/6h, conforme protocolo local.</span></div>
+                      <div class="field"><strong>Diluição</strong><span>Não há dado específico robusto para volume/diluição da dipirona por hipodermóclise nas fontes revisadas.</span></div>
+                      <div class="field"><strong>Tempo de infusão</strong><span>Sem recomendação específica para dipirona por hipodermóclise; práticas gerais de CSCI usam infusões de 24h quando indicado.</span></div>
+                    </div>
+                    <div class="clinical-note">
+                      A base adicional não encontrou estudos com parâmetros específicos de volume,
+                      diluição ou taxa de infusão para metamizol/dipirona por hipodermóclise.
                     </div>
                   </div>
                 </section>
@@ -326,17 +347,16 @@
                   <div class="card-content medicine-card">
                     <header>
                       <h3>Dexametasona</h3>
-                      <span class="tag">Referência 1, 3</span>
+                      <span class="tag">Referências 9, 10, 18</span>
                     </header>
                     <div class="field-grid">
                       <div class="field"><strong>Dose</strong><span>2 a 16mg a cada 24h</span></div>
-                      <div class="field"><strong>Diluição</strong><span>SF 50mL</span></div>
-                      <div class="field"><strong>Tempo de infusão</strong><span>60min</span></div>
-                      <div class="field"><strong>Menor volume</strong><span>SF 1:1mL, aplicação lenta</span></div>
+                      <div class="field"><strong>Diluição</strong><span>Água para injeção ou SF 0,9%; volume final e concentração não especificados nas fontes.</span></div>
+                      <div class="field"><strong>Tempo de infusão</strong><span>Uso SC em bolus ou infusão contínua; práticas gerais de CSCI costumam usar 24h.</span></div>
                     </div>
                     <div class="clinical-note">
-                      Sítio exclusivo, devido incompatibilidade com outras drogas e risco de
-                      irritação local.
+                      Estudos descrevem uso subcutâneo frequente em cuidados paliativos, mas não
+                      trazem volume, concentração ou taxa em mL/h específicos para dexametasona.
                     </div>
                   </div>
                 </section>
@@ -345,18 +365,17 @@
                   <div class="card-content medicine-card">
                     <header>
                       <h3>Haloperidol</h3>
-                      <span class="tag">Referência 2</span>
+                      <span class="tag">Referências 11, 12, 13, 16, 17, 18</span>
                     </header>
                     <div class="field-grid">
-                      <div class="field"><strong>Dose</strong><span>0,5 a 30mg/dia</span></div>
-                      <div class="field"><strong>Diluição</strong><span>AD 1:1mL</span></div>
-                      <div class="field"><strong>Tempo de infusão</strong><span>Bolus: infusão lenta</span></div>
+                      <div class="field"><strong>Dose</strong><span>Em CSCI, mediana aproximada de 2,5 a 3mg/24h; faixa observada de 0,5 a 10mg/24h.</span></div>
+                      <div class="field"><strong>Diluição</strong><span>Os estudos de CSCI não especificam receita padrão de diluição, volume final ou taxa em mL/h para haloperidol isolado.</span></div>
+                      <div class="field"><strong>Tempo de infusão</strong><span>Bolus lento ou infusão subcutânea contínua, geralmente em 24h.</span></div>
                     </div>
                     <div class="clinical-note">
-                      Pode-se administrar em bolus único diário, por ter meia-vida longa. Recomenda-se
-                      a metade da dose para idosos. Diluir em água pois altas doses podem precipitar
-                      com SF. Equivalência VO:SC = 1:1. Concentração máxima 2mg/mL. Administrar em
-                      sítio exclusivo.
+                      O haloperidol aparece com frequência em CSCI de cuidados paliativos, inclusive
+                      em combinações com opioides, midazolam, ciclizina ou hyoscine butilbrometo.
+                      Ajustar dose e diluição conforme protocolo local.
                     </div>
                   </div>
                 </section>
@@ -365,16 +384,17 @@
                   <div class="card-content medicine-card">
                     <header>
                       <h3>Midazolam</h3>
-                      <span class="tag">Referência 1, 3</span>
+                      <span class="tag">Referências 14, 15, 16, 17</span>
                     </header>
                     <div class="field-grid">
-                      <div class="field"><strong>Dose</strong><span>1 a 5mg em bolus ou infusão contínua ACM</span></div>
-                      <div class="field"><strong>Diluição</strong><span>SF 5mL (bolus); 1mg/mL = 100mg de midazolam + SF qsp 100mL (infusão contínua)</span></div>
-                      <div class="field"><strong>Tempo de infusão</strong><span>ACM</span></div>
+                      <div class="field"><strong>Dose</strong><span>1 a 5mg em bolus ou infusão contínua, titulando conforme sintomas.</span></div>
+                      <div class="field"><strong>Diluição</strong><span>SF 0,9% 5mL para bolus; em CSCI, ajustar volume final conforme protocolo local e dispositivo disponível.</span></div>
+                      <div class="field"><strong>Tempo de infusão</strong><span>Bolus ou infusão subcutânea contínua, geralmente em 24h.</span></div>
                     </div>
                     <div class="clinical-note">
                       Pode causar irritação local. Velocidade de infusão de 0,5mL/h a 20mL/h.
-                      Titular a dose de acordo com os sintomas.
+                      É usado em CSCI de cuidados paliativos, frequentemente em combinação com
+                      opioides, anticolinérgicos ou haloperidol.
                     </div>
                   </div>
                 </section>
@@ -383,46 +403,97 @@
                   <div class="card-content medicine-card">
                     <header>
                       <h3>Soro fisiológico 0,9% (SF)</h3>
-                      <span class="tag">Referência 1</span>
+                      <span class="tag">Referências 19, 20</span>
                     </header>
                     <div class="field-grid">
                       <div class="field"><strong>Dose</strong><span>Máximo 1500mL em 24h por sítio</span></div>
+                      <div class="field"><strong>Diluição</strong><span>Solução pronta para infusão.</span></div>
+                      <div class="field"><strong>Tempo de infusão</strong><span>Infusão contínua conforme prescrição e tolerância local.</span></div>
                     </div>
-                    <div class="clinical-note">Volume de infusão máximo 62,5mL/h.</div>
+                    <div class="clinical-note">
+                      Volume de infusão máximo 62,5mL/h. Considerar o limite de volume conforme o
+                      sítio de punção escolhido.
+                    </div>
                   </div>
                 </section>
               </div>
               <details class="references">
-                <summary>Referências da tabela-base usadas nesta aba</summary>
-                <ul class="reference-list">
+                <summary>Referências usadas nesta aba</summary>
+                <ol class="reference-list">
                   <li>
-                    1 - <a href="https://sbgg.org.br/wp-content/uploads/2017/11/SBGG_guia-subcutanea_2aedicao.pdf" target="_blank" rel="noopener">Azevedo, D. L. O uso da via subcutânea em geriatria e cuidados paliativos:
-                    um guia da SBGG e da ANCP para profissionais. 2ª edição. Rio de Janeiro, 2017.</a>
+                    <a href="https://revistaseletronicas.pucrs.br/pajar/article/view/32559" target="_blank" rel="noopener">Vasconcellos, C. F., & Milão, D. Hipodermóclise: alternativa para infusão de medicamentos em pacientes idosos e pacientes em cuidados paliativos. PAJAR. 2019.</a>
                   </li>
                   <li>
-                    2 - <a href="https://revistas.usp.br/rmrp/article/view/150079" target="_blank" rel="noopener">Quaglio R. C., Varallo F. R., Lima N. K. C., Junqueira A. F., Ianhez
-                    Junior E., Matumoto S., Fortuna C. M. Medicamentos passíveis de infusão por
-                    hipodermóclise. Medicina (Ribeirão Preto, Online). 2018; 51(1):55-68.</a>
+                    <a href="https://journal.einstein.br/article/hypodermoclysis-a-literature-review-to-assist-in-clinical-practice/" target="_blank" rel="noopener">Bruno, V. G. Hypodermoclysis: a literature review to assist in clinical practice. Einstein (São Paulo). 2015.</a>
                   </li>
                   <li>
-                    3 - <a href="https://aplicacoes.einstein.br/manualfarmaceutico/Paginas/Termos.aspx?filtro=Ta&itemID=167" target="_blank" rel="noopener">Sociedade Beneficente Israelita Brasileira Albert Einstein.
-                    Hipodermóclise [documento institucional]. Revisto e atualizado em 2013; revisão
-                    da literatura atualizada em agosto de 2017.</a>
+                    <a href="https://www.sciencedirect.com/science/article/pii/088539249090014B" target="_blank" rel="noopener">Bruera et al. Hypodermoclysis for the administration of fluids and narcotic analgesics in patients with advanced cancer. J Pain Symptom Manage. 1990.</a>
                   </li>
                   <li>
-                    4 - <a href="https://www.secpal.org/documentos-aecpal/monografia-secpal-uso-de-la-via-subcutanea-en-cuidados-paliativos/" target="_blank" rel="noopener">Avillés, R. G., Antiñolo, F. G. Uso de la vía subcutánea en cuidados
+                    <a href="https://pubmed.ncbi.nlm.nih.gov/40470855/" target="_blank" rel="noopener">Brugnolli, A., Bevilacqua, A., & Pedrotti, D. Indications to the use of subcutaneous route for fluids and drugs administration: a literature review. 2025.</a>
+                  </li>
+                  <li>
+                    <a href="https://doi.org/10.1016/j.jpainsymman.2008.07.007" target="_blank" rel="noopener">Wildiers, H. et al. Atropine, hyoscine butylbromide, or scopolamine are equally effective for the treatment of death rattle in terminal care. Journal of Pain and Symptom Management. 2009.</a>
+                  </li>
+                  <li>
+                    <a href="https://d1xe7tfg0uwul9.cloudfront.net/sbgg.org.br/wp-content/uploads/2023/11/1699883102_uso-da-via-subcutanea-geriatria-cuidados-paliativos.pdf" target="_blank" rel="noopener">Azevedo, D. L. O uso da via subcutânea em geriatria e cuidados paliativos: um guia da SBGG e da ANCP para profissionais. 2ª edição. Rio de Janeiro: SBGG; 2016.</a>
+                  </li>
+                  <li>
+                    <a href="https://docs.google.com/document/d/1zBxvsRI67_-XM7WucIRqmBl63FT8jTCf60MOSazyxIs/edit?usp=sharing" target="_blank" rel="noopener">Base Dipirona: revisão sobre volume, diluição e tempo de infusão de metamizol/dipirona por hipodermóclise.</a>
+                  </li>
+                  <li>
+                    <a href="https://doi.org/10.3390/pharmacy10050112" target="_blank" rel="noopener">Au, Y., Baker, L., & Hindmarsh, J. The impact of an electronic prescribing template with decision support upon the prescribing of subcutaneous infusions at the end of life in a community setting. Pharmacy. 2022.</a>
+                  </li>
+                  <li>
+                    <a href="https://docs.google.com/document/d/1s3gVgZG_lN4jNrvLZ4ZNwrAXSupPwOSIIVVpIiqtpb4/edit?usp=sharing" target="_blank" rel="noopener">Base Dexametasona: revisão sobre uso subcutâneo, diluição e infusão contínua de dexametasona por hipodermóclise.</a>
+                  </li>
+                  <li>
+                    <a href="https://doi.org/10.12968/ijpn.2010.16.10.79213" target="_blank" rel="noopener">Walker, J., Lane, P., & McKenzie, C. Evidence-based practice guidelines: a survey of subcutaneous dexamethasone administration. International Journal of Palliative Nursing. 2010.</a>
+                  </li>
+                  <li>
+                    <a href="https://docs.google.com/document/d/1tolSS9sTFUxcoF6P6vsx3IHSfPC-sEs1NkX1opDql3E/edit?usp=sharing" target="_blank" rel="noopener">Base Haloperidol: revisão sobre dose, diluição e duração de infusão subcutânea contínua de haloperidol.</a>
+                  </li>
+                  <li>
+                    <a href="https://doi.org/10.1136/bmjspcare-2011-000075" target="_blank" rel="noopener">Gambles, M. et al. How is agitation and restlessness managed in the last 24 h of life in patients whose care is supported by the Liverpool Care Pathway for the Dying Patient? BMJ Supportive & Palliative Care. 2011.</a>
+                  </li>
+                  <li>
+                    <a href="https://doi.org/10.1016/j.jpainsymman.2013.10.018" target="_blank" rel="noopener">Bartz, L. et al. Subcutaneous administration of drugs in palliative care: results of a systematic observational study. Journal of Pain and Symptom Management. 2014.</a>
+                  </li>
+                  <li>
+                    <a href="https://docs.google.com/document/d/1gcsGGORpfqIpdTree7WX2djqnrxHfOrwut_o_FSj0hU/edit?usp=sharing" target="_blank" rel="noopener">Base Midazolam: revisão sobre uso subcutâneo, dose, diluição e infusão contínua de midazolam por hipodermóclise.</a>
+                  </li>
+                  <li>
+                    <a href="https://pubmed.ncbi.nlm.nih.gov/2384705/" target="_blank" rel="noopener">Bottomley, D. M., & Hanks, G. W. Subcutaneous midazolam infusion in palliative care. Journal of Pain and Symptom Management. 1990.</a>
+                  </li>
+                  <li>
+                    <a href="https://doi.org/10.1186/s12904-020-00611-3" target="_blank" rel="noopener">Baker, J. et al. An evaluation of continuous subcutaneous infusions across seven NHS acute hospitals. BMC Palliative Care. 2020.</a>
+                  </li>
+                  <li>
+                    <a href="https://doi.org/10.1186/s12904-020-00681-3" target="_blank" rel="noopener">Fürst, P. et al. Continuous subcutaneous infusion for pain control in dying patients: experiences from a tertiary palliative care center. BMC Palliative Care. 2020.</a>
+                  </li>
+                  <li>
+                    <a href="https://doi.org/10.1093/ijpp/riae039" target="_blank" rel="noopener">Leong, M., Michael, N., & Wojnar, R. Compatibility of medication admixtures in continuous subcutaneous infusions. International Journal of Pharmacy Practice. 2024.</a>
+                  </li>
+                  <li>
+                    <a href="https://docs.google.com/document/d/1GS6YNAUMHNT38cfZSNGqH16izCnImbqBPDZkL-TyaF4/edit?usp=sharing" target="_blank" rel="noopener">Base Soro fisiológico: revisão sobre uso de SF 0,9%, volume por sítio e tempo de infusão por hipodermóclise.</a>
+                  </li>
+                  <li>
+                    <a href="https://sbgg.org.br/wp-content/uploads/2017/11/SBGG_guia-subcutanea_2aedicao.pdf" target="_blank" rel="noopener">Azevedo, D. L. O uso da via subcutânea em geriatria e cuidados paliativos: um guia da SBGG e da ANCP para profissionais. 2ª edição. Rio de Janeiro, 2017.</a>
+                  </li>
+                  <li>
+                    <a href="https://www.secpal.org/documentos-aecpal/monografia-secpal-uso-de-la-via-subcutanea-en-cuidados-paliativos/" target="_blank" rel="noopener">Avillés, R. G., Antiñolo, F. G. Uso de la vía subcutánea en cuidados
                     paliativos. Madrid: Sociedad Española de Cuidados Paliativos (SECPAL), 2013.</a>
                   </li>
                   <li>
-                    5 - <a href="https://pdf4pro.com/view/guidelines-for-the-use-of-subcutaneous-2ff098.html" target="_blank" rel="noopener">NHS Greater Glasgow and Clyde. Guideline for the use of subcutaneous
+                    <a href="https://pdf4pro.com/view/guidelines-for-the-use-of-subcutaneous-2ff098.html" target="_blank" rel="noopener">NHS Greater Glasgow and Clyde. Guideline for the use of subcutaneous
                     medications in palliative care for adults. Palliative Care Practice Development
                     Team, 2011.</a>
                   </li>
                   <li>
-                    6 - <a href="https://informefarmacologicodohuap.blogspot.com/2017/05/livro-manual-de-drogas-injetaveis-4-ed.html" target="_blank" rel="noopener">Souza G. B. Manual de drogas injetáveis. 4ª edição. Editora Medfarma. São
+                    <a href="https://informefarmacologicodohuap.blogspot.com/2017/05/livro-manual-de-drogas-injetaveis-4-ed.html" target="_blank" rel="noopener">Souza G. B. Manual de drogas injetáveis. 4ª edição. Editora Medfarma. São
                     Paulo, 2017.</a>
                   </li>
-                </ul>
+                </ol>
               </details>
             </div>
           </div>
@@ -666,6 +737,8 @@
                 </div>
                 <div class="clinical-note">
                   A prescrição será gerada automaticamente conforme os itens forem selecionados.
+                  Os dados de dose, diluição e tempo usam as referências da aba Medicamentos e
+                  soluções; a separação em punções usa a matriz da aba Compatibilidade.
                 </div>
               </div>
             </div>
@@ -765,10 +838,10 @@
                 <details class="references">
                   <summary>Referências usadas nesta aba</summary>
                   <ul class="reference-list">
-                    <li>Schen R. Administration of fluid by subcutaneous infusion: revival of a forgotten method. Harefuah. 1997.</li>
-                    <li>Sasson M, Shvartzman P. Hypodermoclysis: an alternative infusion technique. Am Fam Physician. 2001.</li>
-                    <li>Dasgupta M, Binns MA, Rochon PA. Subcutaneous fluid infusion in a long-term care setting. J Am Geriatr Soc. 2000.</li>
-                    <li>Azevedo DL. O uso da via subcutânea em geriatria e cuidados paliativos. 2ª ed. Rio de Janeiro: SBGG; 2016.</li>
+                    <li><a href="https://pubmed.ncbi.nlm.nih.gov/?term=Schen+R+Administration+of+fluid+by+subcutaneous+infusion+Harefuah+1997" target="_blank" rel="noopener">Schen R. Administration of fluid by subcutaneous infusion: revival of a forgotten method. Harefuah. 1997.</a></li>
+                    <li><a href="https://www.aafp.org/pubs/afp/issues/2001/1101/p1575.html" target="_blank" rel="noopener">Sasson M, Shvartzman P. Hypodermoclysis: an alternative infusion technique. Am Fam Physician. 2001.</a></li>
+                    <li><a href="https://doi.org/10.1111/j.1532-5415.2000.tb04755.x" target="_blank" rel="noopener">Dasgupta M, Binns MA, Rochon PA. Subcutaneous fluid infusion in a long-term care setting. J Am Geriatr Soc. 2000.</a></li>
+                    <li><a href="https://sbgg.org.br/wp-content/uploads/2016/06/uso-da-via-subcutanea-geriatria-cuidados-paliativos.pdf" target="_blank" rel="noopener">Azevedo DL. O uso da via subcutânea em geriatria e cuidados paliativos. 2ª ed. Rio de Janeiro: SBGG; 2016.</a></li>
                   </ul>
                 </details>
               </div>
@@ -792,6 +865,10 @@
                     Checklist pré visita domiciliar
                   </button>
                   <section class="checklist-panel embedded-checklist" id="checklist" hidden>
+                    <div class="checklist-header">
+                      <h3>Checklist pré visita domiciliar</h3>
+                      <button class="secondary-button" id="closeChecklist" type="button">Fechar</button>
+                    </div>
                     <div class="checklist-progress">
                       <strong id="checklistCount">0 de 10 itens marcados</strong>
                       <div class="progress-track"><div class="progress-bar" id="checklistProgress"></div></div>

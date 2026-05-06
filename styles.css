@@ -183,6 +183,15 @@ h1 {
   gap: 16px;
 }
 
+.welcome-copy {
+  display: grid;
+  gap: 6px;
+}
+
+.welcome-copy p {
+  margin: 0;
+}
+
 .idealizer-grid {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -284,7 +293,7 @@ h1 {
   display: grid;
   grid-template-columns: minmax(360px, 1fr) minmax(280px, 0.78fr);
   gap: 16px;
-  align-items: start;
+  align-items: stretch;
 }
 
 .video-frame {
@@ -698,6 +707,37 @@ button:focus-visible {
   gap: 12px;
 }
 
+.history-intro-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px;
+  align-items: stretch;
+}
+
+.history-intro-grid p {
+  display: flex;
+  align-items: center;
+  margin: 0;
+  min-height: 240px;
+  text-align: justify;
+  line-height: 1.65;
+}
+
+.history-image {
+  overflow: hidden;
+  margin: 0;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: #fbffff;
+}
+
+.history-image img {
+  display: block;
+  width: 100%;
+  max-height: 240px;
+  object-fit: contain;
+}
+
 .timeline-item {
   border: 1px solid var(--line);
   border-left: 5px solid var(--accent);
@@ -770,14 +810,15 @@ details.references summary {
 }
 
 .volume-panel {
-  align-self: start;
-  gap: 8px;
-  min-height: auto;
-  padding: 12px;
+  align-content: space-between;
+  align-self: stretch;
+  gap: 10px;
+  min-height: 100%;
+  padding: 16px;
 }
 
 .volume-panel h2 {
-  font-size: 1.1rem;
+  font-size: 1.2rem;
 }
 
 .volume-panel p {
@@ -787,11 +828,11 @@ details.references summary {
 }
 
 .volume-panel .compact-site-list {
-  gap: 6px;
+  gap: 8px;
 }
 
 .volume-panel .site-item {
-  padding: 8px 10px;
+  padding: 10px 12px;
 }
 
 .volume-panel .site-item strong {
@@ -823,6 +864,18 @@ details.references summary {
 
 .embedded-checklist[hidden] {
   display: none;
+}
+
+.checklist-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.checklist-header h3 {
+  margin: 0;
+  color: var(--accent-2);
 }
 
 .checklist-progress {
@@ -1015,6 +1068,7 @@ details.references summary {
   .tech-media-grid,
   .tech-grid,
   .drug-grid,
+  .history-intro-grid,
   .indication-grid,
   .site-list,
   .form-grid,
@@ -1031,6 +1085,11 @@ details.references summary {
     flex-direction: column;
   }
 
+  .checklist-header {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
   .voice-assistant {
     padding: 12px;
   }
@@ -1043,6 +1102,11 @@ details.references summary {
   .voice-status,
   .voice-transcript {
     font-size: 0.96rem;
+  }
+
+  .history-intro-grid p {
+    display: block;
+    min-height: auto;
   }
 }
 
