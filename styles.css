@@ -604,11 +604,15 @@ li {
   line-height: 1.5;
 }
 
-.procedure-grid {
+.procedure-grid,
+.procedure-panels {
   display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 16px;
   align-items: start;
+}
+
+.procedure-grid {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
 }
 
 .procedure-variant {
@@ -618,6 +622,10 @@ li {
   border-radius: 8px;
   background: rgba(223, 248, 246, 0.36);
   padding: 16px;
+}
+
+.procedure-variant[hidden] {
+  display: none;
 }
 
 .procedure-variant-needle {
@@ -1108,13 +1116,15 @@ details.references summary {
   padding-top: 16px;
 }
 
-.material-subtabs {
+.material-subtabs,
+.technique-subtabs {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 8px;
 }
 
-.material-subtab {
+.material-subtab,
+.technique-subtab {
   min-height: 48px;
   border: 1px solid var(--line);
   border-radius: 6px;
@@ -1129,7 +1139,8 @@ details.references summary {
   text-align: center;
 }
 
-.material-subtab[aria-selected="true"] {
+.material-subtab[aria-selected="true"],
+.technique-subtab[aria-selected="true"] {
   background: var(--accent);
   color: white;
   box-shadow: 0 8px 18px rgba(8, 145, 178, 0.22);
@@ -1261,6 +1272,7 @@ details.references summary {
   .tech-media-grid,
   .tech-grid,
   .procedure-grid,
+  .technique-subtabs,
   .material-subtabs,
   .drug-grid,
   .history-intro-grid,
@@ -1349,7 +1361,8 @@ details.references summary {
   .primary-button,
   .secondary-button,
   .document-tab-trigger,
-  .material-subtab {
+  .material-subtab,
+  .technique-subtab {
     width: 100%;
   }
 

@@ -799,8 +799,35 @@
             <div class="card">
               <div class="card-content stack">
                 <h2>Passo a passo da punção</h2>
-                <div class="procedure-grid">
-                  <section class="procedure-variant procedure-variant-needle">
+                <div class="technique-subtabs" role="tablist" aria-label="Tipos de cateter para técnica de punção">
+                  <button
+                    class="technique-subtab"
+                    type="button"
+                    role="tab"
+                    aria-selected="true"
+                    aria-controls="technique-scalp"
+                    data-technique-subtab="scalp"
+                  >
+                    Cateter agulhado (scalp)
+                  </button>
+                  <button
+                    class="technique-subtab"
+                    type="button"
+                    role="tab"
+                    aria-selected="false"
+                    aria-controls="technique-jelco"
+                    data-technique-subtab="jelco"
+                  >
+                    Cateter não agulhado (jelco ou íntima)
+                  </button>
+                </div>
+                <div class="procedure-panels">
+                  <section
+                    class="procedure-variant procedure-variant-needle active"
+                    id="technique-scalp"
+                    role="tabpanel"
+                    data-technique-panel="scalp"
+                  >
                     <h3>Cateter agulhado (scalp)</h3>
                     <ol class="procedure-steps">
                       <li>
@@ -841,7 +868,13 @@
                       </li>
                     </ol>
                   </section>
-                  <section class="procedure-variant procedure-variant-cannula">
+                  <section
+                    class="procedure-variant procedure-variant-cannula"
+                    id="technique-jelco"
+                    role="tabpanel"
+                    data-technique-panel="jelco"
+                    hidden
+                  >
                     <h3>Cateter não agulhado (jelco ou íntima)</h3>
                     <ol class="procedure-steps">
                       <li>

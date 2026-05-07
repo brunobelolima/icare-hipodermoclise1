@@ -11,6 +11,8 @@ const materialChecklistProgress = document.querySelector("#materialChecklistProg
 const clearMaterialChecklistButton = document.querySelector("#clearMaterialChecklist");
 const materialSubtabs = Array.from(document.querySelectorAll(".material-subtab"));
 const materialSubtabPanels = Array.from(document.querySelectorAll("[data-material-panel]"));
+const techniqueSubtabs = Array.from(document.querySelectorAll(".technique-subtab"));
+const techniqueSubtabPanels = Array.from(document.querySelectorAll("[data-technique-panel]"));
 const compatItemA = document.querySelector("#compatItemA");
 const compatItemB = document.querySelector("#compatItemB");
 const compatInteractiveResult = document.querySelector("#compatInteractiveResult");
@@ -87,6 +89,20 @@ function activateMaterialSubtab(trigger) {
 
   materialSubtabPanels.forEach((panel) => {
     const isActive = panel.dataset.materialPanel === target;
+    panel.hidden = !isActive;
+    panel.classList.toggle("active", isActive);
+  });
+}
+
+function activateTechniqueSubtab(trigger) {
+  const target = trigger.dataset.techniqueSubtab;
+
+  techniqueSubtabs.forEach((item) => {
+    item.setAttribute("aria-selected", String(item === trigger));
+  });
+
+  techniqueSubtabPanels.forEach((panel) => {
+    const isActive = panel.dataset.techniquePanel === target;
     panel.hidden = !isActive;
     panel.classList.toggle("active", isActive);
   });
@@ -1003,6 +1019,10 @@ materialChecklistItems.forEach((item) => {
 
 materialSubtabs.forEach((trigger) => {
   trigger.addEventListener("click", () => activateMaterialSubtab(trigger));
+});
+
+techniqueSubtabs.forEach((trigger) => {
+  trigger.addEventListener("click", () => activateTechniqueSubtab(trigger));
 });
 
 document.querySelector("#clearChecklist").addEventListener("click", () => {
