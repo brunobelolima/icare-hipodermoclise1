@@ -33,6 +33,12 @@
           <button class="tab-trigger" role="tab" aria-selected="false" data-tab="indicacoes">
             Indicações e contraindicações
           </button>
+          <button class="tab-trigger" role="tab" aria-selected="false" data-tab="material">
+            Material necessário
+          </button>
+          <button class="tab-trigger" role="tab" aria-selected="false" data-tab="tecnica">
+            Técnica de punção
+          </button>
           <button class="tab-trigger" role="tab" aria-selected="false" data-tab="medicamentos">
             Medicamentos e soluções
           </button>
@@ -41,9 +47,6 @@
           </button>
           <button class="tab-trigger" role="tab" aria-selected="false" data-tab="prescricao">
             Prescrição
-          </button>
-          <button class="tab-trigger" role="tab" aria-selected="false" data-tab="tecnica">
-            Técnica de punção
           </button>
           <button class="tab-trigger" role="tab" aria-selected="false" data-tab="cuidados">
             Principais cuidados
@@ -61,8 +64,9 @@
             <div class="card-content stack">
               <h2>Boas-vindas ao iCare</h2>
               <div class="welcome-copy">
+                <p>Olá,</p>
                 <p>
-                  Olá. Este material foi criado para apoiar o uso da hipodermóclise em cuidados de
+                  Este material foi criado para apoiar o uso da hipodermóclise em cuidados de
                   fim de vida, reunindo informações práticas para consulta, organização
                   da visita e tomada de decisão clínica.
                 </p>
@@ -70,7 +74,7 @@
                   Foi dada preferência a artigos originais, incluindo ensaios clínicos randomizados
                   controlados (RCT), estudos não randomizados e estudos observacionais realizados
                   em humanos. Quando essas informações não eram suficientes, elas foram
-                  complementadas com dados de manuais e guias. Todas as informações são referenciadas.
+                  complementadas com dados de manuais, guias e opinião de especialista.
                 </p>
               </div>
               <div class="dashboard-grid welcome-grid">
@@ -79,7 +83,7 @@
                   <ul class="quick-list">
                     <li>Gerado com auxílio de inteligência artificial.</li>
                     <li>Validado por seus idealizadores.</li>
-                    <li>Organizado para consulta rápida por profissionais envolvidos no cuidado domiciliar.</li>
+                    <li>Organizado para consulta rápida por profissionais envolvidos no cuidado.</li>
                   </ul>
                 </section>
               </div>
@@ -442,7 +446,7 @@
                     <a href="https://doi.org/10.1016/j.jpainsymman.2008.07.007" target="_blank" rel="noopener">Wildiers, H. et al. Atropine, hyoscine butylbromide, or scopolamine are equally effective for the treatment of death rattle in terminal care. Journal of Pain and Symptom Management. 2009.</a>
                   </li>
                   <li>
-                    <a href="https://d1xe7tfg0uwul9.cloudfront.net/sbgg.org.br/wp-content/uploads/2023/11/1699883102_uso-da-via-subcutanea-geriatria-cuidados-paliativos.pdf" target="_blank" rel="noopener">Azevedo, D. L. O uso da via subcutânea em geriatria e cuidados paliativos: um guia da SBGG e da ANCP para profissionais. 2ª edição. Rio de Janeiro: SBGG; 2016.</a>
+                    <a href="https://drive.google.com/file/d/1PtxNlxYwLHTiw74_ZzsYXo2U-NJFa3si/view?usp=sharing" target="_blank" rel="noopener">Manual Hipodermóclise SBGG 2025. O uso da via subcutânea na geriatria e em cuidados paliativos. 3ª edição.</a>
                   </li>
                   <li>
                     <a href="https://docs.google.com/document/d/1zBxvsRI67_-XM7WucIRqmBl63FT8jTCf60MOSazyxIs/edit?usp=sharing" target="_blank" rel="noopener">Base Dipirona: revisão sobre volume, diluição e tempo de infusão de metamizol/dipirona por hipodermóclise.</a>
@@ -484,7 +488,7 @@
                     <a href="https://docs.google.com/document/d/1GS6YNAUMHNT38cfZSNGqH16izCnImbqBPDZkL-TyaF4/edit?usp=sharing" target="_blank" rel="noopener">Base Soro fisiológico: revisão sobre uso de SF 0,9%, volume por sítio e tempo de infusão por hipodermóclise.</a>
                   </li>
                   <li>
-                    <a href="https://sbgg.org.br/wp-content/uploads/2017/11/SBGG_guia-subcutanea_2aedicao.pdf" target="_blank" rel="noopener">Azevedo, D. L. O uso da via subcutânea em geriatria e cuidados paliativos: um guia da SBGG e da ANCP para profissionais. 2ª edição. Rio de Janeiro, 2017.</a>
+                    <a href="https://drive.google.com/file/d/1PtxNlxYwLHTiw74_ZzsYXo2U-NJFa3si/view?usp=sharing" target="_blank" rel="noopener">Manual Hipodermóclise SBGG 2025. O uso da via subcutânea na geriatria e em cuidados paliativos. 3ª edição.</a>
                   </li>
                   <li>
                     <a href="https://www.secpal.org/documentos-aecpal/monografia-secpal-uso-de-la-via-subcutanea-en-cuidados-paliativos/" target="_blank" rel="noopener">Avillés, R. G., Antiñolo, F. G. Uso de la vía subcutánea en cuidados
@@ -783,42 +787,238 @@
                   </div>
                 </div>
               </div>
-              <section class="status-panel success volume-panel">
-                <h2>Volume por sítio de punção</h2>
-                <div class="site-list compact-site-list">
-                  <div class="site-item"><strong>Infraclavicular</strong><span>Até 250mL/24h.</span></div>
-                  <div class="site-item"><strong>Deltoidea</strong><span>Até 250mL/24h.</span></div>
-                  <div class="site-item"><strong>Interescapular</strong><span>Até 1000mL/24h.</span></div>
-                  <div class="site-item"><strong>Abdome</strong><span>Até 1000mL/24h.</span></div>
-                  <div class="site-item"><strong>Vasto lateral da coxa</strong><span>Até 1500mL/24h.</span></div>
-                </div>
-                <p>Volume total por múltiplos sítios: até 3000mL em 24 horas.</p>
-              </section>
+              <figure class="card technique-image">
+                <img
+                  src="https://drive.google.com/thumbnail?id=18VkbhEOMJp91vutK4CKA7lR1ehqpirCs&sz=w1400"
+                  alt="Imagem de apoio para técnica de punção subcutânea"
+                  width="1440"
+                  height="900"
+                />
+              </figure>
             </div>
             <div class="card">
               <div class="card-content stack">
-                <h2>Material necessário</h2>
-                <ul class="quick-list">
-                  <li>Bandeja e luvas de procedimento.</li>
-                  <li>Solução antisséptica: álcool 70% e clorexidina alcoólica.</li>
-                  <li>Gaze não estéril ou bola de algodão.</li>
-                  <li>Cateter não agulhado: jelco ou íntima 22 a 24G.</li>
-                  <li>Agulha 40x12 e seringa de 10mL.</li>
-                  <li>Flaconete de 10mL de soro fisiológico 0,9%.</li>
-                  <li>Equipo duas vias quando for utilizado jelco.</li>
-                  <li>Cobertura semipermeável estéril e transparente para fixação.</li>
-                  <li>Fita microporosa para fixação do circuito intermediário e identificação.</li>
-                </ul>
+                <h2>Passo a passo da punção</h2>
+                <div class="procedure-grid">
+                  <section class="procedure-variant procedure-variant-needle">
+                    <h3>Cateter agulhado (scalp)</h3>
+                    <ol class="procedure-steps">
+                      <li>
+                        <strong>Explique e prepare.</strong>
+                        <span>Oriente paciente e familiares, higienize as mãos, separe o material em bandeja e calce luvas de procedimento.</span>
+                      </li>
+                      <li>
+                        <strong>Preencha o circuito.</strong>
+                        <span>Preencha o intermediário do scalp com 1mL de soro fisiológico 0,9% e mantenha a seringa acoplada à via introdutória.</span>
+                      </li>
+                      <li>
+                        <strong>Escolha o sítio.</strong>
+                        <span>Avalie tecido subcutâneo, conforto, volume previsto e contraindicações locais. Se houver pelos, use tricotomia ou tesoura; evite lâmina.</span>
+                      </li>
+                      <li>
+                        <strong>Faça antissepsia.</strong>
+                        <span>Realize antissepsia da pele com álcool 70% ou clorexidina e aguarde a secagem antes da punção.</span>
+                      </li>
+                      <li>
+                        <strong>Puncione com prega cutânea.</strong>
+                        <span>Tracione a pele e introduza o scalp com bisel voltado para cima, em direção centrípeta, acompanhando a drenagem linfática local.</span>
+                      </li>
+                      <li>
+                        <strong>Ajuste o ângulo.</strong>
+                        <span>Use 45 a 60 graus na maioria dos pacientes; em pessoas emagrecidas, reduza para cerca de 30 graus.</span>
+                      </li>
+                      <li>
+                        <strong>Aspire e confirme.</strong>
+                        <span>A agulha deve parecer livre no subcutâneo. Aspire para excluir vaso; se houver retorno sanguíneo, retire e repuncione a pelo menos 5cm.</span>
+                      </li>
+                      <li>
+                        <strong>Fixe e identifique.</strong>
+                        <span>Enrole o intermediário e fixe com cobertura estéril transparente. Identifique data, horário, profissional e medicação exclusiva, se houver.</span>
+                      </li>
+                      <li>
+                        <strong>Administre e registre.</strong>
+                        <span>Administre bolus ou conecte a solução. Após bolus, injete 1mL de SF 0,9% e registre tipo, calibre, sítio, curativo e intercorrências.</span>
+                      </li>
+                    </ol>
+                  </section>
+                  <section class="procedure-variant procedure-variant-cannula">
+                    <h3>Cateter não agulhado (jelco ou íntima)</h3>
+                    <ol class="procedure-steps">
+                      <li>
+                        <strong>Explique e prepare.</strong>
+                        <span>Oriente paciente e familiares, higienize as mãos, organize bandeja, luvas, cateter, extensor ou equipo de duas vias e curativo transparente.</span>
+                      </li>
+                      <li>
+                        <strong>Preencha o sistema.</strong>
+                        <span>Preencha cateter, extensor e conexões com soro fisiológico 0,9% antes da inserção para evitar ar e manter o lúmen pérvio.</span>
+                      </li>
+                      <li>
+                        <strong>Escolha o sítio.</strong>
+                        <span>Priorize área com subcutâneo suficiente, sem edema, lesão, radioterapia prévia, cicatriz importante, proeminência óssea, estoma ou região pós-mastectomia.</span>
+                      </li>
+                      <li>
+                        <strong>Faça antissepsia.</strong>
+                        <span>Realize antissepsia com álcool 70% ou clorexidina e aguarde a secagem completa.</span>
+                      </li>
+                      <li>
+                        <strong>Introduza o cateter.</strong>
+                        <span>Faça prega cutânea e introduza o cateter no subcutâneo com ângulo baixo, em geral 30 a 45 graus, ajustando à espessura do tecido.</span>
+                      </li>
+                      <li>
+                        <strong>Avance a cânula e retire o mandril.</strong>
+                        <span>Após acessar o subcutâneo, avance apenas a cânula flexível e retire a agulha introdutora, descartando-a em recipiente para perfurocortantes.</span>
+                      </li>
+                      <li>
+                        <strong>Conecte e teste.</strong>
+                        <span>Conecte o extensor ou equipo preparado, aspire com cautela quando aplicável e observe se há dor, resistência, sangramento ou extravasamento.</span>
+                      </li>
+                      <li>
+                        <strong>Fixe sem tração.</strong>
+                        <span>Fixe a cânula e o circuito com cobertura estéril transparente, evitando dobras, pressão excessiva e tração sobre o ponto de inserção.</span>
+                      </li>
+                      <li>
+                        <strong>Administre e registre.</strong>
+                        <span>Administre bolus ou conecte a solução conforme prescrição, lave o circuito com SF 0,9% após bolus e registre tipo, calibre, sítio, curativo e intercorrências.</span>
+                      </li>
+                    </ol>
+                  </section>
+                </div>
               </div>
             </div>
+            <section class="status-panel warning technique-alert">
+              <h2>Pontos de segurança</h2>
+              <ul class="quick-list">
+                <li>Não rotacione o cateter em 180 graus após a punção; essa prática pode traumatizar o tecido.</li>
+                <li>Em scalp, evite dispositivo com retração automática da agulha, pois pode favorecer retirada acidental e lesão por pressão relacionada a dispositivo.</li>
+                <li>Use cobertura transparente sempre que possível para facilitar monitoramento de edema, rubor, dor, secreção ou deslocamento.</li>
+              </ul>
+            </section>
             <div class="card">
               <div class="card-content stack">
                 <details class="references">
                   <summary>Referências usadas nesta aba</summary>
                   <ul class="reference-list">
-                    <li><a href="https://sbgg.org.br/wp-content/uploads/2017/11/SBGG_guia-subcutanea_2aedicao.pdf" target="_blank" rel="noopener">Azevedo DL. O uso da via subcutânea em geriatria e cuidados paliativos: um guia da SBGG e da ANCP para profissionais. 2ª edição. Rio de Janeiro, 2017.</a></li>
+                    <li><a href="https://drive.google.com/file/d/1PtxNlxYwLHTiw74_ZzsYXo2U-NJFa3si/view?usp=sharing" target="_blank" rel="noopener">Manual Hipodermóclise SBGG 2025. O uso da via subcutânea na geriatria e em cuidados paliativos. 3ª edição.</a></li>
                     <li><a href="https://www.aafp.org/pubs/afp/issues/2001/1101/p1575.html" target="_blank" rel="noopener">Sasson M, Shvartzman P. Hypodermoclysis: an alternative infusion technique. Am Fam Physician. 2001.</a></li>
                     <li><a href="https://revistaseletronicas.pucrs.br/pajar/article/view/32559" target="_blank" rel="noopener">Vasconcellos CF, Milão D. Hipodermóclise: alternativa para infusão de medicamentos em pacientes idosos e pacientes em cuidados paliativos. PAJAR. 2019.</a></li>
+                  </ul>
+                </details>
+              </div>
+            </div>
+          </div>
+        </article>
+
+        <article id="material" class="tab-panel" role="tabpanel">
+          <div class="stack">
+            <div class="card">
+              <div class="card-content stack">
+                <h2>Material necessário</h2>
+                <div class="technique-summary">
+                  <p>
+                    A punção subcutânea costuma utilizar cânulas entre 21 e 27G. Em cateter
+                    agulhado, o scalp 21 a 25G é uma opção descrita para a técnica, com preparo
+                    prévio do circuito e fixação que permita observar o sítio.
+                  </p>
+                  <div class="checklist-progress">
+                    <strong id="materialChecklistCount">0 de 17 itens marcados</strong>
+                    <div class="progress-track"><div class="progress-bar" id="materialChecklistProgress"></div></div>
+                  </div>
+                  <section class="voice-assistant" aria-live="polite">
+                    <div class="voice-assistant-header">
+                      <div>
+                        <h3>Assistente de voz</h3>
+                        <p>Fale os materiais conferidos para marcar o checklist automaticamente.</p>
+                      </div>
+                      <button class="primary-button" id="materialVoiceToggle" type="button">
+                        Iniciar voz
+                      </button>
+                    </div>
+                    <div class="voice-status" id="materialVoiceStatus">
+                      Assistente de voz pronto para iniciar.
+                    </div>
+                    <div class="voice-transcript" id="materialVoiceTranscript">
+                      A transcrição aparecerá aqui enquanto você fala.
+                    </div>
+                    <p class="voice-hint">
+                      No celular, toque em iniciar, fale uma frase curta e toque novamente para continuar.
+                    </p>
+                  </section>
+                  <div class="material-subtabs" role="tablist" aria-label="Tipos de cateter">
+                    <button
+                      class="material-subtab"
+                      type="button"
+                      role="tab"
+                      aria-selected="true"
+                      aria-controls="material-scalp"
+                      data-material-subtab="scalp"
+                    >
+                      Cateter agulhado (scalp)
+                    </button>
+                    <button
+                      class="material-subtab"
+                      type="button"
+                      role="tab"
+                      aria-selected="false"
+                      aria-controls="material-jelco"
+                      data-material-subtab="jelco"
+                    >
+                      Cateter não agulhado (jelco ou íntima)
+                    </button>
+                  </div>
+                  <div class="material-checklist-panels" id="materialChecklist">
+                    <section
+                      class="check-section material-check-card material-check-card-needle active"
+                      id="material-scalp"
+                      role="tabpanel"
+                      data-material-panel="scalp"
+                    >
+                      <h3>Cateter agulhado (scalp)</h3>
+                      <label class="check-item"><input type="checkbox" /> <span>Bandeja e luvas de procedimento.</span></label>
+                      <label class="check-item"><input type="checkbox" /> <span>Solução antisséptica: álcool 70% ou clorexidina.</span></label>
+                      <label class="check-item"><input type="checkbox" /> <span>Gaze não estéril ou bola de algodão.</span></label>
+                      <label class="check-item"><input type="checkbox" /> <span>Cateter agulhado, tipo scalp 21 a 25G.</span></label>
+                      <label class="check-item"><input type="checkbox" /> <span>Agulha 40 x 12mm para aspiração de medicação.</span></label>
+                      <label class="check-item"><input type="checkbox" /> <span>Seringa de 1mL e flaconete de 10mL de soro fisiológico 0,9%.</span></label>
+                      <label class="check-item"><input type="checkbox" /> <span>Cobertura estéril transparente para o sítio de punção.</span></label>
+                      <label class="check-item"><input type="checkbox" /> <span>Esparadrapo ou fita micropore para fixação do circuito e identificação.</span></label>
+                    </section>
+                    <section
+                      class="check-section material-check-card material-check-card-cannula"
+                      id="material-jelco"
+                      role="tabpanel"
+                      data-material-panel="jelco"
+                      hidden
+                    >
+                      <h3>Cateter não agulhado (jelco ou íntima)</h3>
+                      <label class="check-item"><input type="checkbox" /> <span>Bandeja e luvas de procedimento.</span></label>
+                      <label class="check-item"><input type="checkbox" /> <span>Solução antisséptica: álcool 70% ou clorexidina.</span></label>
+                      <label class="check-item"><input type="checkbox" /> <span>Gaze não estéril ou bola de algodão.</span></label>
+                      <label class="check-item"><input type="checkbox" /> <span>Cateter não agulhado, tipo jelco ou íntima 22 a 24G.</span></label>
+                      <label class="check-item"><input type="checkbox" /> <span>Agulha 40 x 12mm para aspiração de medicação.</span></label>
+                      <label class="check-item"><input type="checkbox" /> <span>Seringa de 10mL e flaconete de 10mL de soro fisiológico 0,9%.</span></label>
+                      <label class="check-item"><input type="checkbox" /> <span>Equipo de duas vias quando for utilizado jelco.</span></label>
+                      <label class="check-item"><input type="checkbox" /> <span>Cobertura estéril transparente para o sítio de punção.</span></label>
+                      <label class="check-item"><input type="checkbox" /> <span>Esparadrapo ou fita micropore para fixação do circuito e identificação.</span></label>
+                    </section>
+                  </div>
+                  <button class="secondary-button" id="clearMaterialChecklist" type="button">Limpar marcações</button>
+                </div>
+              </div>
+            </div>
+            <section class="status-panel success">
+              <h2>Antes de começar</h2>
+              <ul class="quick-list">
+                <li>Separe todo o material em bandeja antes da punção.</li>
+                <li>Preencha o circuito intermediário com soro fisiológico 0,9% antes de puncionar.</li>
+                <li>Prefira cobertura transparente para facilitar o monitoramento do sítio.</li>
+              </ul>
+            </section>
+            <div class="card">
+              <div class="card-content stack">
+                <details class="references">
+                  <summary>Referências usadas nesta aba</summary>
+                  <ul class="reference-list">
+                    <li><a href="https://drive.google.com/file/d/1PtxNlxYwLHTiw74_ZzsYXo2U-NJFa3si/view?usp=sharing" target="_blank" rel="noopener">Manual Hipodermóclise SBGG 2025. O uso da via subcutânea na geriatria e em cuidados paliativos. 3ª edição.</a></li>
                   </ul>
                 </details>
               </div>
@@ -831,7 +1031,7 @@
             <div class="card">
               <div class="card-content stack">
                 <h2>Principais cuidados</h2>
-                <div class="site-list">
+                <div class="site-list cuidados-list">
                   <div class="site-item">
                     <strong>Ao puncionar</strong>
                     <ul class="quick-list">
@@ -868,7 +1068,7 @@
                     <li><a href="https://pubmed.ncbi.nlm.nih.gov/?term=Schen+R+Administration+of+fluid+by+subcutaneous+infusion+Harefuah+1997" target="_blank" rel="noopener">Schen R. Administration of fluid by subcutaneous infusion: revival of a forgotten method. Harefuah. 1997.</a></li>
                     <li><a href="https://www.aafp.org/pubs/afp/issues/2001/1101/p1575.html" target="_blank" rel="noopener">Sasson M, Shvartzman P. Hypodermoclysis: an alternative infusion technique. Am Fam Physician. 2001.</a></li>
                     <li><a href="https://doi.org/10.1111/j.1532-5415.2000.tb04755.x" target="_blank" rel="noopener">Dasgupta M, Binns MA, Rochon PA. Subcutaneous fluid infusion in a long-term care setting. J Am Geriatr Soc. 2000.</a></li>
-                    <li><a href="https://sbgg.org.br/wp-content/uploads/2016/06/uso-da-via-subcutanea-geriatria-cuidados-paliativos.pdf" target="_blank" rel="noopener">Azevedo DL. O uso da via subcutânea em geriatria e cuidados paliativos. 2ª ed. Rio de Janeiro: SBGG; 2016.</a></li>
+                    <li><a href="https://drive.google.com/file/d/1PtxNlxYwLHTiw74_ZzsYXo2U-NJFa3si/view?usp=sharing" target="_blank" rel="noopener">Manual Hipodermóclise SBGG 2025. O uso da via subcutânea na geriatria e em cuidados paliativos. 3ª edição.</a></li>
                   </ul>
                 </details>
               </div>
@@ -918,11 +1118,11 @@
                     aria-expanded="false"
                     aria-controls="checklist"
                   >
-                    Checklist pré visita domiciliar
+                    Checklist pré visita
                   </button>
                   <section class="checklist-panel embedded-checklist" id="checklist" hidden>
                     <div class="checklist-header">
-                      <h3>Checklist pré visita domiciliar</h3>
+                      <h3>Checklist pré visita</h3>
                       <button class="secondary-button" id="closeChecklist" type="button">Fechar</button>
                     </div>
                     <div class="checklist-progress">

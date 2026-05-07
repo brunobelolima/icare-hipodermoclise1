@@ -3,6 +3,14 @@ const panels = Array.from(document.querySelectorAll(".tab-panel"));
 const checklistItems = Array.from(document.querySelectorAll("#visitChecklist input[type='checkbox']"));
 const checklistCount = document.querySelector("#checklistCount");
 const checklistProgress = document.querySelector("#checklistProgress");
+const materialChecklistItems = Array.from(
+  document.querySelectorAll("#materialChecklist input[type='checkbox']"),
+);
+const materialChecklistCount = document.querySelector("#materialChecklistCount");
+const materialChecklistProgress = document.querySelector("#materialChecklistProgress");
+const clearMaterialChecklistButton = document.querySelector("#clearMaterialChecklist");
+const materialSubtabs = Array.from(document.querySelectorAll(".material-subtab"));
+const materialSubtabPanels = Array.from(document.querySelectorAll("[data-material-panel]"));
 const compatItemA = document.querySelector("#compatItemA");
 const compatItemB = document.querySelector("#compatItemB");
 const compatInteractiveResult = document.querySelector("#compatInteractiveResult");
@@ -16,6 +24,9 @@ const visitCounter = document.querySelector("#visitCounter");
 const voiceChecklistToggle = document.querySelector("#voiceChecklistToggle");
 const voiceChecklistStatus = document.querySelector("#voiceChecklistStatus");
 const voiceChecklistTranscript = document.querySelector("#voiceChecklistTranscript");
+const materialVoiceToggle = document.querySelector("#materialVoiceToggle");
+const materialVoiceStatus = document.querySelector("#materialVoiceStatus");
+const materialVoiceTranscript = document.querySelector("#materialVoiceTranscript");
 const documentNoteTrigger = document.querySelector("#documentNoteTrigger");
 const documentNotePanel = document.querySelector("#documentNote");
 const closeDocumentNoteButton = document.querySelector("#closeDocumentNote");
@@ -24,12 +35,15 @@ const documentChecklistPanel = document.querySelector("#checklist");
 const closeChecklistButton = document.querySelector("#closeChecklist");
 const contactEmail = "icarehipodermoclise@gmail.com";
 const storageKey = "icare-model-checklist";
+const materialStorageKey = "icare-material-checklist";
 const visitCounterUrl = "https://abacus.jasoncameron.dev/hit/icare-hipodermoclise1/visitas";
 const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
 const isMobileVoiceDevice =
   window.matchMedia("(pointer: coarse)").matches || window.matchMedia("(max-width: 820px)").matches;
 let checklistRecognition = null;
 let checklistVoiceActive = false;
+let materialRecognition = null;
+let materialVoiceActive = false;
 
 async function updateVisitCounter() {
   try {
@@ -62,6 +76,20 @@ function activateTab(tab) {
 function loadTechniqueVideo() {
   if (!techniqueVideo || techniqueVideo.getAttribute("src") !== "about:blank") return;
   techniqueVideo.src = techniqueVideo.dataset.src;
+}
+
+function activateMaterialSubtab(trigger) {
+  const target = trigger.dataset.materialSubtab;
+
+  materialSubtabs.forEach((item) => {
+    item.setAttribute("aria-selected", String(item === trigger));
+  });
+
+  materialSubtabPanels.forEach((panel) => {
+    const isActive = panel.dataset.materialPanel === target;
+    panel.hidden = !isActive;
+    panel.classList.toggle("active", isActive);
+  });
 }
 
 function openDocumentChecklist() {
@@ -147,6 +175,38 @@ function restoreChecklist() {
   updateChecklistProgress();
 }
 
+function readMaterialChecklist() {
+  try {
+    return JSON.parse(localStorage.getItem(materialStorageKey)) || [];
+  } catch {
+    return [];
+  }
+}
+
+function saveMaterialChecklist() {
+  localStorage.setItem(
+    materialStorageKey,
+    JSON.stringify(materialChecklistItems.map((item) => item.checked)),
+  );
+}
+
+function updateMaterialChecklistProgress() {
+  if (!materialChecklistCount || !materialChecklistProgress) return;
+  const checked = materialChecklistItems.filter((item) => item.checked).length;
+  const total = materialChecklistItems.length;
+  const percent = total ? Math.round((checked / total) * 100) : 0;
+  materialChecklistCount.textContent = `${checked} de ${total} itens marcados`;
+  materialChecklistProgress.style.width = `${percent}%`;
+}
+
+function restoreMaterialChecklist() {
+  const saved = readMaterialChecklist();
+  materialChecklistItems.forEach((item, index) => {
+    item.checked = Boolean(saved[index]);
+  });
+  updateMaterialChecklistProgress();
+}
+
 function normalizeSpeechText(text) {
   return text
     .toLowerCase()
@@ -163,8 +223,21 @@ function setVoiceStatus(message, className = "") {
   voiceChecklistStatus.textContent = message;
 }
 
+function setMaterialVoiceStatus(message, className = "") {
+  if (!materialVoiceStatus) return;
+  materialVoiceStatus.className = `voice-status${className ? ` ${className}` : ""}`;
+  materialVoiceStatus.textContent = message;
+}
+
 function markChecklistByVoice(index) {
   const item = checklistItems[index];
+  if (!item || item.checked) return false;
+  item.checked = true;
+  return true;
+}
+
+function markMaterialByVoice(index) {
+  const item = materialChecklistItems[index];
   if (!item || item.checked) return false;
   item.checked = true;
   return true;
@@ -223,6 +296,94 @@ const checklistVoiceTargets = [
   },
 ];
 
+const materialVoiceTargets = [
+  {
+    index: 0,
+    label: "bandeja e luvas do scalp",
+    terms: ["bandeja scalp", "luvas scalp", "luva scalp", "bandeja agulhado", "luvas agulhado"],
+  },
+  {
+    index: 1,
+    label: "antisséptico do scalp",
+    terms: ["alcool scalp", "clorexidina scalp", "antisseptico scalp", "antissepsia scalp"],
+  },
+  {
+    index: 2,
+    label: "gaze ou algodão do scalp",
+    terms: ["gaze scalp", "algodao scalp", "gaze agulhado", "algodao agulhado"],
+  },
+  {
+    index: 3,
+    label: "cateter agulhado",
+    terms: ["scalp", "cateter agulhado", "agulhado", "vinte e um", "vinte e cinco", "21", "25"],
+  },
+  {
+    index: 4,
+    label: "agulha 40 por 12 do scalp",
+    terms: ["agulha scalp", "40 por 12 scalp", "quarenta por doze scalp", "aspiracao scalp"],
+  },
+  {
+    index: 5,
+    label: "seringa e soro fisiológico do scalp",
+    terms: ["seringa scalp", "soro fisiologico scalp", "sf scalp", "flaconete scalp"],
+  },
+  {
+    index: 6,
+    label: "cobertura estéril do scalp",
+    terms: ["cobertura scalp", "curativo scalp", "transparente scalp", "esteril scalp"],
+  },
+  {
+    index: 7,
+    label: "micropore ou esparadrapo do scalp",
+    terms: ["micropore scalp", "esparadrapo scalp", "fita scalp", "fixacao scalp"],
+  },
+  {
+    index: 8,
+    label: "bandeja e luvas do jelco",
+    terms: ["bandeja jelco", "luvas jelco", "luva jelco", "bandeja intima", "luvas intima", "bandeja nao agulhado"],
+  },
+  {
+    index: 9,
+    label: "antisséptico do jelco",
+    terms: ["alcool jelco", "clorexidina jelco", "antisseptico jelco", "alcool intima", "clorexidina intima"],
+  },
+  {
+    index: 10,
+    label: "gaze ou algodão do jelco",
+    terms: ["gaze jelco", "algodao jelco", "gaze intima", "algodao intima"],
+  },
+  {
+    index: 11,
+    label: "cateter não agulhado",
+    terms: ["jelco", "intima", "nao agulhado", "cateter nao agulhado", "vinte e dois", "vinte e quatro", "22", "24"],
+  },
+  {
+    index: 12,
+    label: "agulha 40 por 12 do jelco",
+    terms: ["agulha jelco", "40 por 12 jelco", "quarenta por doze jelco", "aspiracao jelco"],
+  },
+  {
+    index: 13,
+    label: "seringa e soro fisiológico do jelco",
+    terms: ["seringa jelco", "soro fisiologico jelco", "sf jelco", "flaconete jelco", "seringa intima"],
+  },
+  {
+    index: 14,
+    label: "equipo de duas vias",
+    terms: ["equipo", "duas vias", "dupla via", "extensor"],
+  },
+  {
+    index: 15,
+    label: "cobertura estéril do jelco",
+    terms: ["cobertura jelco", "curativo jelco", "transparente jelco", "esteril jelco", "cobertura intima"],
+  },
+  {
+    index: 16,
+    label: "micropore ou esparadrapo do jelco",
+    terms: ["micropore jelco", "esparadrapo jelco", "fita jelco", "fixacao jelco", "micropore intima"],
+  },
+];
+
 function processChecklistVoice(text) {
   const normalized = normalizeSpeechText(text);
   if (!normalized) return;
@@ -251,6 +412,38 @@ function processChecklistVoice(text) {
   }
 }
 
+function processMaterialVoice(text) {
+  const normalized = normalizeSpeechText(text);
+  if (!normalized) return;
+
+  if (
+    normalized.includes("limpar material") ||
+    normalized.includes("limpar checklist") ||
+    normalized.includes("limpar marcacoes")
+  ) {
+    materialChecklistItems.forEach((item) => {
+      item.checked = false;
+    });
+    saveMaterialChecklist();
+    updateMaterialChecklistProgress();
+    setMaterialVoiceStatus("Checklist de materiais limpo por comando de voz.", "warning");
+    return;
+  }
+
+  const matchedLabels = [];
+  materialVoiceTargets.forEach((target) => {
+    if (target.terms.some((term) => normalized.includes(term)) && markMaterialByVoice(target.index)) {
+      matchedLabels.push(target.label);
+    }
+  });
+
+  if (matchedLabels.length) {
+    saveMaterialChecklist();
+    updateMaterialChecklistProgress();
+    setMaterialVoiceStatus(`Marcado por voz: ${matchedLabels.join(", ")}.`, "listening");
+  }
+}
+
 function stopChecklistVoice() {
   checklistVoiceActive = false;
   if (checklistRecognition) checklistRecognition.stop();
@@ -258,11 +451,20 @@ function stopChecklistVoice() {
   setVoiceStatus("Assistente de voz pausado.");
 }
 
+function stopMaterialVoice() {
+  materialVoiceActive = false;
+  if (materialRecognition) materialRecognition.stop();
+  if (materialVoiceToggle) materialVoiceToggle.textContent = "Iniciar voz";
+  setMaterialVoiceStatus("Assistente de voz pausado.");
+}
+
 function startChecklistVoice() {
   if (!SpeechRecognition || !voiceChecklistToggle) {
     setVoiceStatus("Reconhecimento de voz indisponível neste navegador.", "warning");
     return;
   }
+
+  if (materialVoiceActive) stopMaterialVoice();
 
   if (!checklistRecognition) {
     checklistRecognition = new SpeechRecognition();
@@ -318,6 +520,71 @@ function startChecklistVoice() {
     checklistVoiceActive = false;
     voiceChecklistToggle.textContent = "Iniciar voz";
     setVoiceStatus("Não foi possível iniciar a escuta. Tente novamente.", "warning");
+  }
+}
+
+function startMaterialVoice() {
+  if (!SpeechRecognition || !materialVoiceToggle) {
+    setMaterialVoiceStatus("Reconhecimento de voz indisponível neste navegador.", "warning");
+    return;
+  }
+
+  if (checklistVoiceActive) stopChecklistVoice();
+
+  if (!materialRecognition) {
+    materialRecognition = new SpeechRecognition();
+    materialRecognition.lang = "pt-BR";
+    materialRecognition.continuous = !isMobileVoiceDevice;
+    materialRecognition.interimResults = !isMobileVoiceDevice;
+
+    materialRecognition.addEventListener("result", (event) => {
+      let spokenText = "";
+      for (let index = event.resultIndex; index < event.results.length; index += 1) {
+        spokenText += event.results[index][0].transcript;
+      }
+      if (materialVoiceTranscript) {
+        materialVoiceTranscript.textContent = spokenText || "Aguardando fala...";
+      }
+      processMaterialVoice(spokenText);
+    });
+
+    materialRecognition.addEventListener("error", () => {
+      materialVoiceActive = false;
+      materialVoiceToggle.textContent = "Iniciar voz";
+      setMaterialVoiceStatus("Não foi possível captar o áudio. Verifique a permissão do microfone.", "warning");
+    });
+
+    materialRecognition.addEventListener("end", () => {
+      if (!materialVoiceActive) return;
+      if (isMobileVoiceDevice) {
+        materialVoiceActive = false;
+        materialVoiceToggle.textContent = "Iniciar voz";
+        setMaterialVoiceStatus("Fala processada. Toque em iniciar voz para ditar outro item.", "warning");
+        return;
+      }
+      try {
+        materialRecognition.start();
+      } catch {
+        materialVoiceActive = false;
+        materialVoiceToggle.textContent = "Iniciar voz";
+      }
+    });
+  }
+
+  materialVoiceActive = true;
+  materialVoiceToggle.textContent = "Parar voz";
+  setMaterialVoiceStatus(
+    isMobileVoiceDevice
+      ? "Ouvindo. Fale uma frase curta com os materiais conferidos."
+      : "Ouvindo. Fale os materiais conferidos do checklist.",
+    "listening",
+  );
+  try {
+    materialRecognition.start();
+  } catch {
+    materialVoiceActive = false;
+    materialVoiceToggle.textContent = "Iniciar voz";
+    setMaterialVoiceStatus("Não foi possível iniciar a escuta. Tente novamente.", "warning");
   }
 }
 
@@ -727,6 +994,17 @@ checklistItems.forEach((item) => {
   });
 });
 
+materialChecklistItems.forEach((item) => {
+  item.addEventListener("change", () => {
+    saveMaterialChecklist();
+    updateMaterialChecklistProgress();
+  });
+});
+
+materialSubtabs.forEach((trigger) => {
+  trigger.addEventListener("click", () => activateMaterialSubtab(trigger));
+});
+
 document.querySelector("#clearChecklist").addEventListener("click", () => {
   checklistItems.forEach((item) => {
     item.checked = false;
@@ -734,6 +1012,16 @@ document.querySelector("#clearChecklist").addEventListener("click", () => {
   saveChecklist();
   updateChecklistProgress();
 });
+
+if (clearMaterialChecklistButton) {
+  clearMaterialChecklistButton.addEventListener("click", () => {
+    materialChecklistItems.forEach((item) => {
+      item.checked = false;
+    });
+    saveMaterialChecklist();
+    updateMaterialChecklistProgress();
+  });
+}
 
 if (voiceChecklistToggle) {
   if (!SpeechRecognition) {
@@ -746,6 +1034,21 @@ if (voiceChecklistToggle) {
       stopChecklistVoice();
     } else {
       startChecklistVoice();
+    }
+  });
+}
+
+if (materialVoiceToggle) {
+  if (!SpeechRecognition) {
+    materialVoiceToggle.disabled = true;
+    setMaterialVoiceStatus("Reconhecimento de voz indisponível neste navegador.", "warning");
+  }
+
+  materialVoiceToggle.addEventListener("click", () => {
+    if (materialVoiceActive) {
+      stopMaterialVoice();
+    } else {
+      startMaterialVoice();
     }
   });
 }
@@ -772,6 +1075,7 @@ contactForm.addEventListener("submit", (event) => {
 });
 
 restoreChecklist();
+restoreMaterialChecklist();
 renderCompatibilityResult();
 syncPrescriptionOptions();
 updateVisitCounter();
