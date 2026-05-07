@@ -16,6 +16,9 @@ const visitCounter = document.querySelector("#visitCounter");
 const voiceChecklistToggle = document.querySelector("#voiceChecklistToggle");
 const voiceChecklistStatus = document.querySelector("#voiceChecklistStatus");
 const voiceChecklistTranscript = document.querySelector("#voiceChecklistTranscript");
+const documentNoteTrigger = document.querySelector("#documentNoteTrigger");
+const documentNotePanel = document.querySelector("#documentNote");
+const closeDocumentNoteButton = document.querySelector("#closeDocumentNote");
 const documentChecklistTrigger = document.querySelector("#documentChecklistTrigger");
 const documentChecklistPanel = document.querySelector("#checklist");
 const closeChecklistButton = document.querySelector("#closeChecklist");
@@ -78,6 +81,26 @@ function toggleDocumentChecklist() {
     openDocumentChecklist();
   } else {
     closeDocumentChecklist();
+  }
+}
+
+function openDocumentNote() {
+  if (!documentNoteTrigger || !documentNotePanel) return;
+  documentNotePanel.hidden = false;
+  documentNoteTrigger.setAttribute("aria-expanded", "true");
+}
+
+function closeDocumentNote() {
+  if (!documentNoteTrigger || !documentNotePanel) return;
+  documentNotePanel.hidden = true;
+  documentNoteTrigger.setAttribute("aria-expanded", "false");
+}
+
+function toggleDocumentNote() {
+  if (documentNotePanel?.hidden) {
+    openDocumentNote();
+  } else {
+    closeDocumentNote();
   }
 }
 
@@ -634,7 +657,7 @@ function generatePrescription() {
   if (!items.length) {
     punctureHighlight.className = "status-panel prescription-highlight warning";
     punctureHighlight.innerHTML = `
-      <h2>Número orientado</h2>
+      <h2>Quantidade de hipodermóclises sugerida:</h2>
       <p>Selecione pelo menos um item.</p>
     `;
     punctureGroups.innerHTML = "";
@@ -642,10 +665,10 @@ function generatePrescription() {
   }
 
   const groups = groupItemsByCompatibility(items);
-  const punctureWord = groups.length === 1 ? "punção por hipodermóclise" : "punções por hipodermóclise";
+  const punctureWord = groups.length === 1 ? "punção de hipodermóclise" : "punções de hipodermóclises";
   punctureHighlight.className = "status-panel prescription-highlight success";
   punctureHighlight.innerHTML = `
-    <h2>Número orientado: ${groups.length}</h2>
+    <h2>Quantidade de hipodermóclises sugerida:</h2>
     <p>${groups.length} ${punctureWord} para ${items.length} item(ns) selecionado(s).</p>
   `;
   renderPunctureGroups(groups);
@@ -661,8 +684,16 @@ if (documentChecklistTrigger) {
   documentChecklistTrigger.addEventListener("click", toggleDocumentChecklist);
 }
 
+if (documentNoteTrigger) {
+  documentNoteTrigger.addEventListener("click", toggleDocumentNote);
+}
+
 if (closeChecklistButton) {
   closeChecklistButton.addEventListener("click", closeDocumentChecklist);
+}
+
+if (closeDocumentNoteButton) {
+  closeDocumentNoteButton.addEventListener("click", closeDocumentNote);
 }
 
 [compatItemA, compatItemB].forEach((control) => {
@@ -683,7 +714,7 @@ document.querySelector("#clearPrescription").addEventListener("click", () => {
   syncPrescriptionOptions();
   punctureHighlight.className = "status-panel prescription-highlight";
   punctureHighlight.innerHTML = `
-    <h2>Número orientado</h2>
+    <h2>Quantidade de hipodermóclises sugerida:</h2>
     <p>Selecione os itens para gerar a prescrição automaticamente.</p>
   `;
   punctureGroups.innerHTML = "";
