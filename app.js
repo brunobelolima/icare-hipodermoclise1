@@ -1,5 +1,10 @@
 const tabs = Array.from(document.querySelectorAll(".tab-trigger"));
 const panels = Array.from(document.querySelectorAll(".tab-panel"));
+const appShell = document.querySelector(".app");
+const accessGate = document.querySelector("#accessGate");
+const accessGateTitle = document.querySelector("#accessGateTitle");
+const confirmHealthProfessionalButton = document.querySelector("#confirmHealthProfessional");
+const denyHealthProfessionalButton = document.querySelector("#denyHealthProfessional");
 const checklistItems = Array.from(document.querySelectorAll("#visitChecklist input[type='checkbox']"));
 const checklistCount = document.querySelector("#checklistCount");
 const checklistProgress = document.querySelector("#checklistProgress");
@@ -36,6 +41,7 @@ const documentChecklistTrigger = document.querySelector("#documentChecklistTrigg
 const documentChecklistPanel = document.querySelector("#checklist");
 const closeChecklistButton = document.querySelector("#closeChecklist");
 const contactEmail = "icarehipodermoclise@gmail.com";
+const accessStorageKey = "icare-health-professional-access";
 const storageKey = "icare-model-checklist";
 const materialStorageKey = "icare-material-checklist";
 const visitCounterUrl = "https://abacus.jasoncameron.dev/hit/icare-hipodermoclise1/visitas";
@@ -46,6 +52,53 @@ let checklistRecognition = null;
 let checklistVoiceActive = false;
 let materialRecognition = null;
 let materialVoiceActive = false;
+
+function rememberProfessionalAccess() {
+  try {
+    sessionStorage.setItem(accessStorageKey, "yes");
+  } catch {
+    // Session storage can be unavailable in restrictive browser modes.
+  }
+}
+
+function hasProfessionalAccess() {
+  try {
+    return sessionStorage.getItem(accessStorageKey) === "yes";
+  } catch {
+    return false;
+  }
+}
+
+function allowProfessionalAccess() {
+  rememberProfessionalAccess();
+  document.body.classList.remove("access-pending", "access-denied");
+  accessGate.hidden = true;
+  appShell.removeAttribute("aria-hidden");
+}
+
+function denyProfessionalAccess() {
+  document.body.classList.remove("access-pending");
+  document.body.classList.add("access-denied");
+  appShell.setAttribute("aria-hidden", "true");
+  accessGateTitle.textContent = "Acesso bloqueado";
+  accessGate.querySelector("p").textContent =
+    "Este conteúdo é destinado exclusivamente a profissionais de saúde.";
+  confirmHealthProfessionalButton.hidden = true;
+  denyHealthProfessionalButton.hidden = true;
+}
+
+function initializeAccessGate() {
+  if (!accessGate || !appShell) return;
+
+  if (hasProfessionalAccess()) {
+    allowProfessionalAccess();
+    return;
+  }
+
+  confirmHealthProfessionalButton.addEventListener("click", allowProfessionalAccess);
+  denyHealthProfessionalButton.addEventListener("click", denyProfessionalAccess);
+  confirmHealthProfessionalButton.focus();
+}
 
 async function updateVisitCounter() {
   try {
@@ -98,7 +151,9 @@ function activateTechniqueSubtab(trigger) {
   const target = trigger.dataset.techniqueSubtab;
 
   techniqueSubtabs.forEach((item) => {
-    item.setAttribute("aria-selected", String(item === trigger));
+    const isActive = item === trigger;
+    item.setAttribute("aria-selected", String(isActive));
+    item.setAttribute("tabindex", isActive ? "0" : "-1");
   });
 
   techniqueSubtabPanels.forEach((panel) => {
@@ -106,6 +161,16 @@ function activateTechniqueSubtab(trigger) {
     panel.hidden = !isActive;
     panel.classList.toggle("active", isActive);
   });
+}
+
+function moveTechniqueSubtabFocus(currentTrigger, direction) {
+  const currentIndex = techniqueSubtabs.indexOf(currentTrigger);
+  if (currentIndex < 0) return;
+
+  const nextIndex = (currentIndex + direction + techniqueSubtabs.length) % techniqueSubtabs.length;
+  const nextTrigger = techniqueSubtabs[nextIndex];
+  activateTechniqueSubtab(nextTrigger);
+  nextTrigger.focus();
 }
 
 function openDocumentChecklist() {
@@ -718,8 +783,7 @@ const prescriptionData = {
     dilution: "SF 0,9% 1mL para bolus; volume de diluição para infusão contínua não especificado nas fontes",
     time: "Bolus ou infusão contínua; manutenção descrita como 10mg SC a cada 4h ou infusão contínua SC",
     minVolume: "",
-    comments:
-      "Não confundir com apresentação combinada com dipirona. A fonte também descreve scopolamine hydrobromide 0,25mg SC em bolus e 1,5mg/24h em manutenção.",
+    comments: "Não confundir com apresentação combinada com dipirona.",
     reference: "5, 6",
   },
   clorpromazina: {
@@ -728,7 +792,7 @@ const prescriptionData = {
     time: "30min ou infusão contínua",
     minVolume: "",
     comments: "Se infusão contínua, usar frasco sem PVC.",
-    reference: "21, 22, 23",
+    reference: "7, 8, 9",
   },
   dipirona: {
     dose: "1 a 2g até 6/6h, conforme protocolo local",
@@ -736,8 +800,8 @@ const prescriptionData = {
     time: "Sem recomendação específica para dipirona por hipodermóclise; práticas gerais de CSCI usam infusões de 24h quando indicado",
     minVolume: "",
     comments:
-      "A base adicional não encontrou estudos com parâmetros específicos de volume, diluição ou taxa de infusão para metamizol/dipirona por hipodermóclise.",
-    reference: "7, 8, 16",
+      "As fontes revisadas não encontraram estudos com parâmetros específicos de volume, diluição ou taxa de infusão para metamizol/dipirona por hipodermóclise.",
+    reference: "6, 7, 10",
   },
   dexametasona: {
     dose: "2 a 16mg a cada 24h",
@@ -746,7 +810,7 @@ const prescriptionData = {
     minVolume: "",
     comments:
       "Estudos descrevem uso subcutâneo frequente em cuidados paliativos, mas não trazem volume, concentração ou taxa em mL/h específicos para dexametasona.",
-    reference: "9, 10, 18",
+    reference: "6, 11, 12",
   },
   haloperidol: {
     dose: "Em CSCI, mediana aproximada de 2,5 a 3mg/24h; faixa observada de 0,5 a 10mg/24h",
@@ -754,18 +818,16 @@ const prescriptionData = {
       "Os estudos de CSCI não especificam receita padrão de diluição, volume final ou taxa em mL/h para haloperidol isolado",
     time: "Bolus lento ou infusão subcutânea contínua, geralmente em 24h",
     minVolume: "",
-    comments:
-      "O haloperidol aparece com frequência em CSCI de cuidados paliativos, inclusive em combinações com opioides, midazolam, ciclizina ou hyoscine butilbrometo. Ajustar dose e diluição conforme protocolo local.",
-    reference: "11, 12, 13, 16, 17, 18",
+    comments: "",
+    reference: "6, 12, 13, 14, 15, 16",
   },
   midazolam: {
     dose: "1 a 5mg em bolus ou infusão contínua, titulando conforme sintomas",
     dilution: "SF 0,9% 5mL para bolus; em CSCI, ajustar volume final conforme protocolo local e dispositivo disponível",
     time: "Bolus ou infusão subcutânea contínua, geralmente em 24h",
     minVolume: "",
-    comments:
-      "Pode causar irritação local. Velocidade de infusão de 0,5mL/h a 20mL/h. É usado em CSCI de cuidados paliativos, frequentemente em combinação com opioides, anticolinérgicos ou haloperidol.",
-    reference: "14, 15, 16, 17",
+    comments: "Pode causar irritação local. Velocidade de infusão de 0,5mL/h a 20mL/h.",
+    reference: "6, 14, 15, 17",
   },
   sf: {
     dose: "Máximo 1500mL em 24h por sítio",
@@ -774,7 +836,7 @@ const prescriptionData = {
     minVolume: "",
     comments:
       "Volume de infusão máximo 62,5mL/h. Considerar o limite de volume conforme o sítio de punção escolhido.",
-    reference: "19, 20",
+    reference: "6, 7, 8",
   },
 };
 
@@ -1023,6 +1085,30 @@ materialSubtabs.forEach((trigger) => {
 
 techniqueSubtabs.forEach((trigger) => {
   trigger.addEventListener("click", () => activateTechniqueSubtab(trigger));
+  trigger.addEventListener("keydown", (event) => {
+    if (event.key === "ArrowRight" || event.key === "ArrowDown") {
+      event.preventDefault();
+      moveTechniqueSubtabFocus(trigger, 1);
+    }
+
+    if (event.key === "ArrowLeft" || event.key === "ArrowUp") {
+      event.preventDefault();
+      moveTechniqueSubtabFocus(trigger, -1);
+    }
+
+    if (event.key === "Home") {
+      event.preventDefault();
+      activateTechniqueSubtab(techniqueSubtabs[0]);
+      techniqueSubtabs[0].focus();
+    }
+
+    if (event.key === "End") {
+      event.preventDefault();
+      const lastTrigger = techniqueSubtabs[techniqueSubtabs.length - 1];
+      activateTechniqueSubtab(lastTrigger);
+      lastTrigger.focus();
+    }
+  });
 });
 
 document.querySelector("#clearChecklist").addEventListener("click", () => {
@@ -1100,3 +1186,4 @@ renderCompatibilityResult();
 syncPrescriptionOptions();
 updateVisitCounter();
 openHashTab();
+initializeAccessGate();

@@ -33,6 +33,16 @@ body {
     sans-serif;
 }
 
+body.access-pending,
+body.access-denied {
+  overflow: hidden;
+}
+
+body.access-pending .app,
+body.access-denied .app {
+  display: none;
+}
+
 button,
 input,
 select,
@@ -54,6 +64,50 @@ video {
   width: min(1180px, calc(100% - 32px));
   margin: 0 auto;
   padding: 32px 0 48px;
+}
+
+.access-gate {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  display: grid;
+  place-items: center;
+  padding: 20px;
+  background:
+    linear-gradient(180deg, rgba(238, 252, 251, 0.96), rgba(236, 253, 245, 0.94)),
+    radial-gradient(circle at top left, rgba(8, 145, 178, 0.18), transparent 30rem);
+}
+
+.access-gate[hidden] {
+  display: none;
+}
+
+.access-gate-card {
+  width: min(100%, 460px);
+  display: grid;
+  gap: 16px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: var(--surface);
+  box-shadow: var(--shadow);
+  padding: 24px;
+  text-align: center;
+}
+
+.access-gate-card h2,
+.access-gate-card p {
+  margin: 0;
+}
+
+.access-gate-card p {
+  color: var(--muted);
+  line-height: 1.5;
+}
+
+.access-gate-actions {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
 }
 
 .masthead {
@@ -345,6 +399,15 @@ h1 {
   width: 100%;
   height: auto;
   object-fit: contain;
+}
+
+.technique-image figcaption {
+  border-top: 1px solid var(--line);
+  color: var(--muted);
+  font-size: 0.94rem;
+  line-height: 1.4;
+  padding: 10px 14px;
+  text-align: center;
 }
 
 .card {
@@ -780,6 +843,22 @@ button:focus-visible {
   text-transform: uppercase;
 }
 
+.field sup {
+  color: var(--accent-2);
+  font-size: 0.68em;
+  font-weight: 900;
+  line-height: 0;
+  margin-left: 2px;
+}
+
+.ref-mark {
+  color: var(--accent-2);
+  font-size: 0.72em;
+  font-weight: 800;
+  line-height: 0;
+  margin-left: 2px;
+}
+
 .field span {
   color: var(--ink);
   line-height: 1.45;
@@ -1123,6 +1202,10 @@ details.references summary {
   gap: 8px;
 }
 
+.technique-subtabs {
+  align-items: stretch;
+}
+
 .material-subtab,
 .technique-subtab {
   min-height: 48px;
@@ -1137,6 +1220,8 @@ details.references summary {
   overflow-wrap: anywhere;
   padding: 0 14px;
   text-align: center;
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
 }
 
 .material-subtab[aria-selected="true"],
@@ -1315,6 +1400,23 @@ details.references summary {
     min-height: 52px;
   }
 
+  .technique-subtabs {
+    position: sticky;
+    top: 8px;
+    z-index: 3;
+    margin: -4px -4px 0;
+    padding: 6px;
+    border: 1px solid rgba(8, 145, 178, 0.12);
+    border-radius: 8px;
+    background: rgba(248, 250, 252, 0.96);
+    box-shadow: 0 8px 22px rgba(15, 23, 42, 0.08);
+  }
+
+  .technique-subtab {
+    min-height: 56px;
+    padding: 10px 12px;
+  }
+
   .voice-status,
   .voice-transcript {
     font-size: 0.96rem;
@@ -1360,10 +1462,19 @@ details.references summary {
 
   .primary-button,
   .secondary-button,
+  .access-gate-actions,
   .document-tab-trigger,
   .material-subtab,
   .technique-subtab {
     width: 100%;
+  }
+
+  .access-gate-actions {
+    grid-template-columns: 1fr;
+  }
+
+  .technique-subtabs {
+    gap: 10px;
   }
 
   .procedure-variant,
