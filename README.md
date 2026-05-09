@@ -9,6 +9,17 @@ Aplicação web sobre o uso de hipodermóclise baseado em evidências.
 - `app.js`: interações, abas, checklists, assistente de voz e contador de visitas.
 - `assets/`: imagens usadas no site.
 - `.nojekyll`: evita processamento pelo Jekyll no GitHub Pages.
+- `.gitignore`: evita envio de arquivos grandes ou temporários para o GitHub.
+
+## Vídeo da técnica de punção
+
+O vídeo da técnica de punção é carregado por um player do Google Drive na aba Técnica de punção.
+
+Para publicar o vídeo junto ao site no GitHub Pages, use uma das opções:
+
+Se quiser usar vídeo local no futuro, mantenha o arquivo abaixo de 100 MB ou use Git LFS.
+
+Arquivos de vídeo locais continuam ignorados no `.gitignore` para evitar bloqueio no GitHub.
 
 ## Publicação no GitHub Pages
 

@@ -59,11 +59,17 @@
           <button class="tab-trigger" role="tab" aria-selected="false" data-tab="prescricao">
             Prescrição
           </button>
+          <button class="tab-trigger" role="tab" aria-selected="false" data-tab="contador-gotas">
+            Contador de gotas
+          </button>
           <button class="tab-trigger" role="tab" aria-selected="false" data-tab="cuidados">
             Principais cuidados
           </button>
           <button class="tab-trigger" role="tab" aria-selected="false" data-tab="documentos">
             Documentos e checklists
+          </button>
+          <button class="tab-trigger" role="tab" aria-selected="false" data-tab="orientacoes-cuidador">
+            Orientações ao cuidador
           </button>
           <button class="tab-trigger" role="tab" aria-selected="false" data-tab="contato">
             Entre em contato
@@ -296,7 +302,7 @@
                     <div class="field-grid">
                       <div class="field"><strong>Dose<sup>1,2,3,4</sup></strong><span>Bolus SC: 2-3mg a cada 4 horas; infusão contínua: 10-20mg/dia, com ajuste individualizado.</span></div>
                       <div class="field"><strong>Diluição<sup>1,2</sup></strong><span>Preferir soro fisiológico 0,9%; diluir a dose prescrita em SF 0,9% conforme volume planejado.</span></div>
-                      <div class="field"><strong>Tempo de infusão<sup>1,2,3</sup></strong><span>Bolus ou infusão contínua; velocidade usual entre 20-100mL/h, sem exceder 100mL/h.</span></div>
+                      <div class="field"><strong>Tempo de infusão<sup>1,2,3</sup></strong><span>Bolus ou infusão contínua; velocidade usual entre 20-100mL/h, equivalente a aproximadamente 7-33 gotas/min em equipo de macrogotas, sem exceder 100mL/h.</span></div>
                     </div>
                     <div class="clinical-note">
                       Não existe dose máxima definida. Iniciar com doses menores em idosos,
@@ -394,7 +400,7 @@
                       <div class="field"><strong>Tempo de infusão<sup>6,14,15,17</sup></strong><span>Bolus ou infusão subcutânea contínua, geralmente em 24h.</span></div>
                     </div>
                     <div class="clinical-note">
-                      Pode causar irritação local. Velocidade de infusão de 0,5mL/h a 20mL/h.
+                      Pode causar irritação local. Velocidade de infusão de 0,5mL/h a 20mL/h, equivalente a aproximadamente 0,2-7 gotas/min em equipo de macrogotas.
                     </div>
                   </div>
                 </section>
@@ -410,7 +416,7 @@
                       <div class="field"><strong>Tempo de infusão<sup>6,7,8</sup></strong><span>Infusão contínua conforme prescrição e tolerância local.</span></div>
                     </div>
                     <div class="clinical-note">
-                      Volume de infusão máximo 62,5mL/h. Considerar o limite de volume conforme o
+                      Volume de infusão máximo 62,5mL/h, equivalente a aproximadamente 21 gotas/min em equipo de macrogotas. Considerar o limite de volume conforme o
                       sítio de punção escolhido.
                     </div>
                   </div>
@@ -712,6 +718,7 @@
                     </select>
                   </label>
                 </div>
+                <button class="secondary-button" id="addPrescriptionItem" type="button">Adicionar item</button>
               </div>
             </div>
             <div class="card">
@@ -730,6 +737,142 @@
           </div>
         </article>
 
+        <article id="contador-gotas" class="tab-panel" role="tabpanel">
+          <div class="stack">
+            <div class="card">
+              <div class="card-content stack">
+                <h2>Contador de gotas</h2>
+                <div class="drop-subtabs" role="tablist" aria-label="Modo de contagem de gotas">
+                  <button
+                    class="drop-subtab"
+                    id="dropAutomaticTab"
+                    type="button"
+                    role="tab"
+                    aria-selected="true"
+                    aria-controls="dropAutomaticPanel"
+                    data-drop-subtab="automatic"
+                  >
+                    Contagem automática
+                  </button>
+                  <button
+                    class="drop-subtab"
+                    id="dropManualTab"
+                    type="button"
+                    role="tab"
+                    aria-selected="false"
+                    aria-controls="dropManualPanel"
+                    data-drop-subtab="manual"
+                    tabindex="-1"
+                  >
+                    Contagem manual
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            <section
+              class="drop-subtab-panel active"
+              id="dropAutomaticPanel"
+              role="tabpanel"
+              aria-labelledby="dropAutomaticTab"
+              data-drop-panel="automatic"
+            >
+              <div class="module-grid drop-counter-grid">
+                <div class="card">
+                  <div class="card-content stack">
+                    <h2>Contagem automática</h2>
+                    <div class="camera-frame">
+                      <video id="dropCameraPreview" playsinline muted></video>
+                      <div class="camera-placeholder" id="dropCameraPlaceholder">
+                        Posicione a câmera do celular para visualizar a câmara de gotejamento.
+                      </div>
+                    </div>
+                    <div class="copy-actions">
+                      <button class="primary-button" id="startDropCamera" type="button">Iniciar câmera</button>
+                      <button class="secondary-button" id="stopDropCamera" type="button" disabled>Parar câmera</button>
+                    </div>
+                    <div class="copy-actions">
+                      <button class="secondary-button" id="startAutoDropCounter" type="button">
+                        Iniciar contagem automática
+                      </button>
+                      <button class="secondary-button" id="stopAutoDropCounter" type="button" disabled>
+                        Parar contagem automática
+                      </button>
+                    </div>
+                    <p class="drop-counter-status" id="dropCameraStatus" aria-live="polite">
+                      A câmera será usada apenas para visualização durante a contagem.
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </section>
+
+            <section
+              class="drop-subtab-panel"
+              id="dropManualPanel"
+              role="tabpanel"
+              aria-labelledby="dropManualTab"
+              data-drop-panel="manual"
+              hidden
+            >
+              <div class="card">
+                <div class="card-content stack">
+                  <h2>Contagem manual</h2>
+                  <div class="drop-counter-status">
+                    Conversão configurada para equipo de macrogotas: 20 gotas/mL.
+                  </div>
+                  <div class="copy-actions">
+                    <button class="primary-button drop-tap-button" id="recordDrop" type="button">
+                      Registrar gota
+                    </button>
+                    <button class="secondary-button" id="resetDropCounter" type="button">Zerar contador</button>
+                  </div>
+                  <div class="form-grid">
+                    <label class="form-row">
+                      <span>Gotas/min em macrogotas</span>
+                      <input id="manualDropsMinute" type="number" min="0" step="0.1" inputmode="decimal" placeholder="Ex.: 21" />
+                    </label>
+                    <label class="form-row">
+                      <span>mL/h</span>
+                      <input id="manualMlHour" type="number" min="0" step="0.1" inputmode="decimal" placeholder="Ex.: 62,5" />
+                    </label>
+                  </div>
+                  <p class="drop-counter-status">
+                    Fórmula em equipo de macrogotas: mL/h = gotas/min x 60 / 20.
+                  </p>
+                </div>
+              </div>
+            </section>
+
+            <div class="card">
+              <div class="card-content stack">
+                <h2>Resultado</h2>
+                <div class="drop-result-grid" aria-live="polite">
+                  <div class="drop-result-card">
+                    <span>Gotas registradas</span>
+                    <strong id="dropCount">0</strong>
+                  </div>
+                  <div class="drop-result-card">
+                    <span>Tempo observado</span>
+                    <strong id="dropElapsed">0s</strong>
+                  </div>
+                  <div class="drop-result-card">
+                    <span>Gotas/min em macrogotas</span>
+                    <strong id="dropPerMinute">--</strong>
+                  </div>
+                  <div class="drop-result-card">
+                    <span>mL/h</span>
+                    <strong id="dropMlHour">--</strong>
+                  </div>
+                </div>
+                <div class="drop-counter-status">
+                  Conversão configurada para equipo de macrogotas: 20 gotas/mL.
+                </div>
+              </div>
+            </div>
+          </div>
+        </article>
+
         <article id="tecnica" class="tab-panel" role="tabpanel">
           <div class="stack">
             <div class="tech-media-grid">
@@ -742,8 +885,7 @@
                       src="about:blank"
                       data-src="https://drive.google.com/file/d/1IUzsUktltswjAkH3vSTkLi1Jzs-QoMsk/preview"
                       title="Vídeo técnica de punção por hipodermóclise"
-                      allow="autoplay; fullscreen; encrypted-media"
-                      loading="lazy"
+                      allow="autoplay; fullscreen"
                       allowfullscreen
                     ></iframe>
                   </div>
@@ -914,90 +1056,72 @@
             <div class="card">
               <div class="card-content stack">
                 <h2>Material necessário</h2>
-                <div class="technique-summary">
-                  <div class="checklist-progress">
-                    <strong id="materialChecklistCount">0 de 17 itens marcados</strong>
-                    <div class="progress-track"><div class="progress-bar" id="materialChecklistProgress"></div></div>
-                  </div>
-                  <section class="voice-assistant" aria-live="polite">
-                    <div class="voice-assistant-header">
-                      <div>
-                        <h3>Assistente de voz</h3>
-                        <p>Fale os materiais conferidos para marcar o checklist automaticamente.</p>
-                      </div>
-                      <button class="primary-button" id="materialVoiceToggle" type="button">
-                        Iniciar voz
-                      </button>
-                    </div>
-                    <div class="voice-status" id="materialVoiceStatus">
-                      Assistente de voz pronto para iniciar.
-                    </div>
-                    <div class="voice-transcript" id="materialVoiceTranscript">
-                      A transcrição aparecerá aqui enquanto você fala.
-                    </div>
-                    <p class="voice-hint">
-                      No celular, toque em iniciar, fale uma frase curta e toque novamente para continuar.
-                    </p>
+                <div class="material-list-subtabs" role="tablist" aria-label="Tipos de cateter para lista de materiais">
+                  <button
+                    id="material-list-tab-scalp"
+                    class="material-list-subtab"
+                    type="button"
+                    role="tab"
+                    aria-selected="true"
+                    aria-controls="material-list-scalp"
+                    data-material-list-subtab="scalp"
+                  >
+                    Cateter agulhado (scalp)
+                  </button>
+                  <button
+                    id="material-list-tab-jelco"
+                    class="material-list-subtab"
+                    type="button"
+                    role="tab"
+                    aria-selected="false"
+                    aria-controls="material-list-jelco"
+                    tabindex="-1"
+                    data-material-list-subtab="jelco"
+                  >
+                    Cateter não agulhado (jelco ou íntima)
+                  </button>
+                </div>
+                <div class="material-list-grid">
+                  <section
+                    class="material-check-card material-check-card-needle active"
+                    id="material-list-scalp"
+                    role="tabpanel"
+                    aria-labelledby="material-list-tab-scalp"
+                    data-material-list-panel="scalp"
+                  >
+                    <h3>Cateter agulhado (scalp)</h3>
+                    <ul class="quick-list">
+                      <li>Bandeja e luvas de procedimento.</li>
+                      <li>Solução antisséptica: álcool 70% ou clorexidina.</li>
+                      <li>Gaze não estéril ou bola de algodão.</li>
+                      <li>Cateter agulhado, tipo scalp 21 a 25G.</li>
+                      <li>Agulha 40 x 12mm para aspiração de medicação.</li>
+                      <li>Seringa de 1mL e flaconete de 10mL de soro fisiológico 0,9%.</li>
+                      <li>Cobertura estéril transparente para o sítio de punção.</li>
+                      <li>Esparadrapo ou fita micropore para fixação do circuito e identificação.</li>
+                    </ul>
                   </section>
-                  <div class="material-subtabs" role="tablist" aria-label="Tipos de cateter">
-                    <button
-                      class="material-subtab"
-                      type="button"
-                      role="tab"
-                      aria-selected="true"
-                      aria-controls="material-scalp"
-                      data-material-subtab="scalp"
-                    >
-                      Cateter agulhado (scalp)
-                    </button>
-                    <button
-                      class="material-subtab"
-                      type="button"
-                      role="tab"
-                      aria-selected="false"
-                      aria-controls="material-jelco"
-                      data-material-subtab="jelco"
-                    >
-                      Cateter não agulhado (jelco ou íntima)
-                    </button>
-                  </div>
-                  <div class="material-checklist-panels" id="materialChecklist">
-                    <section
-                      class="check-section material-check-card material-check-card-needle active"
-                      id="material-scalp"
-                      role="tabpanel"
-                      data-material-panel="scalp"
-                    >
-                      <h3>Cateter agulhado (scalp)</h3>
-                      <label class="check-item"><input type="checkbox" /> <span>Bandeja e luvas de procedimento.</span></label>
-                      <label class="check-item"><input type="checkbox" /> <span>Solução antisséptica: álcool 70% ou clorexidina.</span></label>
-                      <label class="check-item"><input type="checkbox" /> <span>Gaze não estéril ou bola de algodão.</span></label>
-                      <label class="check-item"><input type="checkbox" /> <span>Cateter agulhado, tipo scalp 21 a 25G.</span></label>
-                      <label class="check-item"><input type="checkbox" /> <span>Agulha 40 x 12mm para aspiração de medicação.</span></label>
-                      <label class="check-item"><input type="checkbox" /> <span>Seringa de 1mL e flaconete de 10mL de soro fisiológico 0,9%.</span></label>
-                      <label class="check-item"><input type="checkbox" /> <span>Cobertura estéril transparente para o sítio de punção.</span></label>
-                      <label class="check-item"><input type="checkbox" /> <span>Esparadrapo ou fita micropore para fixação do circuito e identificação.</span></label>
-                    </section>
-                    <section
-                      class="check-section material-check-card material-check-card-cannula"
-                      id="material-jelco"
-                      role="tabpanel"
-                      data-material-panel="jelco"
-                      hidden
-                    >
-                      <h3>Cateter não agulhado (jelco ou íntima)</h3>
-                      <label class="check-item"><input type="checkbox" /> <span>Bandeja e luvas de procedimento.</span></label>
-                      <label class="check-item"><input type="checkbox" /> <span>Solução antisséptica: álcool 70% ou clorexidina.</span></label>
-                      <label class="check-item"><input type="checkbox" /> <span>Gaze não estéril ou bola de algodão.</span></label>
-                      <label class="check-item"><input type="checkbox" /> <span>Cateter não agulhado, tipo jelco ou íntima 22 a 24G.</span></label>
-                      <label class="check-item"><input type="checkbox" /> <span>Agulha 40 x 12mm para aspiração de medicação.</span></label>
-                      <label class="check-item"><input type="checkbox" /> <span>Seringa de 10mL e flaconete de 10mL de soro fisiológico 0,9%.</span></label>
-                      <label class="check-item"><input type="checkbox" /> <span>Equipo de duas vias quando for utilizado jelco.</span></label>
-                      <label class="check-item"><input type="checkbox" /> <span>Cobertura estéril transparente para o sítio de punção.</span></label>
-                      <label class="check-item"><input type="checkbox" /> <span>Esparadrapo ou fita micropore para fixação do circuito e identificação.</span></label>
-                    </section>
-                  </div>
-                  <button class="secondary-button" id="clearMaterialChecklist" type="button">Limpar marcações</button>
+                  <section
+                    class="material-check-card material-check-card-cannula"
+                    id="material-list-jelco"
+                    role="tabpanel"
+                    aria-labelledby="material-list-tab-jelco"
+                    data-material-list-panel="jelco"
+                    hidden
+                  >
+                    <h3>Cateter não agulhado (jelco ou íntima)</h3>
+                    <ul class="quick-list">
+                      <li>Bandeja e luvas de procedimento.</li>
+                      <li>Solução antisséptica: álcool 70% ou clorexidina.</li>
+                      <li>Gaze não estéril ou bola de algodão.</li>
+                      <li>Cateter não agulhado, tipo jelco ou íntima 22 a 24G.</li>
+                      <li>Agulha 40 x 12mm para aspiração de medicação.</li>
+                      <li>Seringa de 10mL e flaconete de 10mL de soro fisiológico 0,9%.</li>
+                      <li>Equipo de duas vias quando for utilizado jelco.</li>
+                      <li>Cobertura estéril transparente para o sítio de punção.</li>
+                      <li>Esparadrapo ou fita micropore para fixação do circuito e identificação.</li>
+                    </ul>
+                  </section>
                 </div>
               </div>
             </div>
@@ -1109,6 +1233,106 @@
                 <section class="document-card">
                   <button
                     class="document-tab-trigger"
+                    id="documentMaterialTrigger"
+                    type="button"
+                    aria-expanded="false"
+                    aria-controls="materialChecklistPanel"
+                  >
+                    Material necessário
+                  </button>
+                  <section class="checklist-panel embedded-checklist" id="materialChecklistPanel" hidden>
+                    <div class="checklist-header">
+                      <h3>Material necessário</h3>
+                      <button class="secondary-button" id="closeMaterialChecklist" type="button">Fechar</button>
+                    </div>
+                    <div class="checklist-progress">
+                      <strong id="materialChecklistCount">0 de 17 itens marcados</strong>
+                      <div class="progress-track"><div class="progress-bar" id="materialChecklistProgress"></div></div>
+                    </div>
+                    <section class="voice-assistant" aria-live="polite">
+                      <div class="voice-assistant-header">
+                        <div>
+                          <h3>Assistente de voz</h3>
+                          <p>Fale os materiais conferidos para marcar o checklist automaticamente.</p>
+                        </div>
+                        <button class="primary-button" id="materialVoiceToggle" type="button">
+                          Iniciar voz
+                        </button>
+                      </div>
+                      <div class="voice-status" id="materialVoiceStatus">
+                        Assistente de voz pronto para iniciar.
+                      </div>
+                      <div class="voice-transcript" id="materialVoiceTranscript">
+                        A transcrição aparecerá aqui enquanto você fala.
+                      </div>
+                      <p class="voice-hint">
+                        No celular, toque em iniciar, fale uma frase curta e toque novamente para continuar.
+                      </p>
+                    </section>
+                    <div class="material-subtabs" role="tablist" aria-label="Tipos de cateter">
+                      <button
+                        class="material-subtab"
+                        type="button"
+                        role="tab"
+                        aria-selected="true"
+                        aria-controls="material-scalp"
+                        data-material-subtab="scalp"
+                      >
+                        Cateter agulhado (scalp)
+                      </button>
+                      <button
+                        class="material-subtab"
+                        type="button"
+                        role="tab"
+                        aria-selected="false"
+                        aria-controls="material-jelco"
+                        data-material-subtab="jelco"
+                      >
+                        Cateter não agulhado (jelco ou íntima)
+                      </button>
+                    </div>
+                    <div class="material-checklist-panels" id="materialChecklist">
+                      <section
+                        class="check-section material-check-card material-check-card-needle active"
+                        id="material-scalp"
+                        role="tabpanel"
+                        data-material-panel="scalp"
+                      >
+                        <h3>Cateter agulhado (scalp)</h3>
+                        <label class="check-item"><input type="checkbox" /> <span>Bandeja e luvas de procedimento.</span></label>
+                        <label class="check-item"><input type="checkbox" /> <span>Solução antisséptica: álcool 70% ou clorexidina.</span></label>
+                        <label class="check-item"><input type="checkbox" /> <span>Gaze não estéril ou bola de algodão.</span></label>
+                        <label class="check-item"><input type="checkbox" /> <span>Cateter agulhado, tipo scalp 21 a 25G.</span></label>
+                        <label class="check-item"><input type="checkbox" /> <span>Agulha 40 x 12mm para aspiração de medicação.</span></label>
+                        <label class="check-item"><input type="checkbox" /> <span>Seringa de 1mL e flaconete de 10mL de soro fisiológico 0,9%.</span></label>
+                        <label class="check-item"><input type="checkbox" /> <span>Cobertura estéril transparente para o sítio de punção.</span></label>
+                        <label class="check-item"><input type="checkbox" /> <span>Esparadrapo ou fita micropore para fixação do circuito e identificação.</span></label>
+                      </section>
+                      <section
+                        class="check-section material-check-card material-check-card-cannula"
+                        id="material-jelco"
+                        role="tabpanel"
+                        data-material-panel="jelco"
+                        hidden
+                      >
+                        <h3>Cateter não agulhado (jelco ou íntima)</h3>
+                        <label class="check-item"><input type="checkbox" /> <span>Bandeja e luvas de procedimento.</span></label>
+                        <label class="check-item"><input type="checkbox" /> <span>Solução antisséptica: álcool 70% ou clorexidina.</span></label>
+                        <label class="check-item"><input type="checkbox" /> <span>Gaze não estéril ou bola de algodão.</span></label>
+                        <label class="check-item"><input type="checkbox" /> <span>Cateter não agulhado, tipo jelco ou íntima 22 a 24G.</span></label>
+                        <label class="check-item"><input type="checkbox" /> <span>Agulha 40 x 12mm para aspiração de medicação.</span></label>
+                        <label class="check-item"><input type="checkbox" /> <span>Seringa de 10mL e flaconete de 10mL de soro fisiológico 0,9%.</span></label>
+                        <label class="check-item"><input type="checkbox" /> <span>Equipo de duas vias quando for utilizado jelco.</span></label>
+                        <label class="check-item"><input type="checkbox" /> <span>Cobertura estéril transparente para o sítio de punção.</span></label>
+                        <label class="check-item"><input type="checkbox" /> <span>Esparadrapo ou fita micropore para fixação do circuito e identificação.</span></label>
+                      </section>
+                    </div>
+                    <button class="secondary-button" id="clearMaterialChecklist" type="button">Limpar marcações</button>
+                  </section>
+                </section>
+                <section class="document-card">
+                  <button
+                    class="document-tab-trigger"
                     id="documentChecklistTrigger"
                     type="button"
                     aria-expanded="false"
@@ -1168,6 +1392,75 @@
           </div>
         </article>
 
+        <article id="orientacoes-cuidador" class="tab-panel" role="tabpanel">
+          <div class="card">
+            <div class="card-content stack">
+              <h2>Orientações ao cuidador</h2>
+              <p>
+                A hipodermóclise em casa pode ser segura quando é corretamente indicada,
+                acompanhada por equipe treinada e quando a família sabe o que observar.
+              </p>
+              <div class="site-list">
+                <div class="site-item">
+                  <strong>Cuidados com o local da punção</strong>
+                  <ul class="quick-list">
+                    <li>Inchaço ou edema ao redor da agulha ou cateter.</li>
+                    <li>Vermelhidão no local da punção.</li>
+                    <li>Dor, ardor ou queimação no local puncionado.</li>
+                    <li>Esses sinais podem ser leves, mas o sítio deve ser reavaliado pela equipe.</li>
+                  </ul>
+                </div>
+                <div class="site-item">
+                  <strong>Durante a infusão</strong>
+                  <ul class="quick-list">
+                    <li>Conferir se a solução está correndo conforme orientação da equipe.</li>
+                    <li>Não alterar velocidade, volume ou medicamentos sem orientação profissional.</li>
+                    <li>Manter frasco, equipo e conexões protegidos e organizados.</li>
+                  </ul>
+                </div>
+                <div class="site-item">
+                  <strong>Quando acionar a equipe</strong>
+                  <ul class="quick-list">
+                    <li>Inchaço intenso, aumento rápido do volume ou endurecimento importante no local.</li>
+                    <li>Vermelhidão que se expande, calor local ou saída de secreção.</li>
+                    <li>Dor intensa ou que não melhora após pausa ou orientação de troca do local.</li>
+                    <li>Piora evidente do estado geral, como mais sonolência, falta de ar ou rebaixamento do nível de consciência.</li>
+                    <li>Dúvida ou insegurança da família sobre a continuidade do cuidado.</li>
+                  </ul>
+                </div>
+                <div class="site-item">
+                  <strong>Papel da equipe e do cuidador</strong>
+                  <ul class="quick-list">
+                    <li>Seguir as orientações combinadas com a equipe de saúde.</li>
+                    <li>Manter comunicação aberta em caso de intercorrência ou dúvida.</li>
+                    <li>Registrar mudanças observadas no local da punção ou no estado geral.</li>
+                    <li>Evitar modificar volume, velocidade ou medicamentos sem orientação profissional.</li>
+                  </ul>
+                </div>
+              </div>
+              <section class="status-panel warning">
+                <h2>Importante</h2>
+                <p>
+                  A família deve vigiar principalmente o local da punção e mudanças importantes no
+                  estado geral do paciente. Diante de sinais intensos, dúvidas ou piora clínica,
+                  a orientação é acionar a equipe de saúde.
+                </p>
+              </section>
+              <details class="references">
+                <summary>Referências usadas nesta aba</summary>
+                <ol class="reference-list">
+                  <li><a href="https://docs.google.com/document/d/1wL1ZItKDd4xQuuy9Vk2LHnlYrvaa1ffk74nLJ8fR9dk/edit?usp=sharing" target="_blank" rel="noopener">Hipodermóclise em casa: o que a família deve observar. Documento-fonte fornecido para esta aba.</a></li>
+                  <li><a href="https://doi.org/10.53660/clm-1050-23c59" target="_blank" rel="noopener">Dib R, Santana M, Ferreira W, Antunes R, França L, De Souza Ramos R. Applicability of hypodermoclysis in patients in palliative care. Concilium. 2023.</a></li>
+                  <li><a href="https://doi.org/10.15448/2357-9641.2019.1.32559" target="_blank" rel="noopener">Vasconcellos C, Milão D. Hipodermóclise: alternativa para infusão de medicamentos em pacientes idosos e pacientes em cuidados paliativos. PAJAR. 2019.</a></li>
+                  <li><a href="https://doi.org/10.12707/riii12137" target="_blank" rel="noopener">Nietsche E et al. Equipe de saúde e familiares cuidadores: atenção ao doente terminal no domicílio. Revista de Enfermagem Referência. 2013.</a></li>
+                  <li><a href="https://doi.org/10.33362/ries.v4i1.329" target="_blank" rel="noopener">Langaro F et al. Vivência familiar nos cuidados domiciliares em final de vida e processos de luto. 2015.</a></li>
+                  <li><a href="https://doi.org/10.33448/rsd-v10i2.12151" target="_blank" rel="noopener">Queiroz A et al. Cuidados voltados aos familiares de pessoas em finitude humana. Research, Society and Development. 2021.</a></li>
+                </ol>
+              </details>
+            </div>
+          </div>
+        </article>
+
         <article id="contato" class="tab-panel" role="tabpanel">
           <div class="card narrow">
             <div class="card-content stack">
@@ -1185,9 +1478,6 @@
                   <span>Perfil</span>
                   <select name="profile">
                     <option>Profissional de saúde</option>
-                    <option>Cuidador familiar</option>
-                    <option>Gestor/educador</option>
-                    <option>Outro</option>
                   </select>
                 </label>
                 <label class="form-row">

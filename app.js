@@ -16,14 +16,35 @@ const materialChecklistProgress = document.querySelector("#materialChecklistProg
 const clearMaterialChecklistButton = document.querySelector("#clearMaterialChecklist");
 const materialSubtabs = Array.from(document.querySelectorAll(".material-subtab"));
 const materialSubtabPanels = Array.from(document.querySelectorAll("[data-material-panel]"));
+const materialListSubtabs = Array.from(document.querySelectorAll(".material-list-subtab"));
+const materialListSubtabPanels = Array.from(document.querySelectorAll("[data-material-list-panel]"));
 const techniqueSubtabs = Array.from(document.querySelectorAll(".technique-subtab"));
 const techniqueSubtabPanels = Array.from(document.querySelectorAll("[data-technique-panel]"));
+const dropSubtabs = Array.from(document.querySelectorAll(".drop-subtab"));
+const dropSubtabPanels = Array.from(document.querySelectorAll("[data-drop-panel]"));
 const compatItemA = document.querySelector("#compatItemA");
 const compatItemB = document.querySelector("#compatItemB");
 const compatInteractiveResult = document.querySelector("#compatInteractiveResult");
-const prescriptionItemControls = Array.from(document.querySelectorAll(".prescription-item"));
+const prescriptionItemsContainer = document.querySelector("#prescriptionItems");
+const addPrescriptionItemButton = document.querySelector("#addPrescriptionItem");
+let prescriptionItemControls = Array.from(document.querySelectorAll(".prescription-item"));
 const punctureHighlight = document.querySelector("#punctureHighlight");
 const punctureGroups = document.querySelector("#punctureGroups");
+const dropCameraPreview = document.querySelector("#dropCameraPreview");
+const dropCameraPlaceholder = document.querySelector("#dropCameraPlaceholder");
+const startDropCameraButton = document.querySelector("#startDropCamera");
+const stopDropCameraButton = document.querySelector("#stopDropCamera");
+const startAutoDropCounterButton = document.querySelector("#startAutoDropCounter");
+const stopAutoDropCounterButton = document.querySelector("#stopAutoDropCounter");
+const dropCameraStatus = document.querySelector("#dropCameraStatus");
+const recordDropButton = document.querySelector("#recordDrop");
+const resetDropCounterButton = document.querySelector("#resetDropCounter");
+const dropCount = document.querySelector("#dropCount");
+const dropElapsed = document.querySelector("#dropElapsed");
+const dropPerMinute = document.querySelector("#dropPerMinute");
+const dropMlHour = document.querySelector("#dropMlHour");
+const manualDropsMinute = document.querySelector("#manualDropsMinute");
+const manualMlHour = document.querySelector("#manualMlHour");
 const contactForm = document.querySelector("#contactForm");
 const contactResult = document.querySelector("#contactResult");
 const techniqueVideo = document.querySelector("#techniqueVideo");
@@ -37,6 +58,9 @@ const materialVoiceTranscript = document.querySelector("#materialVoiceTranscript
 const documentNoteTrigger = document.querySelector("#documentNoteTrigger");
 const documentNotePanel = document.querySelector("#documentNote");
 const closeDocumentNoteButton = document.querySelector("#closeDocumentNote");
+const documentMaterialTrigger = document.querySelector("#documentMaterialTrigger");
+const documentMaterialPanel = document.querySelector("#materialChecklistPanel");
+const closeMaterialChecklistPanelButton = document.querySelector("#closeMaterialChecklist");
 const documentChecklistTrigger = document.querySelector("#documentChecklistTrigger");
 const documentChecklistPanel = document.querySelector("#checklist");
 const closeChecklistButton = document.querySelector("#closeChecklist");
@@ -52,6 +76,16 @@ let checklistRecognition = null;
 let checklistVoiceActive = false;
 let materialRecognition = null;
 let materialVoiceActive = false;
+let dropCameraStream = null;
+let dropTimestamps = [];
+let dropTimer = null;
+let manualConversionLock = false;
+let autoDropActive = false;
+let autoDropFrame = null;
+let previousDropBrightness = null;
+let lastAutoDropAt = 0;
+const dropDetectionCanvas = document.createElement("canvas");
+const dropDetectionContext = dropDetectionCanvas.getContext("2d", { willReadFrequently: true });
 
 function rememberProfessionalAccess() {
   try {
@@ -74,6 +108,7 @@ function allowProfessionalAccess() {
   document.body.classList.remove("access-pending", "access-denied");
   accessGate.hidden = true;
   appShell.removeAttribute("aria-hidden");
+  scrollToActivePanel({ behavior: "auto" });
 }
 
 function denyProfessionalAccess() {
@@ -110,7 +145,23 @@ async function updateVisitCounter() {
   }
 }
 
-function activateTab(tab) {
+function shouldScrollToPanel() {
+  return window.matchMedia("(pointer: coarse)").matches || window.matchMedia("(max-width: 820px)").matches;
+}
+
+function scrollToActivePanel({ behavior = "smooth" } = {}) {
+  if (!shouldScrollToPanel() || document.body.classList.contains("access-pending")) return;
+
+  const activePanel = panels.find((panel) => panel.classList.contains("active"));
+  if (!activePanel) return;
+
+  window.requestAnimationFrame(() => {
+    const top = activePanel.getBoundingClientRect().top + window.scrollY - 12;
+    window.scrollTo({ top: Math.max(top, 0), behavior });
+  });
+}
+
+function activateTab(tab, { scrollToPanel = false } = {}) {
   const targetId = tab.dataset.tab;
 
   tabs.forEach((item) => {
@@ -125,12 +176,258 @@ function activateTab(tab) {
     loadTechniqueVideo();
   }
 
+  if (targetId !== "contador-gotas") {
+    stopDropCamera();
+  }
+
   history.replaceState(null, "", `#${targetId}`);
+
+  if (scrollToPanel) {
+    scrollToActivePanel();
+  }
 }
 
 function loadTechniqueVideo() {
   if (!techniqueVideo || techniqueVideo.getAttribute("src") !== "about:blank") return;
   techniqueVideo.src = techniqueVideo.dataset.src;
+}
+
+function dropFactorValue() {
+  return 20;
+}
+
+function formatDecimal(value, maximumFractionDigits = 1) {
+  if (!Number.isFinite(value)) return "--";
+  return value.toLocaleString("pt-BR", {
+    maximumFractionDigits,
+    minimumFractionDigits: value % 1 === 0 ? 0 : 1,
+  });
+}
+
+function formatInputDecimal(value) {
+  if (!Number.isFinite(value)) return "";
+  return Number(value.toFixed(1)).toString();
+}
+
+function formatElapsed(milliseconds) {
+  if (!milliseconds || milliseconds < 1000) return "0s";
+  const totalSeconds = Math.round(milliseconds / 1000);
+  const minutes = Math.floor(totalSeconds / 60);
+  const seconds = totalSeconds % 60;
+  return minutes ? `${minutes}min ${String(seconds).padStart(2, "0")}s` : `${seconds}s`;
+}
+
+function calculatedDropsPerMinute() {
+  if (dropTimestamps.length < 2) return null;
+  const elapsedMinutes = (dropTimestamps[dropTimestamps.length - 1] - dropTimestamps[0]) / 60000;
+  if (elapsedMinutes <= 0) return null;
+  return (dropTimestamps.length - 1) / elapsedMinutes;
+}
+
+function updateDropCounterResults() {
+  if (!dropCount || !dropElapsed || !dropPerMinute || !dropMlHour) return;
+
+  const now = Date.now();
+  const elapsed = dropTimestamps.length ? now - dropTimestamps[0] : 0;
+  const dropsMinute = calculatedDropsPerMinute();
+  const mlHour = dropsMinute === null ? null : (dropsMinute * 60) / dropFactorValue();
+
+  dropCount.textContent = String(dropTimestamps.length);
+  dropElapsed.textContent = formatElapsed(elapsed);
+  dropPerMinute.textContent = dropsMinute === null ? "--" : formatDecimal(dropsMinute, 1);
+  dropMlHour.textContent = mlHour === null ? "--" : formatDecimal(mlHour, 1);
+}
+
+function startDropTimer() {
+  if (dropTimer) return;
+  dropTimer = window.setInterval(updateDropCounterResults, 1000);
+}
+
+function stopDropTimer() {
+  if (!dropTimer) return;
+  window.clearInterval(dropTimer);
+  dropTimer = null;
+}
+
+function recordDrop() {
+  dropTimestamps.push(Date.now());
+  startDropTimer();
+  updateDropCounterResults();
+}
+
+function resetDropCounter() {
+  dropTimestamps = [];
+  stopDropTimer();
+  updateDropCounterResults();
+}
+
+function setDropCameraStatus(message, className = "") {
+  if (!dropCameraStatus) return;
+  dropCameraStatus.textContent = message;
+  dropCameraStatus.className = `drop-counter-status ${className}`.trim();
+}
+
+async function startDropCamera() {
+  if (!dropCameraPreview || !navigator.mediaDevices?.getUserMedia) {
+    setDropCameraStatus("Câmera indisponível neste navegador.", "warning");
+    return;
+  }
+
+  try {
+    dropCameraStream = await navigator.mediaDevices.getUserMedia({
+      video: {
+        facingMode: { ideal: "environment" },
+        width: { ideal: 1280 },
+        height: { ideal: 720 },
+      },
+      audio: false,
+    });
+    dropCameraPreview.srcObject = dropCameraStream;
+    await dropCameraPreview.play();
+    dropCameraPreview.classList.add("active");
+    if (dropCameraPlaceholder) dropCameraPlaceholder.hidden = true;
+    if (startDropCameraButton) startDropCameraButton.disabled = true;
+    if (stopDropCameraButton) stopDropCameraButton.disabled = false;
+    setDropCameraStatus("Câmera ativa. Toque em Registrar gota a cada gota observada.", "success");
+  } catch {
+    setDropCameraStatus(
+      "Não foi possível acessar a câmera. Verifique a permissão do navegador e tente novamente.",
+      "warning",
+    );
+  }
+}
+
+function stopDropCamera() {
+  stopAutoDropCounter();
+  if (!dropCameraStream) return;
+  dropCameraStream.getTracks().forEach((track) => track.stop());
+  dropCameraStream = null;
+  if (dropCameraPreview) {
+    dropCameraPreview.pause();
+    dropCameraPreview.srcObject = null;
+    dropCameraPreview.classList.remove("active");
+  }
+  if (dropCameraPlaceholder) dropCameraPlaceholder.hidden = false;
+  if (startDropCameraButton) startDropCameraButton.disabled = false;
+  if (stopDropCameraButton) stopDropCameraButton.disabled = true;
+  setDropCameraStatus("Câmera parada.", "");
+}
+
+function readDropDetectionBrightness() {
+  if (!dropCameraPreview || !dropDetectionContext || dropCameraPreview.readyState < 2) return null;
+
+  const videoWidth = dropCameraPreview.videoWidth;
+  const videoHeight = dropCameraPreview.videoHeight;
+  if (!videoWidth || !videoHeight) return null;
+
+  const sampleWidth = Math.max(24, Math.round(videoWidth * 0.32));
+  const sampleHeight = Math.max(24, Math.round(videoHeight * 0.4));
+  const sampleX = Math.round((videoWidth - sampleWidth) / 2);
+  const sampleY = Math.round((videoHeight - sampleHeight) / 2);
+
+  dropDetectionCanvas.width = 80;
+  dropDetectionCanvas.height = 80;
+  dropDetectionContext.drawImage(
+    dropCameraPreview,
+    sampleX,
+    sampleY,
+    sampleWidth,
+    sampleHeight,
+    0,
+    0,
+    dropDetectionCanvas.width,
+    dropDetectionCanvas.height,
+  );
+
+  const { data } = dropDetectionContext.getImageData(
+    0,
+    0,
+    dropDetectionCanvas.width,
+    dropDetectionCanvas.height,
+  );
+  let totalBrightness = 0;
+  for (let index = 0; index < data.length; index += 4) {
+    totalBrightness += (data[index] + data[index + 1] + data[index + 2]) / 3;
+  }
+  return totalBrightness / (data.length / 4);
+}
+
+function detectDropFrame() {
+  if (!autoDropActive) return;
+
+  const brightness = readDropDetectionBrightness();
+  const now = Date.now();
+  if (brightness !== null && previousDropBrightness !== null) {
+    const difference = Math.abs(brightness - previousDropBrightness);
+    if (difference > 10 && now - lastAutoDropAt > 650) {
+      lastAutoDropAt = now;
+      recordDrop();
+    }
+  }
+  previousDropBrightness = brightness;
+  autoDropFrame = window.requestAnimationFrame(detectDropFrame);
+}
+
+async function startAutoDropCounter() {
+  if (!dropCameraStream) {
+    await startDropCamera();
+  }
+  if (!dropCameraStream || autoDropActive) return;
+
+  autoDropActive = true;
+  previousDropBrightness = null;
+  lastAutoDropAt = 0;
+  if (startAutoDropCounterButton) startAutoDropCounterButton.disabled = true;
+  if (stopAutoDropCounterButton) stopAutoDropCounterButton.disabled = false;
+  setDropCameraStatus(
+    "Contagem automática ativa. Centralize a câmara de gotejamento na imagem; use Registrar gota se precisar corrigir.",
+    "success",
+  );
+  detectDropFrame();
+}
+
+function stopAutoDropCounter() {
+  if (!autoDropActive && !autoDropFrame) return;
+  autoDropActive = false;
+  previousDropBrightness = null;
+  if (autoDropFrame) {
+    window.cancelAnimationFrame(autoDropFrame);
+    autoDropFrame = null;
+  }
+  if (startAutoDropCounterButton) startAutoDropCounterButton.disabled = false;
+  if (stopAutoDropCounterButton) stopAutoDropCounterButton.disabled = true;
+  if (dropCameraStream) {
+    setDropCameraStatus("Contagem automática parada. A câmera continua disponível para contagem manual.", "");
+  }
+}
+
+function syncManualFromDropsMinute() {
+  if (!manualDropsMinute || !manualMlHour || manualConversionLock) return;
+  manualConversionLock = true;
+  const dropsMinute = Number(manualDropsMinute.value.replace(",", "."));
+  manualMlHour.value = Number.isFinite(dropsMinute) && manualDropsMinute.value
+    ? formatInputDecimal((dropsMinute * 60) / dropFactorValue())
+    : "";
+  manualConversionLock = false;
+}
+
+function syncManualFromMlHour() {
+  if (!manualDropsMinute || !manualMlHour || manualConversionLock) return;
+  manualConversionLock = true;
+  const mlHour = Number(manualMlHour.value.replace(",", "."));
+  manualDropsMinute.value = Number.isFinite(mlHour) && manualMlHour.value
+    ? formatInputDecimal((mlHour * dropFactorValue()) / 60)
+    : "";
+  manualConversionLock = false;
+}
+
+function refreshDropFactorCalculations() {
+  updateDropCounterResults();
+  if (manualDropsMinute?.value) {
+    syncManualFromDropsMinute();
+  } else if (manualMlHour?.value) {
+    syncManualFromMlHour();
+  }
 }
 
 function activateMaterialSubtab(trigger) {
@@ -145,6 +442,32 @@ function activateMaterialSubtab(trigger) {
     panel.hidden = !isActive;
     panel.classList.toggle("active", isActive);
   });
+}
+
+function activateMaterialListSubtab(trigger) {
+  const target = trigger.dataset.materialListSubtab;
+
+  materialListSubtabs.forEach((item) => {
+    const isActive = item === trigger;
+    item.setAttribute("aria-selected", String(isActive));
+    item.setAttribute("tabindex", isActive ? "0" : "-1");
+  });
+
+  materialListSubtabPanels.forEach((panel) => {
+    const isActive = panel.dataset.materialListPanel === target;
+    panel.hidden = !isActive;
+    panel.classList.toggle("active", isActive);
+  });
+}
+
+function moveMaterialListSubtabFocus(currentTrigger, direction) {
+  const currentIndex = materialListSubtabs.indexOf(currentTrigger);
+  if (currentIndex < 0) return;
+
+  const nextIndex = (currentIndex + direction + materialListSubtabs.length) % materialListSubtabs.length;
+  const nextTrigger = materialListSubtabs[nextIndex];
+  activateMaterialListSubtab(nextTrigger);
+  nextTrigger.focus();
 }
 
 function activateTechniqueSubtab(trigger) {
@@ -170,6 +493,36 @@ function moveTechniqueSubtabFocus(currentTrigger, direction) {
   const nextIndex = (currentIndex + direction + techniqueSubtabs.length) % techniqueSubtabs.length;
   const nextTrigger = techniqueSubtabs[nextIndex];
   activateTechniqueSubtab(nextTrigger);
+  nextTrigger.focus();
+}
+
+function activateDropSubtab(trigger) {
+  const target = trigger.dataset.dropSubtab;
+
+  dropSubtabs.forEach((item) => {
+    const isActive = item === trigger;
+    item.setAttribute("aria-selected", String(isActive));
+    item.setAttribute("tabindex", isActive ? "0" : "-1");
+  });
+
+  dropSubtabPanels.forEach((panel) => {
+    const isActive = panel.dataset.dropPanel === target;
+    panel.hidden = !isActive;
+    panel.classList.toggle("active", isActive);
+  });
+
+  if (target === "manual") {
+    stopDropCamera();
+  }
+}
+
+function moveDropSubtabFocus(currentTrigger, direction) {
+  const currentIndex = dropSubtabs.indexOf(currentTrigger);
+  if (currentIndex < 0) return;
+
+  const nextIndex = (currentIndex + direction + dropSubtabs.length) % dropSubtabs.length;
+  const nextTrigger = dropSubtabs[nextIndex];
+  activateDropSubtab(nextTrigger);
   nextTrigger.focus();
 }
 
@@ -213,19 +566,41 @@ function toggleDocumentNote() {
   }
 }
 
+function openMaterialChecklistPanel() {
+  if (!documentMaterialTrigger || !documentMaterialPanel) return;
+  documentMaterialPanel.hidden = false;
+  documentMaterialTrigger.setAttribute("aria-expanded", "true");
+}
+
+function closeMaterialChecklistPanel() {
+  if (!documentMaterialTrigger || !documentMaterialPanel) return;
+  documentMaterialPanel.hidden = true;
+  documentMaterialTrigger.setAttribute("aria-expanded", "false");
+}
+
+function toggleMaterialChecklistPanel() {
+  if (documentMaterialPanel?.hidden) {
+    openMaterialChecklistPanel();
+  } else {
+    closeMaterialChecklistPanel();
+  }
+}
+
 function openHashTab() {
   const aliases = {
     avaliacao: "indicacoes",
     plano: "prescricao",
     checklist: "documentos",
+    "material-checklist": "documentos",
     monitoramento: "documentos",
-    cuidador: "contato",
+    cuidador: "orientacoes-cuidador",
   };
   const rawHash = window.location.hash.replace("#", "");
   const target = aliases[rawHash] || rawHash || "boas-vindas";
   const tab = tabs.find((item) => item.dataset.tab === target);
-  if (tab) activateTab(tab);
+  if (tab) activateTab(tab, { scrollToPanel: Boolean(rawHash) });
   if (rawHash === "checklist") openDocumentChecklist();
+  if (rawHash === "material-checklist") openMaterialChecklistPanel();
 }
 
 function readChecklist() {
@@ -772,7 +1147,8 @@ const prescriptionData = {
     dose: "Bolus SC: 2-3mg a cada 4 horas; infusão contínua: 10-20mg/dia, com ajuste individualizado",
     dilution:
       "Preferir soro fisiológico 0,9%; diluir a dose prescrita em SF 0,9% conforme volume planejado",
-    time: "Bolus ou infusão contínua; velocidade usual entre 20-100mL/h, sem exceder 100mL/h",
+    time:
+      "Bolus ou infusão contínua; velocidade usual entre 20-100mL/h, equivalente a aproximadamente 7-33 gotas/min em equipo de macrogotas, sem exceder 100mL/h",
     minVolume: "",
     comments:
       "Não existe dose máxima definida. Iniciar com doses menores em idosos, pacientes frágeis ou com doença renal.",
@@ -826,7 +1202,8 @@ const prescriptionData = {
     dilution: "SF 0,9% 5mL para bolus; em CSCI, ajustar volume final conforme protocolo local e dispositivo disponível",
     time: "Bolus ou infusão subcutânea contínua, geralmente em 24h",
     minVolume: "",
-    comments: "Pode causar irritação local. Velocidade de infusão de 0,5mL/h a 20mL/h.",
+    comments:
+      "Pode causar irritação local. Velocidade de infusão de 0,5mL/h a 20mL/h, equivalente a aproximadamente 0,2-7 gotas/min em equipo de macrogotas.",
     reference: "6, 14, 15, 17",
   },
   sf: {
@@ -835,7 +1212,7 @@ const prescriptionData = {
     time: "Infusão contínua conforme prescrição e tolerância local",
     minVolume: "",
     comments:
-      "Volume de infusão máximo 62,5mL/h. Considerar o limite de volume conforme o sítio de punção escolhido.",
+      "Volume de infusão máximo 62,5mL/h, equivalente a aproximadamente 21 gotas/min em equipo de macrogotas. Considerar o limite de volume conforme o sítio de punção escolhido.",
     reference: "6, 7, 8",
   },
 };
@@ -935,13 +1312,56 @@ function selectedPrescriptionItems() {
 }
 
 function syncPrescriptionOptions() {
-  const selected = selectedPrescriptionItems();
-  prescriptionItemControls.forEach((control) => {
-    Array.from(control.options).forEach((option) => {
-      option.disabled =
-        Boolean(option.value) && option.value !== control.value && selected.includes(option.value);
-    });
+  prescriptionItemControls = Array.from(document.querySelectorAll(".prescription-item"));
+}
+
+function prescriptionOptionMarkup() {
+  return `
+    <option value="">Nenhum item</option>
+    <option value="morfina">Morfina</option>
+    <option value="escopolamina">Escopolamina</option>
+    <option value="clorpromazina">Clorpromazina</option>
+    <option value="dipirona">Dipirona</option>
+    <option value="dexametasona">Dexametasona</option>
+    <option value="haloperidol">Haloperidol</option>
+    <option value="midazolam">Midazolam</option>
+    <option value="sf">Soro fisiológico 0,9% (SF)</option>
+  `;
+}
+
+function refreshPrescriptionItemLabels() {
+  prescriptionItemControls.forEach((control, index) => {
+    const label = control.closest(".form-row");
+    const labelText = label?.querySelector("span");
+    if (labelText) labelText.textContent = `Item ${index + 1}`;
   });
+}
+
+function bindPrescriptionItem(control) {
+  control.addEventListener("change", () => {
+    syncPrescriptionOptions();
+    generatePrescription();
+  });
+}
+
+function addPrescriptionItem() {
+  if (!prescriptionItemsContainer) return;
+
+  const label = document.createElement("label");
+  label.className = "form-row";
+  label.innerHTML = `
+    <span>Item ${prescriptionItemControls.length + 1}</span>
+    <select class="prescription-item">
+      ${prescriptionOptionMarkup()}
+    </select>
+  `;
+
+  prescriptionItemsContainer.append(label);
+  const control = label.querySelector(".prescription-item");
+  prescriptionItemControls.push(control);
+  bindPrescriptionItem(control);
+  refreshPrescriptionItemLabels();
+  control.focus();
 }
 
 function prescriptionCompatibilityLines(items) {
@@ -1020,7 +1440,7 @@ function generatePrescription() {
 }
 
 tabs.forEach((tab) => {
-  tab.addEventListener("click", () => activateTab(tab));
+  tab.addEventListener("click", () => activateTab(tab, { scrollToPanel: true }));
 });
 
 window.addEventListener("hashchange", openHashTab);
@@ -1033,6 +1453,10 @@ if (documentNoteTrigger) {
   documentNoteTrigger.addEventListener("click", toggleDocumentNote);
 }
 
+if (documentMaterialTrigger) {
+  documentMaterialTrigger.addEventListener("click", toggleMaterialChecklistPanel);
+}
+
 if (closeChecklistButton) {
   closeChecklistButton.addEventListener("click", closeDocumentChecklist);
 }
@@ -1041,22 +1465,26 @@ if (closeDocumentNoteButton) {
   closeDocumentNoteButton.addEventListener("click", closeDocumentNote);
 }
 
+if (closeMaterialChecklistPanelButton) {
+  closeMaterialChecklistPanelButton.addEventListener("click", closeMaterialChecklistPanel);
+}
+
 [compatItemA, compatItemB].forEach((control) => {
   control.addEventListener("change", renderCompatibilityResult);
 });
 
-prescriptionItemControls.forEach((control) => {
-  control.addEventListener("change", () => {
-    syncPrescriptionOptions();
-    generatePrescription();
-  });
-});
+prescriptionItemControls.forEach(bindPrescriptionItem);
+
+if (addPrescriptionItemButton) {
+  addPrescriptionItemButton.addEventListener("click", addPrescriptionItem);
+}
 
 document.querySelector("#clearPrescription").addEventListener("click", () => {
   prescriptionItemControls.forEach((control) => {
     control.value = "";
   });
   syncPrescriptionOptions();
+  refreshPrescriptionItemLabels();
   punctureHighlight.className = "status-panel prescription-highlight";
   punctureHighlight.innerHTML = `
     <h2>Quantidade de hipodermóclises sugerida:</h2>
@@ -1064,6 +1492,38 @@ document.querySelector("#clearPrescription").addEventListener("click", () => {
   `;
   punctureGroups.innerHTML = "";
 });
+
+if (startDropCameraButton) {
+  startDropCameraButton.addEventListener("click", startDropCamera);
+}
+
+if (stopDropCameraButton) {
+  stopDropCameraButton.addEventListener("click", stopDropCamera);
+}
+
+if (startAutoDropCounterButton) {
+  startAutoDropCounterButton.addEventListener("click", startAutoDropCounter);
+}
+
+if (stopAutoDropCounterButton) {
+  stopAutoDropCounterButton.addEventListener("click", stopAutoDropCounter);
+}
+
+if (recordDropButton) {
+  recordDropButton.addEventListener("click", recordDrop);
+}
+
+if (resetDropCounterButton) {
+  resetDropCounterButton.addEventListener("click", resetDropCounter);
+}
+
+if (manualDropsMinute) {
+  manualDropsMinute.addEventListener("input", syncManualFromDropsMinute);
+}
+
+if (manualMlHour) {
+  manualMlHour.addEventListener("input", syncManualFromMlHour);
+}
 
 checklistItems.forEach((item) => {
   item.addEventListener("change", () => {
@@ -1081,6 +1541,34 @@ materialChecklistItems.forEach((item) => {
 
 materialSubtabs.forEach((trigger) => {
   trigger.addEventListener("click", () => activateMaterialSubtab(trigger));
+});
+
+materialListSubtabs.forEach((trigger) => {
+  trigger.addEventListener("click", () => activateMaterialListSubtab(trigger));
+  trigger.addEventListener("keydown", (event) => {
+    if (event.key === "ArrowRight" || event.key === "ArrowDown") {
+      event.preventDefault();
+      moveMaterialListSubtabFocus(trigger, 1);
+    }
+
+    if (event.key === "ArrowLeft" || event.key === "ArrowUp") {
+      event.preventDefault();
+      moveMaterialListSubtabFocus(trigger, -1);
+    }
+
+    if (event.key === "Home") {
+      event.preventDefault();
+      activateMaterialListSubtab(materialListSubtabs[0]);
+      materialListSubtabs[0].focus();
+    }
+
+    if (event.key === "End") {
+      event.preventDefault();
+      const lastTrigger = materialListSubtabs[materialListSubtabs.length - 1];
+      activateMaterialListSubtab(lastTrigger);
+      lastTrigger.focus();
+    }
+  });
 });
 
 techniqueSubtabs.forEach((trigger) => {
@@ -1106,6 +1594,34 @@ techniqueSubtabs.forEach((trigger) => {
       event.preventDefault();
       const lastTrigger = techniqueSubtabs[techniqueSubtabs.length - 1];
       activateTechniqueSubtab(lastTrigger);
+      lastTrigger.focus();
+    }
+  });
+});
+
+dropSubtabs.forEach((trigger) => {
+  trigger.addEventListener("click", () => activateDropSubtab(trigger));
+  trigger.addEventListener("keydown", (event) => {
+    if (event.key === "ArrowRight" || event.key === "ArrowDown") {
+      event.preventDefault();
+      moveDropSubtabFocus(trigger, 1);
+    }
+
+    if (event.key === "ArrowLeft" || event.key === "ArrowUp") {
+      event.preventDefault();
+      moveDropSubtabFocus(trigger, -1);
+    }
+
+    if (event.key === "Home") {
+      event.preventDefault();
+      activateDropSubtab(dropSubtabs[0]);
+      dropSubtabs[0].focus();
+    }
+
+    if (event.key === "End") {
+      event.preventDefault();
+      const lastTrigger = dropSubtabs[dropSubtabs.length - 1];
+      activateDropSubtab(lastTrigger);
       lastTrigger.focus();
     }
   });

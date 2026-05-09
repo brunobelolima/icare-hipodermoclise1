@@ -378,12 +378,18 @@ h1 {
   aspect-ratio: 16 / 9;
 }
 
-.video-frame iframe {
+.video-frame iframe,
+.video-frame video {
   position: absolute;
   inset: 0;
   width: 100%;
   height: 100%;
   border: 0;
+}
+
+.video-frame video {
+  background: #082f49;
+  object-fit: contain;
 }
 
 .technique-image {
@@ -599,6 +605,106 @@ li {
 
 .puncture-card li strong {
   color: var(--ink);
+}
+
+.drop-counter-grid {
+  align-items: start;
+}
+
+.camera-frame {
+  position: relative;
+  overflow: hidden;
+  aspect-ratio: 4 / 3;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: #0f172a;
+}
+
+.camera-frame video,
+.camera-placeholder {
+  position: absolute;
+  inset: 0;
+}
+
+.camera-frame video {
+  display: none;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.camera-frame video.active {
+  display: block;
+}
+
+.camera-placeholder {
+  display: grid;
+  place-items: center;
+  color: #e0f2fe;
+  font-weight: 800;
+  line-height: 1.4;
+  padding: 20px;
+  text-align: center;
+}
+
+.camera-placeholder[hidden] {
+  display: none;
+}
+
+.drop-tap-button {
+  min-width: 190px;
+  min-height: 58px;
+  font-size: 1.05rem;
+}
+
+.drop-counter-status {
+  margin: 0;
+  border-radius: 8px;
+  background: var(--surface-2);
+  color: var(--muted);
+  font-weight: 700;
+  line-height: 1.45;
+  padding: 12px;
+}
+
+.drop-counter-status.success {
+  background: #dcfce7;
+  color: #14532d;
+}
+
+.drop-counter-status.warning {
+  background: #fff7ed;
+  color: #7c2d12;
+}
+
+.drop-result-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.drop-result-card {
+  display: grid;
+  gap: 8px;
+  min-height: 96px;
+  align-content: center;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: #fbffff;
+  padding: 14px;
+}
+
+.drop-result-card span {
+  color: var(--muted);
+  font-size: 0.78rem;
+  font-weight: 900;
+  text-transform: uppercase;
+}
+
+.drop-result-card strong {
+  color: var(--accent-2);
+  font-size: 1.65rem;
+  line-height: 1;
 }
 
 .quick-list,
@@ -1196,17 +1302,22 @@ details.references summary {
 }
 
 .material-subtabs,
+.material-list-subtabs,
+.drop-subtabs,
 .technique-subtabs {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 8px;
 }
 
+.drop-subtabs,
 .technique-subtabs {
   align-items: stretch;
 }
 
 .material-subtab,
+.material-list-subtab,
+.drop-subtab,
 .technique-subtab {
   min-height: 48px;
   border: 1px solid var(--line);
@@ -1225,16 +1336,32 @@ details.references summary {
 }
 
 .material-subtab[aria-selected="true"],
+.material-list-subtab[aria-selected="true"],
+.drop-subtab[aria-selected="true"],
 .technique-subtab[aria-selected="true"] {
   background: var(--accent);
   color: white;
   box-shadow: 0 8px 18px rgba(8, 145, 178, 0.22);
 }
 
+.drop-subtab-panel[hidden] {
+  display: none;
+}
+
 .material-checklist-panels {
   display: grid;
   gap: 16px;
   align-items: start;
+}
+
+.material-list-grid {
+  display: grid;
+  gap: 16px;
+  align-items: start;
+}
+
+.material-list-grid [hidden] {
+  display: none;
 }
 
 .material-check-card[hidden] {
@@ -1358,7 +1485,10 @@ details.references summary {
   .tech-grid,
   .procedure-grid,
   .technique-subtabs,
+  .drop-subtabs,
   .material-subtabs,
+  .material-list-subtabs,
+  .material-list-grid,
   .drug-grid,
   .history-intro-grid,
   .indication-grid,
@@ -1400,7 +1530,8 @@ details.references summary {
     min-height: 52px;
   }
 
-  .technique-subtabs {
+  .technique-subtabs,
+  .drop-subtabs {
     position: sticky;
     top: 8px;
     z-index: 3;
@@ -1412,7 +1543,8 @@ details.references summary {
     box-shadow: 0 8px 22px rgba(15, 23, 42, 0.08);
   }
 
-  .technique-subtab {
+  .technique-subtab,
+  .drop-subtab {
     min-height: 56px;
     padding: 10px 12px;
   }
@@ -1464,7 +1596,9 @@ details.references summary {
   .secondary-button,
   .access-gate-actions,
   .document-tab-trigger,
+  .drop-subtab,
   .material-subtab,
+  .material-list-subtab,
   .technique-subtab {
     width: 100%;
   }
@@ -1473,13 +1607,22 @@ details.references summary {
     grid-template-columns: 1fr;
   }
 
-  .technique-subtabs {
+  .technique-subtabs,
+  .drop-subtabs {
     gap: 10px;
   }
 
   .procedure-variant,
   .material-check-card {
     padding: 12px;
+  }
+
+  .drop-result-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .drop-tap-button {
+    width: 100%;
   }
 
   .procedure-steps li {
