@@ -229,6 +229,7 @@ h1 {
 
 .tab-panel {
   display: none;
+  scroll-margin-top: 12px;
   animation: rise-in 260ms ease-out both;
 }
 
@@ -320,7 +321,7 @@ h1 {
 
 .drug-grid {
   display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
+  grid-template-columns: 1fr;
   gap: 16px;
 }
 
@@ -608,13 +609,32 @@ li {
 }
 
 .drop-counter-grid {
+  grid-template-columns: 1fr;
   align-items: start;
+}
+
+.drop-counter-grid .card {
+  width: 100%;
+}
+
+.automatic-drop-layout {
+  display: grid;
+  grid-template-columns: minmax(320px, 0.85fr) minmax(280px, 1.15fr);
+  gap: 16px;
+  align-items: start;
+}
+
+.automatic-drop-controls {
+  display: grid;
+  gap: 12px;
+  align-content: start;
 }
 
 .camera-frame {
   position: relative;
   overflow: hidden;
-  aspect-ratio: 4 / 3;
+  aspect-ratio: 16 / 9;
+  min-height: 190px;
   border: 1px solid var(--line);
   border-radius: 8px;
   background: #0f172a;
@@ -649,6 +669,13 @@ li {
 
 .camera-placeholder[hidden] {
   display: none;
+}
+
+.drop-camera-hint {
+  margin: 0;
+  color: var(--muted);
+  font-size: 0.92rem;
+  line-height: 1.45;
 }
 
 .drop-tap-button {
@@ -932,7 +959,7 @@ button:focus-visible {
 
 .field-grid {
   display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
+  grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: 10px;
 }
 
@@ -968,6 +995,45 @@ button:focus-visible {
 .field span {
   color: var(--ink);
   line-height: 1.45;
+}
+
+.acronym-panel {
+  background: #f8fafc;
+  gap: 8px;
+  padding: 12px;
+}
+
+.acronym-panel h3 {
+  margin: 0;
+  font-size: 1rem;
+}
+
+.acronym-list {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 8px;
+  margin: 0;
+}
+
+.acronym-list div {
+  display: grid;
+  gap: 2px;
+  min-width: 0;
+  border-left: 2px solid var(--accent);
+  padding-left: 8px;
+}
+
+.acronym-list dt {
+  color: var(--ink);
+  font-size: 0.82rem;
+  font-weight: 900;
+}
+
+.acronym-list dd {
+  margin: 0;
+  color: var(--muted);
+  font-size: 0.82rem;
+  line-height: 1.28;
 }
 
 .tag {
@@ -1144,6 +1210,7 @@ details.references summary {
 }
 
 .reference-list {
+  list-style: decimal;
   margin: 12px 0 0;
   padding-left: 22px;
 }
@@ -1530,6 +1597,15 @@ details.references summary {
     min-height: 52px;
   }
 
+  .automatic-drop-layout {
+    grid-template-columns: 1fr;
+  }
+
+  .camera-frame {
+    aspect-ratio: 16 / 9;
+    min-height: 240px;
+  }
+
   .technique-subtabs,
   .drop-subtabs {
     position: sticky;
@@ -1557,6 +1633,14 @@ details.references summary {
   .history-intro-grid p {
     display: block;
     min-height: auto;
+  }
+
+  .field-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .acronym-list {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 }
 
@@ -1607,6 +1691,10 @@ details.references summary {
     grid-template-columns: 1fr;
   }
 
+  .acronym-list {
+    grid-template-columns: 1fr;
+  }
+
   .technique-subtabs,
   .drop-subtabs {
     gap: 10px;
@@ -1619,6 +1707,10 @@ details.references summary {
 
   .drop-result-grid {
     grid-template-columns: 1fr;
+  }
+
+  .camera-frame {
+    min-height: 210px;
   }
 
   .drop-tap-button {

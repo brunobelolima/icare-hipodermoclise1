@@ -293,6 +293,17 @@
           <div class="card">
             <div class="card-content stack">
               <h2>Medicamentos e soluções</h2>
+              <section class="status-panel acronym-panel" aria-label="Legenda de siglas usadas na aba Medicamentos e soluções">
+                <h3>Legenda de siglas</h3>
+                <dl class="acronym-list">
+                  <div><dt>SC</dt><dd>Via subcutânea.</dd></div>
+                  <div><dt>SF 0,9%</dt><dd>Soro fisiológico 0,9%.</dd></div>
+                  <div><dt>CSCI</dt><dd>Infusão subcutânea contínua.</dd></div>
+                  <div><dt>mL/h</dt><dd>Mililitros por hora.</dd></div>
+                  <div><dt>gotas/min</dt><dd>Gotas por minuto em equipo de macrogotas.</dd></div>
+                  <div><dt>PVC</dt><dd>Policloreto de vinila.</dd></div>
+                </dl>
+              </section>
               <div class="drug-grid">
                 <section class="card">
                   <div class="card-content medicine-card">
@@ -417,7 +428,7 @@
                     </div>
                     <div class="clinical-note">
                       Volume de infusão máximo 62,5mL/h, equivalente a aproximadamente 21 gotas/min em equipo de macrogotas. Considerar o limite de volume conforme o
-                      sítio de punção escolhido.
+                      <a href="#puncture-site-image">sítio de punção</a> escolhido.
                     </div>
                   </div>
                 </section>
@@ -519,7 +530,7 @@
                   </div>
                   <div class="status-panel" id="compatInteractiveResult" aria-live="polite">
                     <h2>Compatível</h2>
-                    <p>Morfina + Escopolamina: compatibilidade provável por suporte indireto para opioides com hyoscine butilbrometo em contexto paliativo.</p>
+                    <p>Morfina + Escopolamina: compatibilidade provável por suporte indireto para opioides com escopolamina em contexto paliativo.<sup class="ref-mark">2,5</sup></p>
                   </div>
                 </div>
               </div>
@@ -534,108 +545,92 @@
                       <th>Par avaliado</th>
                       <th>Situação</th>
                       <th>Interpretação prática</th>
-                      <th>Referência</th>
                     </tr>
                   </thead>
                   <tbody>
                     <tr>
                       <td>Morfina + Escopolamina</td>
-                      <td><span class="status-pill ok">Compatibilidade provável</span></td>
-                      <td>Há suporte indireto para opioides com hyoscine butilbrometo em contexto paliativo.</td>
-                      <td>Dickman et al., 2017; Isherwood, Forsyth, & Wilson, 2021</td>
+                      <td><span class="status-pill ok">Compatível</span></td>
+                      <td>Há suporte indireto para opioides com escopolamina em contexto paliativo.<sup class="ref-mark">2,5</sup></td>
                     </tr>
                     <tr>
                       <td>Morfina + Midazolam</td>
-                      <td><span class="status-pill ok">Compatibilidade provável</span></td>
-                      <td>Uma das combinações CSCI mais comuns em cuidados paliativos; midazolam SC com opioide foi bem tolerado localmente.</td>
-                      <td>Dickman et al., 2017; Bottomley & Hanks, 1990</td>
+                      <td><span class="status-pill ok">Compatível</span></td>
+                      <td>Uma das combinações CSCI mais comuns em cuidados paliativos; midazolam SC com opioide foi bem tolerado localmente.<sup class="ref-mark">4,5</sup></td>
                     </tr>
                     <tr>
                       <td>Morfina + Haloperidol</td>
-                      <td><span class="status-pill ok">Compatibilidade provável</span></td>
-                      <td>Combinação frequente; há dados parenterais em SF 0,9% sem precipitação.</td>
-                      <td>Fusi-Schmidhauser, Caronzolo, & Gamondi, 2016; Dickman et al., 2017</td>
+                      <td><span class="status-pill ok">Compatível</span></td>
+                      <td>Combinação frequente; há dados parenterais em SF 0,9% sem precipitação.<sup class="ref-mark">3,5</sup></td>
                     </tr>
                     <tr>
                       <td>Morfina + Haloperidol + Midazolam</td>
-                      <td><span class="status-pill ok">Uso frequente em CSCI</span></td>
-                      <td>Combinação descrita como frequente em serviços de cuidados paliativos.</td>
-                      <td>Dickman et al., 2017; Fusi-Schmidhauser, Caronzolo, & Gamondi, 2016</td>
+                      <td><span class="status-pill ok">Compatível</span></td>
+                      <td>Combinação descrita como frequente em serviços de cuidados paliativos.<sup class="ref-mark">3,5</sup></td>
                     </tr>
                     <tr>
                       <td>Morfina + Clorpromazina</td>
-                      <td><span class="status-pill warn">Inferência</span></td>
+                      <td><span class="status-pill warn">Dados insuficientes</span></td>
                       <td>Aparece em coquetéis parenterais com morfina e haloperidol, mas o dado citado não é SC direto.</td>
-                      <td>Fusi-Schmidhauser, Caronzolo, & Gamondi, 2016</td>
                     </tr>
                     <tr>
                       <td>Escopolamina + Midazolam</td>
-                      <td><span class="status-pill ok">Compatibilidade provável</span></td>
-                      <td>Combinações com hioscina/escopolamina e midazolam são muito usadas em CSCI, inclusive associadas a opioides.</td>
-                      <td>Dickman et al., 2017; Isherwood, Forsyth, & Wilson, 2021</td>
+                      <td><span class="status-pill ok">Compatível</span></td>
+                      <td>Combinações com hioscina/escopolamina e midazolam são muito usadas em CSCI, inclusive associadas a opioides.<sup class="ref-mark">2,5</sup></td>
                     </tr>
                     <tr>
                       <td>Escopolamina + Haloperidol</td>
-                      <td><span class="status-pill ok">Compatibilidade com dado SC</span></td>
-                      <td>Hyoscine butilbrometo + haloperidol em SF 0,9% aparece em mistura ternária SC estável.</td>
-                      <td>Negro et al., 2010</td>
+                      <td><span class="status-pill ok">Compatível</span></td>
+                      <td>Escopolamina + haloperidol em SF 0,9% aparece em mistura ternária SC estável.<sup class="ref-mark">1</sup></td>
                     </tr>
                     <tr>
                       <td>Clorpromazina + Haloperidol</td>
-                      <td><span class="status-pill warn">Inferência</span></td>
+                      <td><span class="status-pill warn">Dados insuficientes</span></td>
                       <td>Sem precipitação em coquetel parenteral com morfina e haloperidol; não há dado SC direto para o par isolado.</td>
-                      <td>Fusi-Schmidhauser, Caronzolo, & Gamondi, 2016</td>
                     </tr>
                     <tr>
                       <td>Dexametasona + Morfina</td>
-                      <td><span class="status-pill warn">Sem dado direto no documento</span></td>
+                      <td><span class="status-pill warn">Dados insuficientes</span></td>
                       <td>Combinação usada na prática, mas a fonte destaca falta de apoio laboratorial formal para muitas associações.</td>
-                      <td>Ingielewicz et al., 2025; síntese do documento de compatibilidade</td>
                     </tr>
                     <tr>
                       <td>Dexametasona + Haloperidol</td>
-                      <td><span class="status-pill warn">Sem dado direto no documento</span></td>
+                      <td><span class="status-pill warn">Dados insuficientes</span></td>
                       <td>A dexametasona aparece como usada por via SC, mas não foi estudada nessas combinações específicas.</td>
-                      <td>Ingielewicz et al., 2025</td>
                     </tr>
                     <tr>
                       <td>Dexametasona + Midazolam</td>
-                      <td><span class="status-pill warn">Sem dado direto no documento</span></td>
+                      <td><span class="status-pill warn">Dados insuficientes</span></td>
                       <td>Não há detalhamento de compatibilidade em mistura com midazolam nas fontes citadas.</td>
-                      <td>Ingielewicz et al., 2025; síntese do documento de compatibilidade</td>
                     </tr>
                     <tr>
                       <td>Dipirona + qualquer um dos demais</td>
-                      <td><span class="status-pill bad">Zona cinzenta</span></td>
-                      <td>O documento informa lacuna específica para compatibilidade da dipirona nessas misturas.</td>
-                      <td>Síntese do documento de compatibilidade</td>
+                      <td><span class="status-pill warn">Dados insuficientes</span></td>
+                      <td>As fontes não apresentam dado direto de compatibilidade da dipirona nessas misturas.</td>
                     </tr>
                     <tr>
                       <td>SF 0,9% com as combinações citadas</td>
                       <td><span class="status-pill ok">Diluente preferencial nos dados</span></td>
-                      <td>As combinações com melhor suporte foram descritas em soro fisiológico 0,9%.</td>
-                      <td>Negro et al., 2010; Isherwood, Forsyth, & Wilson, 2021; Fusi-Schmidhauser, Caronzolo, & Gamondi, 2016</td>
+                      <td>As combinações com melhor suporte foram descritas em soro fisiológico 0,9%.<sup class="ref-mark">1,2,3</sup></td>
                     </tr>
                     <tr>
                       <td>Todos juntos na mesma seringa</td>
-                      <td><span class="status-pill bad">Sem respaldo direto</span></td>
+                      <td><span class="status-pill warn">Dados insuficientes</span></td>
                       <td>Não há estudo avaliando uma única mistura contendo morfina, escopolamina, clorpromazina, dipirona, dexametasona, haloperidol e midazolam em SF.</td>
-                      <td>Síntese do documento de compatibilidade</td>
                     </tr>
                   </tbody>
                 </table>
               </div>
               <details class="references">
                 <summary>Referências usadas nesta aba</summary>
-                <ul class="reference-list">
+                <ol class="reference-list">
                   <li><a href="https://pubmed.ncbi.nlm.nih.gov/20078209/" target="_blank" rel="noopener">Negro et al. (2010). Compatibility and stability of ternary admixtures of tramadol, haloperidol, and hyoscine N-butyl bromide.</a></li>
                   <li><a href="https://journals.sagepub.com/doi/10.1177/08258597211052798" target="_blank" rel="noopener">Isherwood, Forsyth, & Wilson (2021). Subcutaneous dihydrocodeine tartrate compatibility in syringe pump.</a></li>
                   <li><a href="https://pubmed.ncbi.nlm.nih.gov/27448404/" target="_blank" rel="noopener">Fusi-Schmidhauser, Caronzolo, & Gamondi (2016). Multidrug infusions in a Swiss palliative care unit.</a></li>
                   <li><a href="https://pubmed.ncbi.nlm.nih.gov/2384705/" target="_blank" rel="noopener">Bottomley, D., & Hanks, G. (1990). Subcutaneous midazolam infusion in palliative care.</a></li>
                   <li><a href="https://bmcpalliatcare.biomedcentral.com/articles/10.1186/s12904-017-0195-y" target="_blank" rel="noopener">Dickman et al. (2017). Drug combinations administered by continuous subcutaneous infusion requiring compatibility analysis.</a></li>
-                  <li><a href="https://link.springer.com/article/10.1007/s00520-025-09189-z" target="_blank" rel="noopener">Ingielewicz et al. (2025). Palliative patients who may benefit from intranasal delivery of symptomatic drugs.</a></li>
                   <li><a href="https://journals.sagepub.com/doi/10.1177/026921639200600206" target="_blank" rel="noopener">Johnson, I., & Patterson, S. (1992). Drugs used in combination in the syringe driver: a survey of hospice practice.</a></li>
-                </ul>
+                </ol>
               </details>
             </div>
           </div>
@@ -663,48 +658,6 @@
                   </label>
                   <label class="form-row">
                     <span>Item 2</span>
-                    <select class="prescription-item">
-                      <option value="">Nenhum item</option>
-                      <option value="morfina">Morfina</option>
-                      <option value="escopolamina">Escopolamina</option>
-                      <option value="clorpromazina">Clorpromazina</option>
-                      <option value="dipirona">Dipirona</option>
-                      <option value="dexametasona">Dexametasona</option>
-                      <option value="haloperidol">Haloperidol</option>
-                      <option value="midazolam">Midazolam</option>
-                      <option value="sf">Soro fisiológico 0,9% (SF)</option>
-                    </select>
-                  </label>
-                  <label class="form-row">
-                    <span>Item 3</span>
-                    <select class="prescription-item">
-                      <option value="">Nenhum item</option>
-                      <option value="morfina">Morfina</option>
-                      <option value="escopolamina">Escopolamina</option>
-                      <option value="clorpromazina">Clorpromazina</option>
-                      <option value="dipirona">Dipirona</option>
-                      <option value="dexametasona">Dexametasona</option>
-                      <option value="haloperidol">Haloperidol</option>
-                      <option value="midazolam">Midazolam</option>
-                      <option value="sf">Soro fisiológico 0,9% (SF)</option>
-                    </select>
-                  </label>
-                  <label class="form-row">
-                    <span>Item 4</span>
-                    <select class="prescription-item">
-                      <option value="">Nenhum item</option>
-                      <option value="morfina">Morfina</option>
-                      <option value="escopolamina">Escopolamina</option>
-                      <option value="clorpromazina">Clorpromazina</option>
-                      <option value="dipirona">Dipirona</option>
-                      <option value="dexametasona">Dexametasona</option>
-                      <option value="haloperidol">Haloperidol</option>
-                      <option value="midazolam">Midazolam</option>
-                      <option value="sf">Soro fisiológico 0,9% (SF)</option>
-                    </select>
-                  </label>
-                  <label class="form-row">
-                    <span>Item 5</span>
                     <select class="prescription-item">
                       <option value="">Nenhum item</option>
                       <option value="morfina">Morfina</option>
@@ -781,27 +734,38 @@
                 <div class="card">
                   <div class="card-content stack">
                     <h2>Contagem automática</h2>
-                    <div class="camera-frame">
-                      <video id="dropCameraPreview" playsinline muted></video>
-                      <div class="camera-placeholder" id="dropCameraPlaceholder">
-                        Posicione a câmera do celular para visualizar a câmara de gotejamento.
+                    <div class="automatic-drop-layout">
+                      <div class="camera-frame">
+                        <video id="dropCameraPreview" playsinline muted></video>
+                        <div class="camera-placeholder" id="dropCameraPlaceholder">
+                          Posicione a câmera do celular para visualizar a câmara de gotejamento.
+                        </div>
+                      </div>
+                      <div class="automatic-drop-controls">
+                        <p class="drop-camera-hint">
+                          No celular, permita o acesso à câmera quando o navegador solicitar. Em sites publicados,
+                          o acesso à câmera exige conexão segura.
+                        </p>
+                        <div class="copy-actions">
+                          <button class="primary-button" id="startDropCamera" type="button">Iniciar câmera</button>
+                          <button class="secondary-button" id="stopDropCamera" type="button" disabled>Parar câmera</button>
+                        </div>
+                        <div class="copy-actions">
+                          <button class="secondary-button" id="startAutoDropCounter" type="button">
+                            Iniciar contagem automática
+                          </button>
+                          <button class="secondary-button" id="stopAutoDropCounter" type="button" disabled>
+                            Parar contagem automática
+                          </button>
+                          <button class="secondary-button" id="resetAutoDropCounter" type="button">
+                            Zerar contador
+                          </button>
+                        </div>
+                        <p class="drop-counter-status" id="dropCameraStatus" aria-live="polite">
+                          A câmera será usada apenas para visualização durante a contagem.
+                        </p>
                       </div>
                     </div>
-                    <div class="copy-actions">
-                      <button class="primary-button" id="startDropCamera" type="button">Iniciar câmera</button>
-                      <button class="secondary-button" id="stopDropCamera" type="button" disabled>Parar câmera</button>
-                    </div>
-                    <div class="copy-actions">
-                      <button class="secondary-button" id="startAutoDropCounter" type="button">
-                        Iniciar contagem automática
-                      </button>
-                      <button class="secondary-button" id="stopAutoDropCounter" type="button" disabled>
-                        Parar contagem automática
-                      </button>
-                    </div>
-                    <p class="drop-counter-status" id="dropCameraStatus" aria-live="polite">
-                      A câmera será usada apenas para visualização durante a contagem.
-                    </p>
                   </div>
                 </div>
               </div>
@@ -891,14 +855,14 @@
                   </div>
                 </div>
               </div>
-              <figure class="card technique-image">
+              <figure class="card technique-image" id="puncture-site-image">
+                <figcaption>As flechas vermelhas indicam o sentido da agulha.</figcaption>
                 <img
                   src="https://drive.google.com/thumbnail?id=18VkbhEOMJp91vutK4CKA7lR1ehqpirCs&sz=w1400"
                   alt="Imagem de apoio para técnica de punção subcutânea"
                   width="1440"
                   height="900"
                 />
-                <figcaption>As flechas vermelhas indicam o sentido da agulha.</figcaption>
               </figure>
             </div>
             <div class="card">
@@ -941,39 +905,39 @@
                     <ol class="procedure-steps">
                       <li>
                         <strong>Explique e prepare.</strong>
-                        <span>Oriente paciente e familiares, higienize as mãos, separe o material em bandeja e calce luvas de procedimento.</span>
+                        <span>Oriente paciente e familiares, higienize as mãos, separe o material em bandeja e calce luvas de procedimento.<sup class="ref-mark">1</sup></span>
                       </li>
                       <li>
                         <strong>Preencha o circuito.</strong>
-                        <span>Preencha o intermediário do scalp com 1mL de soro fisiológico 0,9% e mantenha a seringa acoplada à via introdutória.</span>
+                        <span>Preencha o intermediário do scalp com 1mL de soro fisiológico 0,9% e mantenha a seringa acoplada à via introdutória.<sup class="ref-mark">1</sup></span>
                       </li>
                       <li>
                         <strong>Escolha o sítio.</strong>
-                        <span>Avalie tecido subcutâneo, conforto, volume previsto e contraindicações locais. Se houver pelos, use tricotomia ou tesoura; evite lâmina.</span>
+                        <span>Avalie tecido subcutâneo, conforto, volume previsto e contraindicações locais. Se houver pelos, use tricotomia ou tesoura; evite lâmina.<sup class="ref-mark">1,3</sup></span>
                       </li>
                       <li>
                         <strong>Faça antissepsia.</strong>
-                        <span>Realize antissepsia da pele com álcool 70% ou clorexidina e aguarde a secagem antes da punção.</span>
+                        <span>Realize antissepsia da pele com álcool 70% ou clorexidina e aguarde a secagem antes da punção.<sup class="ref-mark">1</sup></span>
                       </li>
                       <li>
                         <strong>Puncione com prega cutânea.</strong>
-                        <span>Tracione a pele e introduza o scalp com bisel voltado para cima, em direção centrípeta, acompanhando a drenagem linfática local.</span>
+                        <span>Tracione a pele e introduza o scalp com bisel voltado para cima, em direção centrípeta, acompanhando a drenagem linfática local.<sup class="ref-mark">1</sup></span>
                       </li>
                       <li>
                         <strong>Ajuste o ângulo.</strong>
-                        <span>Use 45 graus na maioria dos pacientes; em pessoas emagrecidas, reduza para cerca de 30 graus.</span>
+                        <span>Use 45 graus na maioria dos pacientes; em pessoas emagrecidas, reduza para cerca de 30 graus.<sup class="ref-mark">1,2,3</sup></span>
                       </li>
                       <li>
                         <strong>Aspire e confirme.</strong>
-                        <span>A agulha deve parecer livre no subcutâneo. Aspire para excluir vaso; se houver retorno sanguíneo, retire e repuncione a pelo menos 5cm.</span>
+                        <span>A agulha deve parecer livre no subcutâneo. Aspire para excluir vaso; se houver retorno sanguíneo, retire e repuncione a pelo menos 5cm.<sup class="ref-mark">1</sup></span>
                       </li>
                       <li>
                         <strong>Fixe e identifique.</strong>
-                        <span>Enrole o intermediário e fixe com cobertura estéril transparente. Identifique data, horário, profissional e medicação exclusiva, se houver.</span>
+                        <span>Enrole o intermediário e fixe com cobertura estéril transparente. Identifique data, horário, profissional e medicação exclusiva, se houver.<sup class="ref-mark">1</sup></span>
                       </li>
                       <li>
                         <strong>Administre e registre.</strong>
-                        <span>Administre bolus ou conecte a solução. Após bolus, injete 1mL de SF 0,9% e registre tipo, calibre, sítio, curativo e intercorrências.</span>
+                        <span>Administre bolus ou conecte a solução. Após bolus, injete 1mL de SF 0,9% e registre tipo, calibre, sítio, curativo e intercorrências.<sup class="ref-mark">1</sup></span>
                       </li>
                     </ol>
                   </section>
@@ -989,39 +953,39 @@
                     <ol class="procedure-steps">
                       <li>
                         <strong>Explique e prepare.</strong>
-                        <span>Oriente paciente e familiares, higienize as mãos, organize bandeja, luvas, cateter, extensor ou equipo de duas vias, se necessário, e curativo transparente.</span>
+                        <span>Oriente paciente e familiares, higienize as mãos, organize bandeja, luvas, cateter, extensor ou equipo de duas vias, se necessário, e curativo transparente.<sup class="ref-mark">1</sup></span>
                       </li>
                       <li>
                         <strong>Preencha o sistema.</strong>
-                        <span>Preencha cateter, extensor e conexões com soro fisiológico 0,9% antes da inserção para evitar ar e manter o lúmen pérvio.</span>
+                        <span>Preencha cateter, extensor e conexões com soro fisiológico 0,9% antes da inserção para evitar ar e manter o lúmen pérvio.<sup class="ref-mark">1</sup></span>
                       </li>
                       <li>
                         <strong>Escolha o sítio.</strong>
-                        <span>Priorize área com subcutâneo suficiente, sem edema, lesão, radioterapia prévia, cicatriz importante, proeminência óssea, estoma ou região pós-mastectomia.</span>
+                        <span>Priorize área com subcutâneo suficiente, sem edema, lesão, radioterapia prévia, cicatriz importante, proeminência óssea, estoma ou região pós-mastectomia.<sup class="ref-mark">1,2,3</sup></span>
                       </li>
                       <li>
                         <strong>Faça antissepsia.</strong>
-                        <span>Realize antissepsia com álcool 70% ou clorexidina e aguarde a secagem completa.</span>
+                        <span>Realize antissepsia com álcool 70% ou clorexidina e aguarde a secagem completa.<sup class="ref-mark">1</sup></span>
                       </li>
                       <li>
                         <strong>Introduza o cateter.</strong>
-                        <span>Faça prega cutânea e introduza o cateter no subcutâneo com ângulo baixo, em geral 30 a 45 graus, ajustando à espessura do tecido.</span>
+                        <span>Faça prega cutânea e introduza o cateter no subcutâneo com ângulo baixo, em geral 30 a 45 graus, ajustando à espessura do tecido.<sup class="ref-mark">1,2,3</sup></span>
                       </li>
                       <li>
                         <strong>Avance a cânula e retire o mandril.</strong>
-                        <span>Após acessar o subcutâneo, avance apenas a cânula flexível e retire a agulha introdutora, descartando-a em recipiente para perfurocortantes.</span>
+                        <span>Após acessar o subcutâneo, avance apenas a cânula flexível e retire a agulha introdutora, descartando-a em recipiente para perfurocortantes.<sup class="ref-mark">1</sup></span>
                       </li>
                       <li>
                         <strong>Conecte e teste.</strong>
-                        <span>Conecte o extensor ou equipo preparado, aspire com cautela quando aplicável e observe se há dor, resistência, sangramento ou extravasamento.</span>
+                        <span>Conecte o extensor ou equipo preparado, aspire com cautela quando aplicável e observe se há dor, resistência, sangramento ou extravasamento.<sup class="ref-mark">1</sup></span>
                       </li>
                       <li>
                         <strong>Fixe sem tração.</strong>
-                        <span>Fixe a cânula e o circuito com cobertura estéril transparente, evitando dobras, pressão excessiva e tração sobre o ponto de inserção.</span>
+                        <span>Fixe a cânula e o circuito com cobertura estéril transparente, evitando dobras, pressão excessiva e tração sobre o ponto de inserção.<sup class="ref-mark">1</sup></span>
                       </li>
                       <li>
                         <strong>Administre e registre.</strong>
-                        <span>Administre bolus ou conecte a solução conforme prescrição, lave o circuito com SF 0,9% após bolus e registre tipo, calibre, sítio, curativo e intercorrências.</span>
+                        <span>Administre bolus ou conecte a solução conforme prescrição, lave o circuito com SF 0,9% após bolus e registre tipo, calibre, sítio, curativo e intercorrências.<sup class="ref-mark">1</sup></span>
                       </li>
                     </ol>
                   </section>
@@ -1031,20 +995,20 @@
             <section class="status-panel warning technique-alert">
               <h2>Pontos de segurança</h2>
               <ul class="quick-list">
-                <li>Não rotacione o cateter em 180 graus após a punção; essa prática pode traumatizar o tecido.</li>
-                <li>Em scalp, evite dispositivo com retração automática da agulha, pois pode favorecer retirada acidental e lesão por pressão relacionada a dispositivo.</li>
-                <li>Use cobertura transparente sempre que possível para facilitar monitoramento de edema, rubor, dor, secreção ou deslocamento.</li>
+                <li>Não rotacione o cateter em 180 graus após a punção; essa prática pode traumatizar o tecido.<sup class="ref-mark">1</sup></li>
+                <li>Em scalp, evite dispositivo com retração automática da agulha, pois pode favorecer retirada acidental e lesão por pressão relacionada a dispositivo.<sup class="ref-mark">1</sup></li>
+                <li>Use cobertura transparente sempre que possível para facilitar monitoramento de edema, rubor, dor, secreção ou deslocamento.<sup class="ref-mark">1,2,3</sup></li>
               </ul>
             </section>
             <div class="card">
               <div class="card-content stack">
                 <details class="references">
                   <summary>Referências usadas nesta aba</summary>
-                  <ul class="reference-list">
+                  <ol class="reference-list">
                     <li><a href="https://drive.google.com/file/d/1PtxNlxYwLHTiw74_ZzsYXo2U-NJFa3si/view?usp=sharing" target="_blank" rel="noopener">Manual Hipodermóclise SBGG 2025. O uso da via subcutânea na geriatria e em cuidados paliativos. 3ª edição.</a></li>
                     <li><a href="https://www.aafp.org/pubs/afp/issues/2001/1101/p1575.html" target="_blank" rel="noopener">Sasson M, Shvartzman P. Hypodermoclysis: an alternative infusion technique. Am Fam Physician. 2001.</a></li>
                     <li><a href="https://revistaseletronicas.pucrs.br/pajar/article/view/32559" target="_blank" rel="noopener">Vasconcellos CF, Milão D. Hipodermóclise: alternativa para infusão de medicamentos em pacientes idosos e pacientes em cuidados paliativos. PAJAR. 2019.</a></li>
-                  </ul>
+                  </ol>
                 </details>
               </div>
             </div>
@@ -1091,14 +1055,14 @@
                   >
                     <h3>Cateter agulhado (scalp)</h3>
                     <ul class="quick-list">
-                      <li>Bandeja e luvas de procedimento.</li>
-                      <li>Solução antisséptica: álcool 70% ou clorexidina.</li>
-                      <li>Gaze não estéril ou bola de algodão.</li>
-                      <li>Cateter agulhado, tipo scalp 21 a 25G.</li>
-                      <li>Agulha 40 x 12mm para aspiração de medicação.</li>
-                      <li>Seringa de 1mL e flaconete de 10mL de soro fisiológico 0,9%.</li>
-                      <li>Cobertura estéril transparente para o sítio de punção.</li>
-                      <li>Esparadrapo ou fita micropore para fixação do circuito e identificação.</li>
+                      <li>Bandeja e luvas de procedimento<sup class="ref-mark">1</sup>.</li>
+                      <li>Solução antisséptica: álcool 70% ou clorexidina<sup class="ref-mark">1</sup>.</li>
+                      <li>Gaze não estéril ou bola de algodão<sup class="ref-mark">1</sup>.</li>
+                      <li>Cateter agulhado, tipo scalp 21 a 25G<sup class="ref-mark">1,2,3</sup>.</li>
+                      <li>Agulha 40 x 12mm para aspiração de medicação<sup class="ref-mark">1</sup>.</li>
+                      <li>Seringa de 1mL e flaconete de 10mL de soro fisiológico 0,9%<sup class="ref-mark">1</sup>.</li>
+                      <li>Cobertura estéril transparente para o sítio de punção<sup class="ref-mark">1,3</sup>.</li>
+                      <li>Esparadrapo ou fita micropore para fixação do circuito e identificação<sup class="ref-mark">1,3</sup>.</li>
                     </ul>
                   </section>
                   <section
@@ -1111,15 +1075,15 @@
                   >
                     <h3>Cateter não agulhado (jelco ou íntima)</h3>
                     <ul class="quick-list">
-                      <li>Bandeja e luvas de procedimento.</li>
-                      <li>Solução antisséptica: álcool 70% ou clorexidina.</li>
-                      <li>Gaze não estéril ou bola de algodão.</li>
-                      <li>Cateter não agulhado, tipo jelco ou íntima 22 a 24G.</li>
-                      <li>Agulha 40 x 12mm para aspiração de medicação.</li>
-                      <li>Seringa de 10mL e flaconete de 10mL de soro fisiológico 0,9%.</li>
-                      <li>Equipo de duas vias quando for utilizado jelco.</li>
-                      <li>Cobertura estéril transparente para o sítio de punção.</li>
-                      <li>Esparadrapo ou fita micropore para fixação do circuito e identificação.</li>
+                      <li>Bandeja e luvas de procedimento<sup class="ref-mark">1</sup>.</li>
+                      <li>Solução antisséptica: álcool 70% ou clorexidina<sup class="ref-mark">1</sup>.</li>
+                      <li>Gaze não estéril ou bola de algodão<sup class="ref-mark">1</sup>.</li>
+                      <li>Cateter não agulhado, tipo jelco ou íntima 22 a 24G<sup class="ref-mark">1,3</sup>.</li>
+                      <li>Agulha 40 x 12mm para aspiração de medicação<sup class="ref-mark">1</sup>.</li>
+                      <li>Seringa de 10mL e flaconete de 10mL de soro fisiológico 0,9%<sup class="ref-mark">1</sup>.</li>
+                      <li>Equipo de duas vias quando for utilizado jelco<sup class="ref-mark">1</sup>.</li>
+                      <li>Cobertura estéril transparente para o sítio de punção<sup class="ref-mark">1,3</sup>.</li>
+                      <li>Esparadrapo ou fita micropore para fixação do circuito e identificação<sup class="ref-mark">1,3</sup>.</li>
                     </ul>
                   </section>
                 </div>
@@ -1128,18 +1092,20 @@
             <section class="status-panel success">
               <h2>Antes de começar</h2>
               <ul class="quick-list">
-                <li>Separe todo o material em bandeja antes da punção.</li>
-                <li>Preencha o circuito intermediário com soro fisiológico 0,9% antes de puncionar.</li>
-                <li>Prefira cobertura transparente para facilitar o monitoramento do sítio.</li>
+                <li>Separe todo o material em bandeja antes da punção<sup class="ref-mark">1</sup>.</li>
+                <li>Preencha o circuito intermediário com soro fisiológico 0,9% antes de puncionar<sup class="ref-mark">1</sup>.</li>
+                <li>Prefira cobertura transparente para facilitar o monitoramento do sítio<sup class="ref-mark">1,3</sup>.</li>
               </ul>
             </section>
             <div class="card">
               <div class="card-content stack">
                 <details class="references">
                   <summary>Referências usadas nesta aba</summary>
-                  <ul class="reference-list">
+                  <ol class="reference-list">
                     <li><a href="https://drive.google.com/file/d/1PtxNlxYwLHTiw74_ZzsYXo2U-NJFa3si/view?usp=sharing" target="_blank" rel="noopener">Manual Hipodermóclise SBGG 2025. O uso da via subcutânea na geriatria e em cuidados paliativos. 3ª edição.</a></li>
-                  </ul>
+                    <li><a href="https://www.aafp.org/pubs/afp/issues/2001/1101/p1575.html" target="_blank" rel="noopener">Sasson M, Shvartzman P. Hypodermoclysis: an alternative infusion technique. Am Fam Physician. 2001.</a></li>
+                    <li><a href="https://revistaseletronicas.pucrs.br/pajar/article/view/32559" target="_blank" rel="noopener">Vasconcellos CF, Milão D. Hipodermóclise: alternativa para infusão de medicamentos em pacientes idosos e pacientes em cuidados paliativos. PAJAR. 2019.</a></li>
+                  </ol>
                 </details>
               </div>
             </div>
@@ -1155,41 +1121,41 @@
                   <div class="site-item">
                     <strong>Ao puncionar</strong>
                     <ul class="quick-list">
-                      <li>Verificar prescrição médica e compatibilidade dos medicamentos com esta via.</li>
-                      <li>Atentar para o volume máximo tolerado em cada área.</li>
-                      <li>Avaliar o melhor local para punção, lembrando que a primeira opção de escolha é a região abdominal.</li>
-                      <li>Observar a direção da agulha e escolher ângulo de 15 a 45º conforme tecido subcutâneo do paciente.</li>
-                      <li>Ao puncionar, soltar a prega somente após a inserção total da agulha.</li>
-                      <li>Checar presença de “botão” ou “soroma”, pequena elevação que, quando presente, deve ser amolecida à palpação superficial e rapidamente absorvida.</li>
-                      <li>Identificar a punção com data e nome da pessoa que realizou o procedimento.</li>
+                      <li>Verificar prescrição médica e compatibilidade dos medicamentos com esta via.<sup class="ref-mark">4</sup></li>
+                      <li>Atentar para o volume máximo tolerado em cada área.<sup class="ref-mark">1,2,3,4</sup></li>
+                      <li>Avaliar o melhor local para punção, lembrando que a primeira opção de escolha é a região abdominal.<sup class="ref-mark">4</sup></li>
+                      <li>Observar a direção da agulha e escolher ângulo de 15 a 45º conforme tecido subcutâneo do paciente.<sup class="ref-mark">4</sup></li>
+                      <li>Ao puncionar, soltar a prega somente após a inserção total da agulha.<sup class="ref-mark">4</sup></li>
+                      <li>Checar presença de “botão” ou “soroma”, pequena elevação que, quando presente, deve ser amolecida à palpação superficial e rapidamente absorvida.<sup class="ref-mark">4</sup></li>
+                      <li>Identificar a punção com data e nome da pessoa que realizou o procedimento.<sup class="ref-mark">4</sup></li>
                     </ul>
                   </div>
                   <div class="site-item">
                     <strong>Ao administrar medicamentos</strong>
                     <ul class="quick-list">
-                      <li>Administrar os medicamentos lentamente, aproximadamente 1mL/min.</li>
-                      <li>Logo após, infundir 3mL de SF 0,9% para garantir que toda medicação seja infundida.</li>
-                      <li>Não administrar mais que três medicamentos por vez.</li>
-                      <li>Utilizar 1mL de SF 0,9% entre as medicações.</li>
+                      <li>Administrar os medicamentos lentamente, aproximadamente 1mL/min.<sup class="ref-mark">4</sup></li>
+                      <li>Logo após, infundir 3mL de SF 0,9% para garantir que toda medicação seja infundida.<sup class="ref-mark">4</sup></li>
+                      <li>Não administrar mais que três medicamentos por vez.<sup class="ref-mark">4</sup></li>
+                      <li>Utilizar 1mL de SF 0,9% entre as medicações.<sup class="ref-mark">4</sup></li>
                     </ul>
                   </div>
                   <div class="site-item">
                     <strong>Segurança e sinais de alerta</strong>
                     <ul class="quick-list">
-                      <li>Sempre higienizar as mãos antes e depois de manipular a hipodermóclise.</li>
-                      <li>Realizar assepsia do dispositivo antes de administrar os medicamentos.</li>
-                      <li>Em caso de hiperemia, dor e edema que não cessem em quatro horas, retirar a hipodermóclise e puncionar outro sítio.</li>
+                      <li>Sempre higienizar as mãos antes e depois de manipular a hipodermóclise.<sup class="ref-mark">4</sup></li>
+                      <li>Realizar assepsia do dispositivo antes de administrar os medicamentos.<sup class="ref-mark">4</sup></li>
+                      <li>Em caso de hiperemia, dor e edema que não cessem em quatro horas, retirar a hipodermóclise e puncionar outro sítio.<sup class="ref-mark">2,3,4</sup></li>
                     </ul>
                   </div>
                 </div>
                 <details class="references">
                   <summary>Referências usadas nesta aba</summary>
-                  <ul class="reference-list">
+                  <ol class="reference-list">
                     <li><a href="https://pubmed.ncbi.nlm.nih.gov/?term=Schen+R+Administration+of+fluid+by+subcutaneous+infusion+Harefuah+1997" target="_blank" rel="noopener">Schen R. Administration of fluid by subcutaneous infusion: revival of a forgotten method. Harefuah. 1997.</a></li>
                     <li><a href="https://www.aafp.org/pubs/afp/issues/2001/1101/p1575.html" target="_blank" rel="noopener">Sasson M, Shvartzman P. Hypodermoclysis: an alternative infusion technique. Am Fam Physician. 2001.</a></li>
                     <li><a href="https://doi.org/10.1111/j.1532-5415.2000.tb04755.x" target="_blank" rel="noopener">Dasgupta M, Binns MA, Rochon PA. Subcutaneous fluid infusion in a long-term care setting. J Am Geriatr Soc. 2000.</a></li>
                     <li><a href="https://drive.google.com/file/d/1PtxNlxYwLHTiw74_ZzsYXo2U-NJFa3si/view?usp=sharing" target="_blank" rel="noopener">Manual Hipodermóclise SBGG 2025. O uso da via subcutânea na geriatria e em cuidados paliativos. 3ª edição.</a></li>
-                  </ul>
+                  </ol>
                 </details>
               </div>
             </div>
@@ -1398,58 +1364,58 @@
               <h2>Orientações ao cuidador</h2>
               <p>
                 A hipodermóclise em casa pode ser segura quando é corretamente indicada,
-                acompanhada por equipe treinada e quando a família sabe o que observar.
+                acompanhada por equipe treinada e quando o cuidador sabe o que observar.<sup class="ref-mark">1,2,3</sup>
               </p>
               <div class="site-list">
                 <div class="site-item">
                   <strong>Cuidados com o local da punção</strong>
                   <ul class="quick-list">
-                    <li>Inchaço ou edema ao redor da agulha ou cateter.</li>
-                    <li>Vermelhidão no local da punção.</li>
-                    <li>Dor, ardor ou queimação no local puncionado.</li>
-                    <li>Esses sinais podem ser leves, mas o sítio deve ser reavaliado pela equipe.</li>
+                    <li>Inchaço ou edema ao redor da agulha ou cateter.<sup class="ref-mark">1</sup></li>
+                    <li>Vermelhidão no local da punção.<sup class="ref-mark">1</sup></li>
+                    <li>Dor, ardor ou queimação no local puncionado.<sup class="ref-mark">1</sup></li>
+                    <li>Esses sinais podem ser leves, mas o sítio deve ser reavaliado pela equipe.<sup class="ref-mark">1,2,3</sup></li>
                   </ul>
                 </div>
                 <div class="site-item">
                   <strong>Durante a infusão</strong>
                   <ul class="quick-list">
-                    <li>Conferir se a solução está correndo conforme orientação da equipe.</li>
-                    <li>Não alterar velocidade, volume ou medicamentos sem orientação profissional.</li>
-                    <li>Manter frasco, equipo e conexões protegidos e organizados.</li>
+                    <li>Conferir se a solução está correndo conforme orientação da equipe.<sup class="ref-mark">1</sup></li>
+                    <li>Não alterar velocidade, volume ou medicamentos sem orientação profissional.<sup class="ref-mark">1,4</sup></li>
+                    <li>Manter frasco, equipo e conexões protegidos e organizados.<sup class="ref-mark">1</sup></li>
                   </ul>
                 </div>
                 <div class="site-item">
                   <strong>Quando acionar a equipe</strong>
                   <ul class="quick-list">
-                    <li>Inchaço intenso, aumento rápido do volume ou endurecimento importante no local.</li>
-                    <li>Vermelhidão que se expande, calor local ou saída de secreção.</li>
-                    <li>Dor intensa ou que não melhora após pausa ou orientação de troca do local.</li>
-                    <li>Piora evidente do estado geral, como mais sonolência, falta de ar ou rebaixamento do nível de consciência.</li>
-                    <li>Dúvida ou insegurança da família sobre a continuidade do cuidado.</li>
+                    <li>Inchaço intenso, aumento rápido do volume ou endurecimento importante no local.<sup class="ref-mark">1,2,3</sup></li>
+                    <li>Vermelhidão que se expande, calor local ou saída de secreção.<sup class="ref-mark">1,2,3</sup></li>
+                    <li>Dor intensa ou que não melhora após pausa ou orientação de troca do local.<sup class="ref-mark">1,2,3</sup></li>
+                    <li>Piora evidente do estado geral, como mais sonolência, falta de ar ou rebaixamento do nível de consciência.<sup class="ref-mark">1,4,6</sup></li>
+                    <li>Dúvida ou insegurança do cuidador sobre a continuidade do cuidado.<sup class="ref-mark">4,5,6</sup></li>
                   </ul>
                 </div>
                 <div class="site-item">
                   <strong>Papel da equipe e do cuidador</strong>
                   <ul class="quick-list">
-                    <li>Seguir as orientações combinadas com a equipe de saúde.</li>
-                    <li>Manter comunicação aberta em caso de intercorrência ou dúvida.</li>
-                    <li>Registrar mudanças observadas no local da punção ou no estado geral.</li>
-                    <li>Evitar modificar volume, velocidade ou medicamentos sem orientação profissional.</li>
+                    <li>Seguir as orientações combinadas com a equipe de saúde.<sup class="ref-mark">1,4</sup></li>
+                    <li>Manter comunicação aberta em caso de intercorrência ou dúvida.<sup class="ref-mark">4,5,6</sup></li>
+                    <li>Registrar mudanças observadas no local da punção ou no estado geral.<sup class="ref-mark">1,4</sup></li>
+                    <li>Evitar modificar volume, velocidade ou medicamentos sem orientação profissional.<sup class="ref-mark">1,4</sup></li>
                   </ul>
                 </div>
               </div>
               <section class="status-panel warning">
                 <h2>Importante</h2>
                 <p>
-                  A família deve vigiar principalmente o local da punção e mudanças importantes no
+                  O cuidador deve vigiar principalmente o local da punção e mudanças importantes no
                   estado geral do paciente. Diante de sinais intensos, dúvidas ou piora clínica,
-                  a orientação é acionar a equipe de saúde.
+                  a orientação é acionar a equipe de saúde.<sup class="ref-mark">1,4,6</sup>
                 </p>
               </section>
               <details class="references">
                 <summary>Referências usadas nesta aba</summary>
                 <ol class="reference-list">
-                  <li><a href="https://docs.google.com/document/d/1wL1ZItKDd4xQuuy9Vk2LHnlYrvaa1ffk74nLJ8fR9dk/edit?usp=sharing" target="_blank" rel="noopener">Hipodermóclise em casa: o que a família deve observar. Documento-fonte fornecido para esta aba.</a></li>
+                  <li><a href="https://docs.google.com/document/d/1wL1ZItKDd4xQuuy9Vk2LHnlYrvaa1ffk74nLJ8fR9dk/edit?usp=sharing" target="_blank" rel="noopener">Hipodermóclise em casa: o que o cuidador deve observar. Documento-fonte fornecido para esta aba.</a></li>
                   <li><a href="https://doi.org/10.53660/clm-1050-23c59" target="_blank" rel="noopener">Dib R, Santana M, Ferreira W, Antunes R, França L, De Souza Ramos R. Applicability of hypodermoclysis in patients in palliative care. Concilium. 2023.</a></li>
                   <li><a href="https://doi.org/10.15448/2357-9641.2019.1.32559" target="_blank" rel="noopener">Vasconcellos C, Milão D. Hipodermóclise: alternativa para infusão de medicamentos em pacientes idosos e pacientes em cuidados paliativos. PAJAR. 2019.</a></li>
                   <li><a href="https://doi.org/10.12707/riii12137" target="_blank" rel="noopener">Nietsche E et al. Equipe de saúde e familiares cuidadores: atenção ao doente terminal no domicílio. Revista de Enfermagem Referência. 2013.</a></li>

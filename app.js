@@ -36,6 +36,7 @@ const startDropCameraButton = document.querySelector("#startDropCamera");
 const stopDropCameraButton = document.querySelector("#stopDropCamera");
 const startAutoDropCounterButton = document.querySelector("#startAutoDropCounter");
 const stopAutoDropCounterButton = document.querySelector("#stopAutoDropCounter");
+const resetAutoDropCounterButton = document.querySelector("#resetAutoDropCounter");
 const dropCameraStatus = document.querySelector("#dropCameraStatus");
 const recordDropButton = document.querySelector("#recordDrop");
 const resetDropCounterButton = document.querySelector("#resetDropCounter");
@@ -83,6 +84,9 @@ let manualConversionLock = false;
 let autoDropActive = false;
 let autoDropFrame = null;
 let previousDropBrightness = null;
+let baselineDropBrightness = null;
+let smoothedDropDifference = 0;
+let autoDropCalibration = [];
 let lastAutoDropAt = 0;
 const dropDetectionCanvas = document.createElement("canvas");
 const dropDetectionContext = dropDetectionCanvas.getContext("2d", { willReadFrequently: true });
@@ -106,20 +110,23 @@ function hasProfessionalAccess() {
 function allowProfessionalAccess() {
   rememberProfessionalAccess();
   document.body.classList.remove("access-pending", "access-denied");
-  accessGate.hidden = true;
-  appShell.removeAttribute("aria-hidden");
+  if (accessGate) accessGate.hidden = true;
+  if (appShell) appShell.removeAttribute("aria-hidden");
   scrollToActivePanel({ behavior: "auto" });
 }
 
 function denyProfessionalAccess() {
   document.body.classList.remove("access-pending");
   document.body.classList.add("access-denied");
-  appShell.setAttribute("aria-hidden", "true");
-  accessGateTitle.textContent = "Acesso bloqueado";
-  accessGate.querySelector("p").textContent =
-    "Este conteúdo é destinado exclusivamente a profissionais de saúde.";
-  confirmHealthProfessionalButton.hidden = true;
-  denyHealthProfessionalButton.hidden = true;
+  if (appShell) appShell.setAttribute("aria-hidden", "true");
+  if (accessGateTitle) accessGateTitle.textContent = "Acesso bloqueado";
+  const accessGateText = accessGate?.querySelector("p");
+  if (accessGateText) {
+    accessGateText.textContent =
+      "Este conteúdo é destinado exclusivamente a profissionais de saúde.";
+  }
+  if (confirmHealthProfessionalButton) confirmHealthProfessionalButton.hidden = true;
+  if (denyHealthProfessionalButton) denyHealthProfessionalButton.hidden = true;
 }
 
 function initializeAccessGate() {
@@ -132,8 +139,10 @@ function initializeAccessGate() {
 
   confirmHealthProfessionalButton.addEventListener("click", allowProfessionalAccess);
   denyHealthProfessionalButton.addEventListener("click", denyProfessionalAccess);
-  confirmHealthProfessionalButton.focus();
+  confirmHealthProfessionalButton.focus({ preventScroll: true });
 }
+
+initializeAccessGate();
 
 async function updateVisitCounter() {
   try {
@@ -149,16 +158,24 @@ function shouldScrollToPanel() {
   return window.matchMedia("(pointer: coarse)").matches || window.matchMedia("(max-width: 820px)").matches;
 }
 
-function scrollToActivePanel({ behavior = "smooth" } = {}) {
+function scrollToPanel(panel, { behavior = "smooth" } = {}) {
   if (!shouldScrollToPanel() || document.body.classList.contains("access-pending")) return;
+  if (!panel) return;
 
-  const activePanel = panels.find((panel) => panel.classList.contains("active"));
-  if (!activePanel) return;
+  const moveToPanel = () => {
+    const top = panel.getBoundingClientRect().top + window.scrollY - 12;
+    window.scrollTo({ top: Math.max(top, 0), behavior });
+  };
 
   window.requestAnimationFrame(() => {
-    const top = activePanel.getBoundingClientRect().top + window.scrollY - 12;
-    window.scrollTo({ top: Math.max(top, 0), behavior });
+    window.requestAnimationFrame(moveToPanel);
+    window.setTimeout(moveToPanel, 180);
   });
+}
+
+function scrollToActivePanel({ behavior = "smooth" } = {}) {
+  const activePanel = panels.find((panel) => panel.classList.contains("active"));
+  scrollToPanel(activePanel, { behavior });
 }
 
 function activateTab(tab, { scrollToPanel = false } = {}) {
@@ -168,8 +185,11 @@ function activateTab(tab, { scrollToPanel = false } = {}) {
     item.setAttribute("aria-selected", String(item === tab));
   });
 
+  let activePanel = null;
   panels.forEach((panel) => {
-    panel.classList.toggle("active", panel.id === targetId);
+    const isActive = panel.id === targetId;
+    panel.classList.toggle("active", isActive);
+    if (isActive) activePanel = panel;
   });
 
   if (targetId === "tecnica") {
@@ -183,7 +203,11 @@ function activateTab(tab, { scrollToPanel = false } = {}) {
   history.replaceState(null, "", `#${targetId}`);
 
   if (scrollToPanel) {
-    scrollToActivePanel();
+    if (activePanel) {
+      activePanel.setAttribute("tabindex", "-1");
+      activePanel.focus({ preventScroll: true });
+    }
+    scrollToPanel(activePanel);
   }
 }
 
@@ -267,28 +291,73 @@ function setDropCameraStatus(message, className = "") {
   dropCameraStatus.className = `drop-counter-status ${className}`.trim();
 }
 
+function canRequestCamera() {
+  return Boolean(dropCameraPreview && navigator.mediaDevices?.getUserMedia);
+}
+
+function cameraBlockedByContext() {
+  return !window.isSecureContext && !["localhost", "127.0.0.1"].includes(window.location.hostname);
+}
+
+function initializeDropCameraAccess() {
+  if (!startDropCameraButton || !dropCameraStatus) return;
+
+  if (cameraBlockedByContext()) {
+    startDropCameraButton.disabled = true;
+    setDropCameraStatus(
+      "Para acessar a câmera no celular, abra o site por HTTPS, como no GitHub Pages.",
+      "warning",
+    );
+    return;
+  }
+
+  if (!canRequestCamera()) {
+    startDropCameraButton.disabled = true;
+    setDropCameraStatus("Câmera indisponível neste navegador.", "warning");
+  }
+}
+
 async function startDropCamera() {
-  if (!dropCameraPreview || !navigator.mediaDevices?.getUserMedia) {
+  if (cameraBlockedByContext()) {
+    setDropCameraStatus(
+      "Para acessar a câmera no celular, abra o site por HTTPS, como no GitHub Pages.",
+      "warning",
+    );
+    return;
+  }
+
+  if (!canRequestCamera()) {
     setDropCameraStatus("Câmera indisponível neste navegador.", "warning");
     return;
   }
 
   try {
-    dropCameraStream = await navigator.mediaDevices.getUserMedia({
-      video: {
-        facingMode: { ideal: "environment" },
-        width: { ideal: 1280 },
-        height: { ideal: 720 },
-      },
-      audio: false,
-    });
+    try {
+      dropCameraStream = await navigator.mediaDevices.getUserMedia({
+        video: {
+          facingMode: { exact: "environment" },
+          width: { ideal: 1280 },
+          height: { ideal: 720 },
+        },
+        audio: false,
+      });
+    } catch {
+      dropCameraStream = await navigator.mediaDevices.getUserMedia({
+        video: {
+          facingMode: { ideal: "environment" },
+          width: { ideal: 1280 },
+          height: { ideal: 720 },
+        },
+        audio: false,
+      });
+    }
     dropCameraPreview.srcObject = dropCameraStream;
     await dropCameraPreview.play();
     dropCameraPreview.classList.add("active");
     if (dropCameraPlaceholder) dropCameraPlaceholder.hidden = true;
     if (startDropCameraButton) startDropCameraButton.disabled = true;
     if (stopDropCameraButton) stopDropCameraButton.disabled = false;
-    setDropCameraStatus("Câmera ativa. Toque em Registrar gota a cada gota observada.", "success");
+    setDropCameraStatus("Câmera ativa. Centralize a câmara de gotejamento antes de iniciar a contagem.", "success");
   } catch {
     setDropCameraStatus(
       "Não foi possível acessar a câmera. Verifique a permissão do navegador e tente novamente.",
@@ -313,20 +382,20 @@ function stopDropCamera() {
   setDropCameraStatus("Câmera parada.", "");
 }
 
-function readDropDetectionBrightness() {
+function readDropDetectionSignal() {
   if (!dropCameraPreview || !dropDetectionContext || dropCameraPreview.readyState < 2) return null;
 
   const videoWidth = dropCameraPreview.videoWidth;
   const videoHeight = dropCameraPreview.videoHeight;
   if (!videoWidth || !videoHeight) return null;
 
-  const sampleWidth = Math.max(24, Math.round(videoWidth * 0.32));
-  const sampleHeight = Math.max(24, Math.round(videoHeight * 0.4));
+  const sampleWidth = Math.max(28, Math.round(videoWidth * 0.18));
+  const sampleHeight = Math.max(42, Math.round(videoHeight * 0.46));
   const sampleX = Math.round((videoWidth - sampleWidth) / 2);
   const sampleY = Math.round((videoHeight - sampleHeight) / 2);
 
-  dropDetectionCanvas.width = 80;
-  dropDetectionCanvas.height = 80;
+  dropDetectionCanvas.width = 48;
+  dropDetectionCanvas.height = 96;
   dropDetectionContext.drawImage(
     dropCameraPreview,
     sampleX,
@@ -345,26 +414,70 @@ function readDropDetectionBrightness() {
     dropDetectionCanvas.width,
     dropDetectionCanvas.height,
   );
-  let totalBrightness = 0;
+  let brightnessSum = 0;
+  let contrastSum = 0;
+  let darkPixelCount = 0;
+  const pixelCount = data.length / 4;
+
   for (let index = 0; index < data.length; index += 4) {
-    totalBrightness += (data[index] + data[index + 1] + data[index + 2]) / 3;
+    const brightness = (data[index] + data[index + 1] + data[index + 2]) / 3;
+    brightnessSum += brightness;
+    contrastSum += Math.abs(data[index] - data[index + 2]);
+    if (brightness < 95) darkPixelCount += 1;
   }
-  return totalBrightness / (data.length / 4);
+
+  return {
+    brightness: brightnessSum / pixelCount,
+    contrast: contrastSum / pixelCount,
+    darkRatio: darkPixelCount / pixelCount,
+  };
+}
+
+function resetAutoDropDetection() {
+  previousDropBrightness = null;
+  baselineDropBrightness = null;
+  smoothedDropDifference = 0;
+  autoDropCalibration = [];
+  lastAutoDropAt = 0;
 }
 
 function detectDropFrame() {
   if (!autoDropActive) return;
 
-  const brightness = readDropDetectionBrightness();
+  const signal = readDropDetectionSignal();
   const now = Date.now();
-  if (brightness !== null && previousDropBrightness !== null) {
-    const difference = Math.abs(brightness - previousDropBrightness);
-    if (difference > 10 && now - lastAutoDropAt > 650) {
-      lastAutoDropAt = now;
-      recordDrop();
+
+  if (signal) {
+    if (autoDropCalibration.length < 24) {
+      autoDropCalibration.push(signal.brightness);
+      baselineDropBrightness =
+        autoDropCalibration.reduce((sum, value) => sum + value, 0) / autoDropCalibration.length;
+      setDropCameraStatus(
+        "Calibrando a imagem. Mantenha a câmara de gotejamento centralizada e iluminada.",
+        "success",
+      );
+    } else {
+      const brightnessDifference = Math.max(0, (baselineDropBrightness || signal.brightness) - signal.brightness);
+      const motionDifference =
+        previousDropBrightness === null ? 0 : Math.max(0, previousDropBrightness - signal.brightness);
+      const signalStrength =
+        brightnessDifference * 0.55 + motionDifference * 0.85 + signal.darkRatio * 32 + signal.contrast * 0.08;
+      smoothedDropDifference = smoothedDropDifference * 0.72 + signalStrength * 0.28;
+      const threshold = Math.max(6.5, Math.min(18, Math.abs(baselineDropBrightness - signal.brightness) * 0.65 + 6));
+
+      if (smoothedDropDifference > threshold && now - lastAutoDropAt > 900) {
+        lastAutoDropAt = now;
+        smoothedDropDifference = 0;
+        baselineDropBrightness = baselineDropBrightness * 0.88 + signal.brightness * 0.12;
+        recordDrop();
+      } else if (now - lastAutoDropAt > 1200) {
+        baselineDropBrightness = baselineDropBrightness * 0.96 + signal.brightness * 0.04;
+      }
     }
+
+    previousDropBrightness = signal.brightness;
   }
-  previousDropBrightness = brightness;
+
   autoDropFrame = window.requestAnimationFrame(detectDropFrame);
 }
 
@@ -375,12 +488,11 @@ async function startAutoDropCounter() {
   if (!dropCameraStream || autoDropActive) return;
 
   autoDropActive = true;
-  previousDropBrightness = null;
-  lastAutoDropAt = 0;
+  resetAutoDropDetection();
   if (startAutoDropCounterButton) startAutoDropCounterButton.disabled = true;
   if (stopAutoDropCounterButton) stopAutoDropCounterButton.disabled = false;
   setDropCameraStatus(
-    "Contagem automática ativa. Centralize a câmara de gotejamento na imagem; use Registrar gota se precisar corrigir.",
+    "Calibrando a imagem. Mantenha a câmara de gotejamento centralizada e com boa iluminação.",
     "success",
   );
   detectDropFrame();
@@ -389,7 +501,7 @@ async function startAutoDropCounter() {
 function stopAutoDropCounter() {
   if (!autoDropActive && !autoDropFrame) return;
   autoDropActive = false;
-  previousDropBrightness = null;
+  resetAutoDropDetection();
   if (autoDropFrame) {
     window.cancelAnimationFrame(autoDropFrame);
     autoDropFrame = null;
@@ -596,6 +708,23 @@ function openHashTab() {
     cuidador: "orientacoes-cuidador",
   };
   const rawHash = window.location.hash.replace("#", "");
+  const targetElement = rawHash ? document.getElementById(rawHash) : null;
+  const targetPanel = targetElement?.classList.contains("tab-panel")
+    ? targetElement
+    : targetElement?.closest(".tab-panel");
+
+  if (targetPanel) {
+    const nestedTab = tabs.find((item) => item.dataset.tab === targetPanel.id);
+    if (nestedTab) {
+      activateTab(nestedTab, { scrollToPanel: false });
+      history.replaceState(null, "", `#${rawHash}`);
+      window.requestAnimationFrame(() => {
+        targetElement.scrollIntoView({ behavior: "smooth", block: "start" });
+      });
+      return;
+    }
+  }
+
   const target = aliases[rawHash] || rawHash || "boas-vindas";
   const tab = tabs.find((item) => item.dataset.tab === target);
   if (tab) activateTab(tab, { scrollToPanel: Boolean(rawHash) });
@@ -1061,82 +1190,82 @@ const compatibilityPairs = {
     className: "success",
     source: "Compatibilidade refs. 2, 5",
     detail:
-      "Compatibilidade provável por suporte indireto para opioides com hyoscine butilbrometo em contexto paliativo.",
+      'Compatibilidade provável por suporte indireto para opioides com escopolamina em contexto paliativo.<sup class="ref-mark">2,5</sup>',
   },
   "haloperidol::morfina": {
     status: "compatível",
     className: "success",
     source: "Compatibilidade refs. 3, 5",
     detail:
-      "Combinação frequente; há dados parenterais em SF 0,9% sem precipitação.",
+      'Combinação frequente; há dados parenterais em SF 0,9% sem precipitação.<sup class="ref-mark">3,5</sup>',
   },
   "escopolamina::haloperidol": {
     status: "compatível",
     className: "success",
     source: "Compatibilidade ref. 1",
     detail:
-      "Há dado SC para mistura com haloperidol e hyoscine butilbrometo em SF 0,9%.",
+      'Há dado SC para mistura com haloperidol e escopolamina em SF 0,9%.<sup class="ref-mark">1</sup>',
   },
   "midazolam::morfina": {
     status: "compatível",
     className: "success",
     source: "Compatibilidade refs. 4, 5",
     detail:
-      "Combinação muito usada em infusão subcutânea contínua; há relato de boa tolerabilidade local.",
+      'Combinação muito usada em infusão subcutânea contínua; há relato de boa tolerabilidade local.<sup class="ref-mark">4,5</sup>',
   },
   "haloperidol::midazolam": {
     status: "compatível",
     className: "success",
     source: "Compatibilidade refs. 3, 5",
     detail:
-      "A combinação morfina + haloperidol + midazolam é descrita como frequente em CSCI em cuidados paliativos.",
+      'A combinação morfina + haloperidol + midazolam é descrita como frequente em CSCI em cuidados paliativos.<sup class="ref-mark">3,5</sup>',
   },
   "escopolamina::midazolam": {
     status: "compatível",
     className: "success",
     source: "Compatibilidade refs. 2, 5",
     detail:
-      "Combinações com hioscina/escopolamina e midazolam são muito usadas em CSCI, inclusive com opioides.",
+      'Combinações com escopolamina e midazolam são muito usadas em CSCI, inclusive com opioides.<sup class="ref-mark">2,5</sup>',
   },
   "clorpromazina::morfina": {
-    status: "não testado",
+    status: "dados insuficientes",
     className: "warning",
     source: "Compatibilidade ref. 3",
     detail:
-      "Há inferência por coquetéis parenterais, mas não dado SC direto para o par isolado.",
+      "Há dados em coquetéis parenterais, mas não dado SC direto para o par isolado.",
   },
   "clorpromazina::haloperidol": {
-    status: "não testado",
+    status: "dados insuficientes",
     className: "warning",
     source: "Compatibilidade ref. 3",
     detail:
       "Sem precipitação em coquetel parenteral com morfina e haloperidol, mas não há dado SC direto para o par isolado.",
   },
   "clorpromazina::midazolam": {
-    status: "não testado",
+    status: "dados insuficientes",
     className: "warning",
-    source: "Síntese da aba Compatibilidade",
+    source: "Dados insuficientes",
     detail:
       "Não há dado específico para via SC/hipodermóclise; a clorpromazina é descrita como potencialmente irritante por via subcutânea.",
   },
   "dexametasona::morfina": {
-    status: "não testado",
+    status: "dados insuficientes",
     className: "warning",
-    source: "Compatibilidade ref. 6 e síntese da aba",
+    source: "Dados insuficientes",
     detail:
       "Combinação usada na prática, mas a fonte destaca falta de apoio laboratorial formal para muitas associações.",
   },
   "dexametasona::haloperidol": {
-    status: "não testado",
+    status: "dados insuficientes",
     className: "warning",
-    source: "Compatibilidade ref. 6",
+    source: "Dados insuficientes",
     detail:
       "A dexametasona aparece como usada por via SC, mas não foi estudada nessas combinações específicas.",
   },
   "dexametasona::midazolam": {
-    status: "não testado",
+    status: "dados insuficientes",
     className: "warning",
-    source: "Compatibilidade ref. 6 e síntese da aba",
+    source: "Dados insuficientes",
     detail:
       "A dexametasona aparece como usada por via SC, mas não há detalhamento de compatibilidade com midazolam nas misturas citadas.",
   },
@@ -1249,19 +1378,19 @@ function renderCompatibilityResult() {
       status: "compatível",
       className: "success",
       source: "Compatibilidade refs. 1, 2, 3",
-      detail: "SF 0,9% é o diluente presente nas combinações com melhor suporte descritas na fonte.",
+      detail: 'SF 0,9% é o diluente presente nas combinações com melhor suporte descritas na fonte.<sup class="ref-mark">1,2,3</sup>',
     };
   } else if (first === "dipirona" || second === "dipirona") {
     result = {
-      status: "não testado",
+      status: "dados insuficientes",
       className: "warning",
-      source: "Síntese da aba Compatibilidade",
-      detail: "A fonte informa lacuna específica para compatibilidade da dipirona nessas misturas.",
+      source: "Dados insuficientes",
+      detail: "As fontes não apresentam dado direto de compatibilidade da dipirona nessas misturas.",
     };
   } else {
     result =
       compatibilityPairs[compatibilityKey(first, second)] || {
-        status: "não testado",
+        status: "dados insuficientes",
         className: "warning",
         detail: "Não há dado direto na fonte para este par. Priorize confirmação farmacêutica ou sítio separado.",
       };
@@ -1279,13 +1408,13 @@ function getCompatibility(first, second) {
     return { status: "compatível", className: "success", source: "Compatibilidade refs. 1, 2, 3" };
   }
   if (first === "dipirona" || second === "dipirona") {
-    return { status: "não testado", className: "warning", source: "Síntese da aba Compatibilidade" };
+    return { status: "dados insuficientes", className: "warning", source: "Dados insuficientes" };
   }
   return (
     compatibilityPairs[compatibilityKey(first, second)] || {
-      status: "não testado",
+      status: "dados insuficientes",
       className: "warning",
-      source: "Síntese da aba Compatibilidade",
+      source: "Dados insuficientes",
     }
   );
 }
@@ -1517,6 +1646,19 @@ if (resetDropCounterButton) {
   resetDropCounterButton.addEventListener("click", resetDropCounter);
 }
 
+if (resetAutoDropCounterButton) {
+  resetAutoDropCounterButton.addEventListener("click", () => {
+    resetDropCounter();
+    resetAutoDropDetection();
+    if (autoDropActive) {
+      setDropCameraStatus(
+        "Contagem zerada. Recalibrando a imagem para continuar a contagem automática.",
+        "success",
+      );
+    }
+  });
+}
+
 if (manualDropsMinute) {
   manualDropsMinute.addEventListener("input", syncManualFromDropsMinute);
 }
@@ -1701,5 +1843,5 @@ restoreMaterialChecklist();
 renderCompatibilityResult();
 syncPrescriptionOptions();
 updateVisitCounter();
+initializeDropCameraAccess();
 openHashTab();
-initializeAccessGate();
