@@ -1017,7 +1017,7 @@ button:focus-visible {
 
 .acronym-panel h3 {
   margin: 0;
-  font-size: 1rem;
+  font-size: 0.9rem;
 }
 
 .acronym-list {
@@ -1028,8 +1028,9 @@ button:focus-visible {
 }
 
 .acronym-list div {
-  display: grid;
-  gap: 2px;
+  display: flex;
+  gap: 5px;
+  align-items: baseline;
   min-width: 0;
   border-left: 2px solid var(--accent);
   padding-left: 8px;
@@ -1037,15 +1038,15 @@ button:focus-visible {
 
 .acronym-list dt {
   color: var(--ink);
-  font-size: 0.82rem;
+  font-size: 0.74rem;
   font-weight: 900;
 }
 
 .acronym-list dd {
   margin: 0;
   color: var(--muted);
-  font-size: 0.82rem;
-  line-height: 1.28;
+  font-size: 0.74rem;
+  line-height: 1.22;
 }
 
 .tag {
@@ -1293,71 +1294,6 @@ details.references summary {
   padding: 14px;
 }
 
-.voice-assistant {
-  display: grid;
-  gap: 12px;
-  border: 1px solid #bae6fd;
-  border-radius: 8px;
-  background: #f0f9ff;
-  padding: 14px;
-}
-
-.voice-assistant-header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 14px;
-}
-
-.voice-assistant h3,
-.voice-assistant p {
-  margin: 0;
-}
-
-.voice-assistant h3 {
-  color: var(--accent-2);
-}
-
-.voice-assistant p {
-  margin-top: 4px;
-  color: var(--muted);
-}
-
-.voice-status {
-  border-radius: 8px;
-  background: white;
-  color: var(--accent-2);
-  padding: 10px 12px;
-  font-weight: 800;
-}
-
-.voice-status.listening {
-  background: #dcfce7;
-  color: #14532d;
-}
-
-.voice-status.warning {
-  background: #fff7ed;
-  color: #7c2d12;
-}
-
-.voice-transcript {
-  min-height: 64px;
-  border: 1px dashed #7dd3fc;
-  border-radius: 8px;
-  background: white;
-  color: var(--muted);
-  padding: 12px;
-  line-height: 1.45;
-}
-
-.voice-hint {
-  margin: 0;
-  color: var(--muted);
-  font-size: 0.92rem;
-  line-height: 1.4;
-}
-
 .progress-track {
   height: 10px;
   overflow: hidden;
@@ -1581,11 +1517,6 @@ details.references summary {
     grid-template-columns: 1fr;
   }
 
-  .voice-assistant-header {
-    align-items: stretch;
-    flex-direction: column;
-  }
-
   .idealizer-card {
     grid-template-columns: 96px minmax(0, 1fr);
   }
@@ -1598,15 +1529,6 @@ details.references summary {
   .checklist-header {
     align-items: stretch;
     flex-direction: column;
-  }
-
-  .voice-assistant {
-    padding: 12px;
-  }
-
-  .voice-assistant .primary-button {
-    width: 100%;
-    min-height: 52px;
   }
 
   .automatic-drop-layout {
@@ -1636,11 +1558,6 @@ details.references summary {
   .drop-subtab {
     min-height: 56px;
     padding: 10px 12px;
-  }
-
-  .voice-status,
-  .voice-transcript {
-    font-size: 0.96rem;
   }
 
   .history-intro-grid p {
