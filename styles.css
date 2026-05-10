@@ -393,6 +393,18 @@ h1 {
   object-fit: contain;
 }
 
+.video-fallback {
+  display: flex;
+  justify-content: flex-end;
+}
+
+.video-fallback .secondary-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  text-decoration: none;
+}
+
 .technique-image {
   overflow: hidden;
   margin: 0;
@@ -1602,8 +1614,9 @@ details.references summary {
   }
 
   .camera-frame {
-    aspect-ratio: 16 / 9;
-    min-height: 240px;
+    aspect-ratio: 3 / 4;
+    min-height: 360px;
+    max-height: 72vh;
   }
 
   .technique-subtabs,
@@ -1710,7 +1723,7 @@ details.references summary {
   }
 
   .camera-frame {
-    min-height: 210px;
+    min-height: 340px;
   }
 
   .drop-tap-button {

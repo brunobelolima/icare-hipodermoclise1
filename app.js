@@ -178,7 +178,7 @@ function scrollToActivePanel({ behavior = "smooth" } = {}) {
   scrollToPanel(activePanel, { behavior });
 }
 
-function activateTab(tab, { scrollToPanel = false } = {}) {
+function activateTab(tab, { scrollToPanel: shouldMoveToPanel = false } = {}) {
   const targetId = tab.dataset.tab;
 
   tabs.forEach((item) => {
@@ -202,7 +202,7 @@ function activateTab(tab, { scrollToPanel = false } = {}) {
 
   history.replaceState(null, "", `#${targetId}`);
 
-  if (scrollToPanel) {
+  if (shouldMoveToPanel) {
     if (activePanel) {
       activePanel.setAttribute("tabindex", "-1");
       activePanel.focus({ preventScroll: true });
@@ -332,12 +332,17 @@ async function startDropCamera() {
   }
 
   try {
+    const mobileCameraLayout =
+      window.matchMedia("(pointer: coarse)").matches || window.matchMedia("(max-width: 620px)").matches;
+    const cameraSize = mobileCameraLayout
+      ? { width: { ideal: 720 }, height: { ideal: 1280 } }
+      : { width: { ideal: 1280 }, height: { ideal: 720 } };
+
     try {
       dropCameraStream = await navigator.mediaDevices.getUserMedia({
         video: {
           facingMode: { exact: "environment" },
-          width: { ideal: 1280 },
-          height: { ideal: 720 },
+          ...cameraSize,
         },
         audio: false,
       });
@@ -345,8 +350,7 @@ async function startDropCamera() {
       dropCameraStream = await navigator.mediaDevices.getUserMedia({
         video: {
           facingMode: { ideal: "environment" },
-          width: { ideal: 1280 },
-          height: { ideal: 720 },
+          ...cameraSize,
         },
         audio: false,
       });
