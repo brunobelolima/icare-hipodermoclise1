@@ -6,7 +6,7 @@ Aplicação web sobre o uso de hipodermóclise baseado em evidências.
 
 - `index.html`: conteúdo e estrutura do site.
 - `styles.css`: estilos visuais e responsividade.
-- `app.js`: interações, abas, checklists, assistente de voz e contador de visitas.
+- `app.js`: interações, abas, checklists, seletor de idioma e contador de visitas.
 - `assets/`: imagens usadas no site.
 - `.nojekyll`: evita processamento pelo Jekyll no GitHub Pages.
 - `.gitignore`: evita envio de arquivos grandes ou temporários para o GitHub.
@@ -14,6 +14,10 @@ Aplicação web sobre o uso de hipodermóclise baseado em evidências.
 ## Vídeo da técnica de punção
 
 O vídeo da técnica de punção é carregado por um player do Google Drive na aba Técnica de punção.
+
+## Idiomas
+
+O site inclui opções para Português, Inglês, Espanhol e Francês no cabeçalho. As versões em inglês, espanhol e francês usam tradução automática do Google Translate, portanto precisam de internet no navegador do usuário.
 
 Para publicar o vídeo junto ao site no GitHub Pages, use uma das opções:
 

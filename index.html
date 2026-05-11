@@ -15,6 +15,23 @@
       <div class="access-gate-card">
         <h2 id="accessGateTitle">Você é profissional de saúde?</h2>
         <p>Este conteúdo é destinado a profissionais de saúde.</p>
+        <div class="language-switcher" aria-label="Tradução">
+          <div class="language-actions">
+            <button class="language-button" type="button" data-language="pt" aria-label="Português" title="Português">
+              <span class="flag-icon" aria-hidden="true">🇧🇷</span>
+            </button>
+            <button class="language-button" type="button" data-language="en" aria-label="Inglês" title="Inglês">
+              <span class="flag-icon" aria-hidden="true">🇬🇧</span>
+            </button>
+            <button class="language-button" type="button" data-language="es" aria-label="Espanhol" title="Espanhol">
+              <span class="flag-icon" aria-hidden="true">🇪🇸</span>
+            </button>
+            <button class="language-button" type="button" data-language="fr" aria-label="Francês" title="Francês">
+              <span class="flag-icon" aria-hidden="true">🇫🇷</span>
+            </button>
+          </div>
+          <div id="google_translate_element" aria-hidden="true"></div>
+        </div>
         <div class="access-gate-actions">
           <button class="primary-button" id="confirmHealthProfessional" type="button">Sim</button>
           <button class="secondary-button" id="denyHealthProfessional" type="button">Não</button>
@@ -858,6 +875,8 @@
                       src="about:blank"
                       data-src="https://drive.google.com/file/d/1IUzsUktltswjAkH3vSTkLi1Jzs-QoMsk/preview"
                       data-fallback-url="https://drive.google.com/file/d/1IUzsUktltswjAkH3vSTkLi1Jzs-QoMsk/view?usp=sharing"
+                      data-translated-src="https://drive.google.com/file/d/1csr6hJOE7IJt0fE3XT6sufmTalhbHRov/preview"
+                      data-translated-fallback-url="https://drive.google.com/file/d/1csr6hJOE7IJt0fE3XT6sufmTalhbHRov/view?usp=sharing"
                       title="Vídeo técnica de punção por hipodermóclise"
                       loading="eager"
                       referrerpolicy="strict-origin-when-cross-origin"
@@ -867,6 +886,7 @@
                   </div>
                   <div class="video-fallback">
                     <a
+                      id="techniqueVideoFallback"
                       class="secondary-button"
                       href="https://drive.google.com/file/d/1IUzsUktltswjAkH3vSTkLi1Jzs-QoMsk/view?usp=sharing"
                       target="_blank"
@@ -1446,5 +1466,6 @@
     </main>
 
     <script src="app.js"></script>
+    <script src="https://translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
   </body>
 </html>

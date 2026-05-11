@@ -49,6 +49,7 @@ const manualMlHour = document.querySelector("#manualMlHour");
 const contactForm = document.querySelector("#contactForm");
 const contactResult = document.querySelector("#contactResult");
 const techniqueVideo = document.querySelector("#techniqueVideo");
+const techniqueVideoFallback = document.querySelector("#techniqueVideoFallback");
 const visitCounter = document.querySelector("#visitCounter");
 const documentNoteTrigger = document.querySelector("#documentNoteTrigger");
 const documentNotePanel = document.querySelector("#documentNote");
@@ -59,8 +60,10 @@ const closeMaterialChecklistPanelButton = document.querySelector("#closeMaterial
 const documentChecklistTrigger = document.querySelector("#documentChecklistTrigger");
 const documentChecklistPanel = document.querySelector("#checklist");
 const closeChecklistButton = document.querySelector("#closeChecklist");
+const languageButtons = Array.from(document.querySelectorAll("[data-language]"));
 const contactEmail = "icarehipodermoclise@gmail.com";
 const accessStorageKey = "icare-health-professional-access";
+const languageStorageKey = "icare-selected-language";
 const storageKey = "icare-model-checklist";
 const materialStorageKey = "icare-material-checklist";
 const visitCounterUrl = "https://abacus.jasoncameron.dev/hit/icare-hipodermoclise2/visitas";
@@ -77,6 +80,74 @@ let autoDropCalibration = [];
 let lastAutoDropAt = 0;
 const dropDetectionCanvas = document.createElement("canvas");
 const dropDetectionContext = dropDetectionCanvas.getContext("2d", { willReadFrequently: true });
+
+function setCookie(name, value, maxAge = 31536000) {
+  document.cookie = `${name}=${value};path=/;max-age=${maxAge};SameSite=Lax`;
+}
+
+function clearCookie(name) {
+  document.cookie = `${name}=;path=/;max-age=0;SameSite=Lax`;
+}
+
+function currentLanguage() {
+  try {
+    const storedLanguage = localStorage.getItem(languageStorageKey);
+    if (storedLanguage) return storedLanguage;
+  } catch {
+    // Local storage can be unavailable in restrictive browser modes.
+  }
+  const match = document.cookie.match(/(?:^|;\s*)googtrans=\/pt\/([^;]+)/);
+  return match?.[1] || "pt";
+}
+
+function rememberLanguage(language) {
+  try {
+    localStorage.setItem(languageStorageKey, language);
+  } catch {
+    // Local storage can be unavailable in restrictive browser modes.
+  }
+}
+
+function markActiveLanguage(language) {
+  languageButtons.forEach((button) => {
+    button.classList.toggle("active", button.dataset.language === language);
+    button.setAttribute("aria-pressed", String(button.dataset.language === language));
+  });
+}
+
+function applyGoogleTranslateLanguage(language) {
+  const translateSelect = document.querySelector(".goog-te-combo");
+  if (!translateSelect) return false;
+  translateSelect.value = language === "pt" ? "" : language;
+  translateSelect.dispatchEvent(new Event("change"));
+  return true;
+}
+
+function changeLanguage(language) {
+  rememberLanguage(language);
+  if (language === "pt") {
+    clearCookie("googtrans");
+  } else {
+    setCookie("googtrans", `/pt/${language}`);
+  }
+  markActiveLanguage(language);
+  loadTechniqueVideo();
+  if (applyGoogleTranslateLanguage(language)) return;
+  window.location.reload();
+}
+
+window.googleTranslateElementInit = function googleTranslateElementInit() {
+  if (!window.google?.translate?.TranslateElement) return;
+  new window.google.translate.TranslateElement(
+    {
+      pageLanguage: "pt",
+      includedLanguages: "pt,en,es,fr",
+      autoDisplay: false,
+    },
+    "google_translate_element",
+  );
+  markActiveLanguage(currentLanguage());
+};
 
 function rememberProfessionalAccess() {
   try {
@@ -199,8 +270,22 @@ function activateTab(tab, { scrollToPanel: shouldMoveToPanel = false } = {}) {
 }
 
 function loadTechniqueVideo() {
-  if (!techniqueVideo || techniqueVideo.getAttribute("src") !== "about:blank") return;
-  techniqueVideo.src = techniqueVideo.dataset.src;
+  if (!techniqueVideo) return;
+  const isTranslatedVersion = currentLanguage() !== "pt";
+  const videoSource = isTranslatedVersion
+    ? techniqueVideo.dataset.translatedSrc || techniqueVideo.dataset.src
+    : techniqueVideo.dataset.src;
+  const fallbackSource = isTranslatedVersion
+    ? techniqueVideo.dataset.translatedFallbackUrl || techniqueVideo.dataset.fallbackUrl
+    : techniqueVideo.dataset.fallbackUrl;
+
+  if (techniqueVideo.getAttribute("src") !== videoSource) {
+    techniqueVideo.src = videoSource;
+  }
+
+  if (techniqueVideoFallback && fallbackSource) {
+    techniqueVideoFallback.href = fallbackSource;
+  }
 }
 
 function dropFactorValue() {
@@ -1413,6 +1498,10 @@ if (clearMaterialChecklistButton) {
   });
 }
 
+languageButtons.forEach((button) => {
+  button.addEventListener("click", () => changeLanguage(button.dataset.language));
+});
+
 contactForm.addEventListener("submit", (event) => {
   event.preventDefault();
   const formData = new FormData(contactForm);
@@ -1436,6 +1525,7 @@ contactForm.addEventListener("submit", (event) => {
 
 restoreChecklist();
 restoreMaterialChecklist();
+markActiveLanguage(currentLanguage());
 renderCompatibilityResult();
 syncPrescriptionOptions();
 updateVisitCounter();
