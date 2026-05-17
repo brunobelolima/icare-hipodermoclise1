@@ -17,7 +17,7 @@ O vídeo da técnica de punção é carregado por um player do Google Drive na a
 
 ## Idiomas
 
-O site inclui opções para Português, Inglês, Espanhol e Francês no cabeçalho. As versões em inglês, espanhol e francês usam tradução automática do Google Translate, portanto precisam de internet no navegador do usuário.
+O site inclui opções para Português, Inglês, Espanhol e Francês no pop-up inicial. As versões em inglês, espanhol e francês usam tradução automática do Google Translate, portanto precisam de internet no navegador do usuário.
 
 Para publicar o vídeo junto ao site no GitHub Pages, use uma das opções:
 

@@ -203,6 +203,7 @@ function initializeAccessGate() {
 initializeAccessGate();
 
 async function updateVisitCounter() {
+  if (!visitCounter) return;
   try {
     const response = await fetch(visitCounterUrl, { cache: "no-store" });
     const data = await response.json();
@@ -872,6 +873,7 @@ const compatibilityLabels = {
   morfina: "Morfina",
   escopolamina: "Escopolamina",
   clorpromazina: "Clorpromazina",
+  ceftriaxona: "Ceftriaxona",
   dipirona: "Dipirona",
   dexametasona: "Dexametasona",
   haloperidol: "Haloperidol",
@@ -987,8 +989,8 @@ const prescriptionData = {
       "Bolus ou infusão contínua; velocidade usual entre 20-100mL/h, equivalente a aproximadamente 7-33 gotas/min em equipo de macrogotas",
     minVolume: "",
     comments:
-      "Não existe dose máxima definida. Iniciar com doses menores em idosos, pacientes frágeis ou com doença renal, monitorando sedação, depressão respiratória, edema, irritação, hematoma ou infecção local.",
-    reference: "1, 2, 3, 4, 6, OE",
+      "Não existe dose máxima definida. Iniciar com doses menores em idosos, pacientes frágeis ou com doença renal, monitorando sedação, depressão respiratória, edema, irritação, hematoma ou infecção local. Preferir diluição da medicação que será infundida em 24h no lugar de solução 1:1 a fim de evitar desperdício de medicação (OE).",
+    reference: "1, 2, 3, 5, OE",
   },
   escopolamina: {
     dose: "20mg 8/8h até 60mg 6/6h; estudo descreve bolus SC de 20mg e manutenção 60mg/24h",
@@ -996,7 +998,7 @@ const prescriptionData = {
     time: "Infusão em bolus ou contínua",
     minVolume: "",
     comments: "Não confundir com apresentação combinada com dipirona.",
-    reference: "5, 6",
+    reference: "4, 5",
   },
   clorpromazina: {
     dose: "12,5 a 50mg até de 6/6h (dose máxima 150mg/dia)",
@@ -1004,7 +1006,17 @@ const prescriptionData = {
     time: "30min ou infusão contínua",
     minVolume: "",
     comments: "Se infusão contínua, usar frasco sem PVC.",
-    reference: "7, 8, 9",
+    reference: "6, 7, 8",
+  },
+  ceftriaxona: {
+    dose:
+      "1 a 2g SC a cada 24h, conforme indicação clínica, prescrição e protocolo local. Em coorte com pacientes acima de 75 anos, a dose média foi próxima de 1g/dia",
+    dilution: "Diluição em SF 0,9% 100 ml",
+    time: "Infundir em 60min (OE)",
+    minVolume: "",
+    comments:
+      "Evidências em adultos, especialmente idosos, descrevem uso SC como alternativa viável quando o acesso venoso é difícil. No estudo prospectivo em cuidados paliativos, não houve suspensão por intolerância local; quando houve irritação, foi manejada com troca do ponto de infusão. Reações locais, como edema, dor, induração, rubor ou irritação, devem ser monitoradas.",
+    reference: "5, 16, 17, 18, 19, 20",
   },
   dipirona: {
     dose: "1 a 2g até 6/6h, conforme protocolo local",
@@ -1013,7 +1025,7 @@ const prescriptionData = {
     minVolume: "",
     comments:
       "As fontes revisadas não encontraram estudos com parâmetros específicos de volume, diluição ou taxa de infusão para metamizol/dipirona por hipodermóclise.",
-    reference: "6, OE",
+    reference: "5, OE",
   },
   dexametasona: {
     dose: "2 a 16mg a cada 24h",
@@ -1022,7 +1034,7 @@ const prescriptionData = {
     minVolume: "",
     comments:
       "Geralmente utilizada em via exclusiva, porém é possível utilizar outras medicações no mesmo sítio desde que seja respeitado o intervalo de no mínimo 60min (OE). Estudos descrevem uso subcutâneo frequente em cuidados paliativos, mas não trazem volume, concentração ou taxa em mL/h específicos para dexametasona.",
-    reference: "6, 10, 11, OE",
+    reference: "5, 9, 10, OE",
   },
   haloperidol: {
     dose: "Em CSCI, mediana aproximada de 2,5 a 3mg/24h; faixa observada de 0,5 a 10mg/24h",
@@ -1031,7 +1043,7 @@ const prescriptionData = {
     time: "Bolus lento ou infusão subcutânea contínua, geralmente em 24h",
     minVolume: "",
     comments: "",
-    reference: "6, 11, 12, 13, 14, 15",
+    reference: "5, 10, 11, 12, 13, 14",
   },
   midazolam: {
     dose: "1 a 5mg em bolus ou infusão contínua, titulando conforme sintomas",
@@ -1040,7 +1052,7 @@ const prescriptionData = {
     minVolume: "",
     comments:
       "Pode causar irritação local. Velocidade de infusão de 0,5mL/h a 20mL/h, equivalente a aproximadamente 0,2-7 gotas/min em equipo de macrogotas.",
-    reference: "6, 13, 14, 16",
+    reference: "5, 12, 13, 15",
   },
   sf: {
     dose: "Máximo de 1500mL em 24h conforme sítio de punção",
@@ -1049,7 +1061,7 @@ const prescriptionData = {
     minVolume: "",
     comments:
       "Atentar para tolerância volêmica de acordo com o tecido subcutâneo do paciente (OE). Volume de infusão máximo 62,5mL/h, equivalente a aproximadamente 21 gotas/min em equipo de macrogotas. Considerar o limite de volume conforme o sítio de punção escolhido.",
-    reference: "6, 7, 8, OE",
+    reference: "5, 6, 7, OE",
   },
 };
 
@@ -1090,6 +1102,14 @@ function renderCompatibilityResult() {
     };
   } else if (explicitPair) {
     result = explicitPair;
+  } else if (first === "ceftriaxona" || second === "ceftriaxona") {
+    result = {
+      status: "dados insuficientes",
+      className: "warning",
+      source: "Compatibilidade refs. 2, 5, 6",
+      detail:
+        'Não há dado específico de mistura, na mesma seringa ou bomba subcutânea, envolvendo ceftriaxona com os demais medicamentos desta matriz.<sup class="ref-mark">2,5,6</sup>',
+    };
   } else if (first === "dipirona" || second === "dipirona") {
     result = {
       status: "dados insuficientes",
@@ -1118,6 +1138,9 @@ function getCompatibility(first, second) {
   }
   const explicitPair = compatibilityPairs[compatibilityKey(first, second)];
   if (explicitPair) return explicitPair;
+  if (first === "ceftriaxona" || second === "ceftriaxona") {
+    return { status: "dados insuficientes", className: "warning", source: "Compatibilidade refs. 2, 5, 6" };
+  }
   if (first === "dipirona" || second === "dipirona") {
     return { status: "dados insuficientes", className: "warning", source: "Dados insuficientes" };
   }
@@ -1155,12 +1178,25 @@ function syncPrescriptionOptions() {
   prescriptionItemControls = Array.from(document.querySelectorAll(".prescription-item"));
 }
 
+function updatePrescriptionOptionAvailability() {
+  const selectedItems = selectedPrescriptionItems();
+  prescriptionItemControls.forEach((control) => {
+    Array.from(control.options).forEach((option) => {
+      option.disabled =
+        Boolean(option.value) &&
+        option.value !== control.value &&
+        selectedItems.includes(option.value);
+    });
+  });
+}
+
 function prescriptionOptionMarkup() {
   return `
     <option value="">Nenhum item</option>
     <option value="morfina">Morfina</option>
     <option value="escopolamina">Escopolamina</option>
     <option value="clorpromazina">Clorpromazina</option>
+    <option value="ceftriaxona">Ceftriaxona</option>
     <option value="dipirona">Dipirona</option>
     <option value="dexametasona">Dexametasona</option>
     <option value="haloperidol">Haloperidol</option>
@@ -1180,6 +1216,7 @@ function refreshPrescriptionItemLabels() {
 function bindPrescriptionItem(control) {
   control.addEventListener("change", () => {
     syncPrescriptionOptions();
+    updatePrescriptionOptionAvailability();
     generatePrescription();
   });
 }
@@ -1201,6 +1238,7 @@ function addPrescriptionItem() {
   prescriptionItemControls.push(control);
   bindPrescriptionItem(control);
   refreshPrescriptionItemLabels();
+  updatePrescriptionOptionAvailability();
   control.focus();
 }
 
@@ -1528,6 +1566,7 @@ restoreMaterialChecklist();
 markActiveLanguage(currentLanguage());
 renderCompatibilityResult();
 syncPrescriptionOptions();
+updatePrescriptionOptionAvailability();
 updateVisitCounter();
 initializeDropCameraAccess();
 openHashTab();
