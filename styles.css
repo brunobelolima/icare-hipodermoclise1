@@ -1789,13 +1789,44 @@ details.references summary {
   }
 
   #para-gestores .manager-cost-table {
-    min-width: 560px;
+    min-width: 0;
+  }
+
+  #para-gestores .manager-cost-table thead {
+    display: none;
+  }
+
+  #para-gestores .manager-cost-table,
+  #para-gestores .manager-cost-table tbody,
+  #para-gestores .manager-cost-table tr,
+  #para-gestores .manager-cost-table td {
+    display: block;
+    width: 100%;
+  }
+
+  #para-gestores .manager-cost-table tr {
+    border-bottom: 1px solid var(--line);
+    padding: 10px 0;
+  }
+
+  #para-gestores .manager-cost-table tr:last-child {
+    border-bottom: 0;
   }
 
   #para-gestores .manager-cost-table th,
   #para-gestores .manager-cost-table td {
-    padding: 10px 8px;
+    display: grid;
+    grid-template-columns: minmax(118px, 0.45fr) minmax(0, 0.55fr);
+    gap: 10px;
+    border-bottom: 0;
+    padding: 8px 10px;
     font-size: 0.86rem;
+  }
+
+  #para-gestores .manager-cost-table td::before {
+    content: attr(data-label);
+    color: var(--accent-2);
+    font-weight: 900;
   }
 
   #indicacoes .status-panel {
