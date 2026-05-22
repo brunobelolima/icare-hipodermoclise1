@@ -22,6 +22,8 @@ const techniqueSubtabs = Array.from(document.querySelectorAll(".technique-subtab
 const techniqueSubtabPanels = Array.from(document.querySelectorAll("[data-technique-panel]"));
 const dropSubtabs = Array.from(document.querySelectorAll(".drop-subtab"));
 const dropSubtabPanels = Array.from(document.querySelectorAll("[data-drop-panel]"));
+const managerSubtabs = Array.from(document.querySelectorAll(".manager-subtab"));
+const managerSubtabPanels = Array.from(document.querySelectorAll("[data-manager-panel]"));
 const compatItemA = document.querySelector("#compatItemA");
 const compatItemB = document.querySelector("#compatItemB");
 const compatInteractiveResult = document.querySelector("#compatInteractiveResult");
@@ -715,6 +717,24 @@ function moveDropSubtabFocus(currentTrigger, direction) {
   nextTrigger.focus();
 }
 
+function toggleManagerSubtab(trigger) {
+  const target = trigger.dataset.managerSubtab;
+  const shouldOpen = trigger.getAttribute("aria-expanded") !== "true";
+
+  managerSubtabs.forEach((item) => {
+    const isTarget = item === trigger && shouldOpen;
+    item.setAttribute("aria-selected", String(isTarget));
+    item.setAttribute("aria-expanded", String(isTarget));
+    item.setAttribute("tabindex", "0");
+  });
+
+  managerSubtabPanels.forEach((panel) => {
+    const isTarget = panel.dataset.managerPanel === target && shouldOpen;
+    panel.hidden = !isTarget;
+    panel.classList.toggle("active", isTarget);
+  });
+}
+
 function openDocumentChecklist() {
   if (!documentChecklistTrigger || !documentChecklistPanel) return;
   documentChecklistPanel.hidden = false;
@@ -783,6 +803,7 @@ function openHashTab() {
     "material-checklist": "documentos",
     monitoramento: "documentos",
     cuidador: "orientacoes-cuidador",
+    gestores: "para-gestores",
   };
   const rawHash = window.location.hash.replace("#", "");
   const targetElement = rawHash ? document.getElementById(rawHash) : null;
@@ -879,6 +900,7 @@ const compatibilityLabels = {
   haloperidol: "Haloperidol",
   midazolam: "Midazolam",
   sf: "Soro fisiológico 0,9% (SF)",
+  sg5: "Soro glicosado 5% (SG 5%)",
 };
 
 const compatibilityPairs = {
@@ -935,6 +957,20 @@ const compatibilityPairs = {
     className: "success",
     source: "OE",
     detail: 'Compatível para uso conforme orientação cadastrada na prescrição.<sup class="ref-mark">OE</sup>',
+  },
+  "morfina::sg5": {
+    status: "compatível",
+    className: "success",
+    source: "Compatibilidade ref. 7",
+    detail:
+      'Solução de glicose 5% associada a SF 0,9% com morfina foi descrita como bem tolerada em hipodermóclise.<sup class="ref-mark">7</sup>',
+  },
+  "sf::sg5": {
+    status: "compatível",
+    className: "success",
+    source: "Compatibilidade ref. 7",
+    detail:
+      'A associação 2/3 glicose 5% + 1/3 SF 0,9% foi descrita em hipodermóclise.<sup class="ref-mark">7</sup>',
   },
   "clorpromazina::morfina": {
     status: "dados insuficientes",
@@ -1063,6 +1099,15 @@ const prescriptionData = {
       "Atentar para tolerância volêmica de acordo com o tecido subcutâneo do paciente (OE). Volume de infusão máximo 62,5mL/h, equivalente a aproximadamente 21 gotas/min em equipo de macrogotas. Considerar o limite de volume conforme o sítio de punção escolhido.",
     reference: "5, 6, 7, OE",
   },
+  sg5: {
+    dose: "Máximo de 1500mL em 24h conforme sítio de punção",
+    dilution: "Solução pronta para infusão; preferir uso associado à solução salina/isotônica quando indicado",
+    time: "Infusão contínua conforme prescrição e tolerância local",
+    minVolume: "",
+    comments:
+      "Atentar para tolerância volêmica de acordo com o tecido subcutâneo do paciente (OE). Volume de infusão máximo 62,5mL/h, equivalente a aproximadamente 21 gotas/min em equipo de macrogotas. Considerar o limite de volume conforme o sítio de punção escolhido.",
+    reference: "5, 21",
+  },
 };
 
 function compatibilityKey(first, second) {
@@ -1093,15 +1138,23 @@ function renderCompatibilityResult() {
   let result;
   const explicitPair = compatibilityPairs[compatibilityKey(first, second)];
 
-  if (first === "sf" || second === "sf") {
+  if (explicitPair) {
+    result = explicitPair;
+  } else if (first === "sf" || second === "sf") {
     result = {
       status: "compatível",
       className: "success",
       source: "Compatibilidade refs. 1, 2, 3",
       detail: 'SF 0,9% é o diluente presente nas combinações com melhor suporte descritas na fonte.<sup class="ref-mark">1,2,3</sup>',
     };
-  } else if (explicitPair) {
-    result = explicitPair;
+  } else if (first === "sg5" || second === "sg5") {
+    result = {
+      status: "dados insuficientes",
+      className: "warning",
+      source: "Compatibilidade ref. 7",
+      detail:
+        'Não há dados diretos de compatibilidade físico-química ou segurança local para esta mistura em soro glicosado 5%, com ou sem SF 0,9%.<sup class="ref-mark">7</sup>',
+    };
   } else if (first === "ceftriaxona" || second === "ceftriaxona") {
     result = {
       status: "dados insuficientes",
@@ -1133,11 +1186,17 @@ function renderCompatibilityResult() {
 }
 
 function getCompatibility(first, second) {
-  if (first === second || first === "sf" || second === "sf") {
-    return { status: "compatível", className: "success", source: "Compatibilidade refs. 1, 2, 3" };
+  if (first === second) {
+    return { status: "compatível", className: "success", source: "Mesmo item" };
   }
   const explicitPair = compatibilityPairs[compatibilityKey(first, second)];
   if (explicitPair) return explicitPair;
+  if (first === "sf" || second === "sf") {
+    return { status: "compatível", className: "success", source: "Compatibilidade refs. 1, 2, 3" };
+  }
+  if (first === "sg5" || second === "sg5") {
+    return { status: "dados insuficientes", className: "warning", source: "Compatibilidade ref. 7" };
+  }
   if (first === "ceftriaxona" || second === "ceftriaxona") {
     return { status: "dados insuficientes", className: "warning", source: "Compatibilidade refs. 2, 5, 6" };
   }
@@ -1202,6 +1261,7 @@ function prescriptionOptionMarkup() {
     <option value="haloperidol">Haloperidol</option>
     <option value="midazolam">Midazolam</option>
     <option value="sf">Soro fisiológico 0,9% (SF)</option>
+    <option value="sg5">Soro glicosado 5% (SG 5%)</option>
   `;
 }
 
@@ -1514,6 +1574,16 @@ dropSubtabs.forEach((trigger) => {
       const lastTrigger = dropSubtabs[dropSubtabs.length - 1];
       activateDropSubtab(lastTrigger);
       lastTrigger.focus();
+    }
+  });
+});
+
+managerSubtabs.forEach((trigger) => {
+  trigger.addEventListener("click", () => toggleManagerSubtab(trigger));
+  trigger.addEventListener("keydown", (event) => {
+    if (event.key === "Enter" || event.key === " ") {
+      event.preventDefault();
+      toggleManagerSubtab(trigger);
     }
   });
 });

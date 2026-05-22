@@ -177,7 +177,7 @@ video {
 
 .visit-counter small {
   color: var(--muted);
-  font-size: 0.7rem;
+  font-size: 0.5rem;
   font-weight: 700;
   line-height: 1.2;
   max-width: 150px;
@@ -410,6 +410,12 @@ h1 {
   padding: 14px;
 }
 
+.summary-item.highlight {
+  border-color: rgba(245, 158, 11, 0.75);
+  background: #fef3c7;
+  box-shadow: 0 12px 26px rgba(180, 83, 9, 0.2);
+}
+
 .summary-item strong {
   display: block;
   color: var(--accent-2);
@@ -423,6 +429,12 @@ h1 {
   color: var(--muted);
   font-size: 0.88rem;
   font-weight: 700;
+}
+
+.summary-item.highlight span {
+  color: #92400e;
+  font-size: 1.05rem;
+  font-weight: 900;
 }
 
 .module-grid,
@@ -1397,15 +1409,23 @@ details.references summary {
   gap: 8px;
 }
 
+.manager-subtabs {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 8px;
+}
+
 .drop-subtabs,
-.technique-subtabs {
+.technique-subtabs,
+.manager-subtabs {
   align-items: stretch;
 }
 
 .material-subtab,
 .material-list-subtab,
 .drop-subtab,
-.technique-subtab {
+.technique-subtab,
+.manager-subtab {
   min-height: 48px;
   border: 1px solid var(--line);
   border-radius: 6px;
@@ -1425,13 +1445,15 @@ details.references summary {
 .material-subtab[aria-selected="true"],
 .material-list-subtab[aria-selected="true"],
 .drop-subtab[aria-selected="true"],
-.technique-subtab[aria-selected="true"] {
+.technique-subtab[aria-selected="true"],
+.manager-subtab[aria-selected="true"] {
   background: var(--accent);
   color: white;
   box-shadow: 0 8px 18px rgba(8, 145, 178, 0.22);
 }
 
-.drop-subtab-panel[hidden] {
+.drop-subtab-panel[hidden],
+.manager-subtab-panel[hidden] {
   display: none;
 }
 
