@@ -437,6 +437,10 @@ h1 {
   font-weight: 900;
 }
 
+.manager-cost-table {
+  min-width: 620px;
+}
+
 .module-grid,
 .tech-grid {
   display: grid;
@@ -1711,7 +1715,8 @@ details.references summary {
   .drop-subtab,
   .material-subtab,
   .material-list-subtab,
-  .technique-subtab {
+  .technique-subtab,
+  .manager-subtab {
     width: 100%;
   }
 
@@ -1764,6 +1769,33 @@ details.references summary {
 
   .compat-table {
     min-width: 720px;
+  }
+
+  #para-gestores .database-summary {
+    grid-template-columns: 1fr;
+  }
+
+  #para-gestores .summary-item strong {
+    font-size: 1.1rem;
+    line-height: 1.2;
+  }
+
+  #para-gestores .summary-item span {
+    font-size: 1rem;
+  }
+
+  #para-gestores .summary-item.highlight span {
+    font-size: 1.22rem;
+  }
+
+  #para-gestores .manager-cost-table {
+    min-width: 560px;
+  }
+
+  #para-gestores .manager-cost-table th,
+  #para-gestores .manager-cost-table td {
+    padding: 10px 8px;
+    font-size: 0.86rem;
   }
 
   #indicacoes .status-panel {
