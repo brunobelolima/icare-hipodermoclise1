@@ -899,6 +899,7 @@ const compatibilityLabels = {
   dexametasona: "Dexametasona",
   haloperidol: "Haloperidol",
   midazolam: "Midazolam",
+  metoclopramida: "Metoclopramida",
   sf: "Soro fisiológico 0,9% (SF)",
   sg5: "Soro glicosado 5% (SG 5%)",
 };
@@ -939,6 +940,20 @@ const compatibilityPairs = {
     detail:
       'A combinação morfina + haloperidol + midazolam é descrita como frequente em CSCI em cuidados paliativos.<sup class="ref-mark">3,5</sup>',
   },
+  "metoclopramida::morfina": {
+    status: "compatível",
+    className: "success",
+    source: "Compatibilidade refs. 9-11",
+    detail:
+      'Misturas binárias/ternárias com morfina, haloperidol e metoclopramida foram descritas como compatíveis e estáveis em SF.<sup class="ref-mark">9-11</sup>',
+  },
+  "haloperidol::metoclopramida": {
+    status: "compatível",
+    className: "success",
+    source: "Compatibilidade refs. 9-11",
+    detail:
+      'Misturas binárias/ternárias com morfina, haloperidol e metoclopramida foram descritas como compatíveis e estáveis em SF.<sup class="ref-mark">9-11</sup>',
+  },
   "escopolamina::midazolam": {
     status: "compatível",
     className: "success",
@@ -961,16 +976,16 @@ const compatibilityPairs = {
   "morfina::sg5": {
     status: "compatível",
     className: "success",
-    source: "Compatibilidade ref. 7",
+    source: "Compatibilidade refs. 7, 8",
     detail:
-      'Solução de glicose 5% associada a SF 0,9% com morfina foi descrita como bem tolerada em hipodermóclise.<sup class="ref-mark">7</sup>',
+      'Solução de glicose 5% associada a SF 0,9% com morfina foi descrita como bem tolerada em hipodermóclise.<sup class="ref-mark">7,8</sup>',
   },
   "sf::sg5": {
     status: "compatível",
     className: "success",
-    source: "Compatibilidade ref. 7",
+    source: "Compatibilidade refs. 7, 8",
     detail:
-      'A associação 2/3 glicose 5% + 1/3 SF 0,9% foi descrita em hipodermóclise.<sup class="ref-mark">7</sup>',
+      'A associação 2/3 glicose 5% + 1/3 SF 0,9% foi descrita em hipodermóclise.<sup class="ref-mark">7,8</sup>',
   },
   "clorpromazina::morfina": {
     status: "dados insuficientes",
@@ -1026,7 +1041,7 @@ const prescriptionData = {
     minVolume: "",
     comments:
       "Não existe dose máxima definida. Iniciar com doses menores em idosos, pacientes frágeis ou com doença renal, monitorando sedação, depressão respiratória, edema, irritação, hematoma ou infecção local. Preferir diluição da medicação que será infundida em 24h no lugar de solução 1:1 a fim de evitar desperdício de medicação (OE).",
-    reference: "1, 2, 3, 5, OE",
+    reference: "1, 2, 4, OE",
   },
   escopolamina: {
     dose: "20mg 8/8h até 60mg 6/6h; estudo descreve bolus SC de 20mg e manutenção 60mg/24h",
@@ -1034,7 +1049,7 @@ const prescriptionData = {
     time: "Infusão em bolus ou contínua",
     minVolume: "",
     comments: "Não confundir com apresentação combinada com dipirona.",
-    reference: "4, 5",
+    reference: "3, 4",
   },
   clorpromazina: {
     dose: "12,5 a 50mg até de 6/6h (dose máxima 150mg/dia)",
@@ -1042,7 +1057,7 @@ const prescriptionData = {
     time: "30min ou infusão contínua",
     minVolume: "",
     comments: "Se infusão contínua, usar frasco sem PVC.",
-    reference: "6, 7, 8",
+    reference: "5, 6, 7",
   },
   ceftriaxona: {
     dose:
@@ -1052,7 +1067,7 @@ const prescriptionData = {
     minVolume: "",
     comments:
       "Evidências em adultos, especialmente idosos, descrevem uso SC como alternativa viável quando o acesso venoso é difícil. No estudo prospectivo em cuidados paliativos, não houve suspensão por intolerância local; quando houve irritação, foi manejada com troca do ponto de infusão. Reações locais, como edema, dor, induração, rubor ou irritação, devem ser monitoradas.",
-    reference: "5, 16, 17, 18, 19, 20",
+    reference: "4, 15, 16, 17, 18, 19",
   },
   dipirona: {
     dose: "1 a 2g até 6/6h, conforme protocolo local",
@@ -1061,7 +1076,7 @@ const prescriptionData = {
     minVolume: "",
     comments:
       "As fontes revisadas não encontraram estudos com parâmetros específicos de volume, diluição ou taxa de infusão para metamizol/dipirona por hipodermóclise.",
-    reference: "5, OE",
+    reference: "4, OE",
   },
   dexametasona: {
     dose: "2 a 16mg a cada 24h",
@@ -1070,7 +1085,7 @@ const prescriptionData = {
     minVolume: "",
     comments:
       "Geralmente utilizada em via exclusiva, porém é possível utilizar outras medicações no mesmo sítio desde que seja respeitado o intervalo de no mínimo 60min (OE). Estudos descrevem uso subcutâneo frequente em cuidados paliativos, mas não trazem volume, concentração ou taxa em mL/h específicos para dexametasona.",
-    reference: "5, 9, 10, OE",
+    reference: "4, 8, 9, OE",
   },
   haloperidol: {
     dose: "Em CSCI, mediana aproximada de 2,5 a 3mg/24h; faixa observada de 0,5 a 10mg/24h",
@@ -1079,7 +1094,7 @@ const prescriptionData = {
     time: "Bolus lento ou infusão subcutânea contínua, geralmente em 24h",
     minVolume: "",
     comments: "",
-    reference: "5, 10, 11, 12, 13, 14",
+    reference: "4, 9, 10, 11, 12, 13",
   },
   midazolam: {
     dose: "1 a 5mg em bolus ou infusão contínua, titulando conforme sintomas",
@@ -1088,7 +1103,18 @@ const prescriptionData = {
     minVolume: "",
     comments:
       "Pode causar irritação local. Velocidade de infusão de 0,5mL/h a 20mL/h, equivalente a aproximadamente 0,2-7 gotas/min em equipo de macrogotas.",
-    reference: "5, 12, 13, 15",
+    reference: "4, 11, 12, 14",
+  },
+  metoclopramida: {
+    dose:
+      "10 a 20mg a cada 6-8h ou 30 a 60mg em bolus, conforme prescrição e protocolo local; estudos descrevem infusão subcutânea contínua de 60-90mg/dia e 120-240mg/24h em contextos oncológicos",
+    dilution:
+      "SF 50mL; em estudos com infusor portátil, foi usado volume total de 48mL/24h",
+    time: "50min ou infusão subcutânea contínua em 24h quando prescrita em bomba",
+    minVolume: "SF 1:1mL, infusão lenta em bolus",
+    comments:
+      "Monitorar probabilidade de efeitos extrapiramidais. É irritante, sendo comum a ocorrência de reação no local de aplicação; estudos também descreveram sonolência, acatisia e irritação local.",
+    reference: "4, 21, 22",
   },
   sf: {
     dose: "Máximo de 1500mL em 24h conforme sítio de punção",
@@ -1097,7 +1123,7 @@ const prescriptionData = {
     minVolume: "",
     comments:
       "Atentar para tolerância volêmica de acordo com o tecido subcutâneo do paciente (OE). Volume de infusão máximo 62,5mL/h, equivalente a aproximadamente 21 gotas/min em equipo de macrogotas. Considerar o limite de volume conforme o sítio de punção escolhido.",
-    reference: "5, 6, 7, OE",
+    reference: "4, 5, 6, OE",
   },
   sg5: {
     dose: "Máximo de 1500mL em 24h conforme sítio de punção",
@@ -1106,7 +1132,7 @@ const prescriptionData = {
     minVolume: "",
     comments:
       "Atentar para tolerância volêmica de acordo com o tecido subcutâneo do paciente (OE). Volume de infusão máximo 62,5mL/h, equivalente a aproximadamente 21 gotas/min em equipo de macrogotas. Considerar o limite de volume conforme o sítio de punção escolhido.",
-    reference: "5, 21",
+    reference: "4, 20",
   },
 };
 
@@ -1151,9 +1177,9 @@ function renderCompatibilityResult() {
     result = {
       status: "dados insuficientes",
       className: "warning",
-      source: "Compatibilidade ref. 7",
+      source: "Compatibilidade refs. 6-8",
       detail:
-        'Não há dados diretos de compatibilidade físico-química ou segurança local para esta mistura em soro glicosado 5%, com ou sem SF 0,9%.<sup class="ref-mark">7</sup>',
+        'Não há dados diretos de compatibilidade físico-química ou segurança local para esta mistura em soro glicosado 5%, com ou sem SF 0,9%.<sup class="ref-mark">6-8</sup>',
     };
   } else if (first === "ceftriaxona" || second === "ceftriaxona") {
     result = {
@@ -1169,6 +1195,13 @@ function renderCompatibilityResult() {
       className: "warning",
       source: "Dados insuficientes",
       detail: "As fontes não apresentam dado direto de compatibilidade da dipirona nessas misturas.",
+    };
+  } else if (first === "metoclopramida" || second === "metoclopramida") {
+    result = {
+      status: "dados insuficientes",
+      className: "warning",
+      source: "Dados insuficientes",
+      detail: "Não há dado direto de compatibilidade da metoclopramida com este item nas fontes cadastradas.",
     };
   } else {
     result = {
@@ -1195,12 +1228,15 @@ function getCompatibility(first, second) {
     return { status: "compatível", className: "success", source: "Compatibilidade refs. 1, 2, 3" };
   }
   if (first === "sg5" || second === "sg5") {
-    return { status: "dados insuficientes", className: "warning", source: "Compatibilidade ref. 7" };
+    return { status: "dados insuficientes", className: "warning", source: "Compatibilidade refs. 6-8" };
   }
   if (first === "ceftriaxona" || second === "ceftriaxona") {
     return { status: "dados insuficientes", className: "warning", source: "Compatibilidade refs. 2, 5, 6" };
   }
   if (first === "dipirona" || second === "dipirona") {
+    return { status: "dados insuficientes", className: "warning", source: "Dados insuficientes" };
+  }
+  if (first === "metoclopramida" || second === "metoclopramida") {
     return { status: "dados insuficientes", className: "warning", source: "Dados insuficientes" };
   }
   return (
@@ -1260,6 +1296,7 @@ function prescriptionOptionMarkup() {
     <option value="dexametasona">Dexametasona</option>
     <option value="haloperidol">Haloperidol</option>
     <option value="midazolam">Midazolam</option>
+    <option value="metoclopramida">Metoclopramida</option>
     <option value="sf">Soro fisiológico 0,9% (SF)</option>
     <option value="sg5">Soro glicosado 5% (SG 5%)</option>
   `;

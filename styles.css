@@ -391,6 +391,12 @@ h1 {
   text-decoration: none;
 }
 
+.manager-document-card .primary-button,
+.manager-document-card .secondary-button {
+  text-align: center;
+  text-decoration: none;
+}
+
 .drug-grid {
   display: grid;
   grid-template-columns: 1fr;
@@ -1007,13 +1013,18 @@ textarea {
 input:focus,
 select:focus,
 textarea:focus,
-button:focus-visible {
+button:focus-visible,
+a.primary-button:focus-visible,
+a.secondary-button:focus-visible {
   outline: 3px solid color-mix(in srgb, var(--focus), transparent 45%);
   outline-offset: 2px;
 }
 
 .primary-button,
 .secondary-button {
+  align-items: center;
+  display: inline-flex;
+  justify-content: center;
   width: fit-content;
   min-height: 44px;
   border-radius: 6px;
