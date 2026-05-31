@@ -55,7 +55,7 @@ const contactForm = document.querySelector("#contactForm");
 const contactResult = document.querySelector("#contactResult");
 const techniqueVideo = document.querySelector("#techniqueVideo");
 const techniqueVideoFallback = document.querySelector("#techniqueVideoFallback");
-const visitCounter = document.querySelector("#visitCounter");
+const visitCounters = Array.from(document.querySelectorAll("[data-visit-counter-value]"));
 const documentNoteTrigger = document.querySelector("#documentNoteTrigger");
 const documentNotePanel = document.querySelector("#documentNote");
 const closeDocumentNoteButton = document.querySelector("#closeDocumentNote");
@@ -192,6 +192,7 @@ function denyProfessionalAccess() {
   document.body.classList.add("access-limited");
   if (accessGate) accessGate.hidden = true;
   if (appShell) appShell.removeAttribute("aria-hidden");
+  updateVisitCounter({ incrementIfNewSession: true });
   const publicTab = tabs.find((tab) => tab.dataset.tab === "nao-profissionais");
   if (publicTab) activateTab(publicTab, { scrollToPanel: true });
 }
@@ -241,7 +242,7 @@ function isLocalPreview() {
 }
 
 async function updateVisitCounter({ incrementIfNewSession = false } = {}) {
-  if (!visitCounter) return;
+  if (!visitCounters.length) return;
   if (visitCounterLoaded) return;
 
   const shouldIncrement = incrementIfNewSession && shouldCountNewVisit() && !isLocalPreview();
@@ -251,11 +252,15 @@ async function updateVisitCounter({ incrementIfNewSession = false } = {}) {
     const response = await fetch(targetUrl, { cache: "no-store" });
     if (!response.ok) throw new Error("Visit counter request failed");
     const data = await response.json();
-    visitCounter.textContent = String(data.value);
+    visitCounters.forEach((counter) => {
+      counter.textContent = String(data.value);
+    });
     if (shouldIncrement) rememberCountedVisit();
     visitCounterLoaded = true;
   } catch {
-    visitCounter.textContent = "--";
+    visitCounters.forEach((counter) => {
+      counter.textContent = "--";
+    });
   }
 }
 
@@ -288,6 +293,11 @@ function activateTab(tab, { scrollToPanel: shouldMoveToPanel = false } = {}) {
 
   if (document.body.classList.contains("access-limited") && !limitedAccessTabs.has(targetId)) {
     targetId = "nao-profissionais";
+    tab = tabs.find((item) => item.dataset.tab === targetId) || tab;
+  }
+
+  if (!document.body.classList.contains("access-limited") && targetId === "nao-profissionais") {
+    targetId = "boas-vindas";
     tab = tabs.find((item) => item.dataset.tab === targetId) || tab;
   }
 

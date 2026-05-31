@@ -47,6 +47,10 @@ body.access-limited .tab-trigger:not([data-tab="nao-profissionais"]):not([data-t
   display: none;
 }
 
+body:not(.access-limited) .tab-trigger[data-tab="nao-profissionais"] {
+  display: none;
+}
+
 button,
 input,
 select,
