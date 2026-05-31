@@ -3,11 +3,39 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>iCare - hipodermóclise</title>
+    <title>iCare Hipodermóclise | Guia para profissionais de saúde</title>
     <meta
       name="description"
-      content="iCare - hipodermóclise: uso de hipodermóclise baseado em evidências."
+      content="Guia iCare sobre hipodermóclise para profissionais de saúde: técnica de punção, materiais, medicamentos, compatibilidade, prescrição, pediatria e cuidados ao cuidador."
     />
+    <meta
+      name="keywords"
+      content="hipodermóclise, via subcutânea, cuidados paliativos, geriatria, pediatria, técnica de punção, medicamentos subcutâneos, compatibilidade medicamentosa, prescrição"
+    />
+    <meta name="author" content="iCare Hipodermóclise" />
+    <meta name="robots" content="index, follow, max-image-preview:large" />
+    <meta name="theme-color" content="#0891b2" />
+    <meta name="application-name" content="iCare Hipodermóclise" />
+    <link rel="canonical" href="https://icare-hipodermoclise.com.br/" />
+    <meta property="og:type" content="website" />
+    <meta property="og:locale" content="pt_BR" />
+    <meta property="og:url" content="https://icare-hipodermoclise.com.br/" />
+    <meta property="og:site_name" content="iCare Hipodermóclise" />
+    <meta property="og:title" content="iCare Hipodermóclise | Guia para profissionais de saúde" />
+    <meta
+      property="og:description"
+      content="Conteúdo sobre hipodermóclise com técnica de punção, materiais, medicamentos, compatibilidade, prescrição, pediatria e orientações ao cuidador."
+    />
+    <meta property="og:image" content="https://icare-hipodermoclise.com.br/assets/hero-care.png" />
+    <meta property="og:image:alt" content="Profissional de saúde em contexto de cuidado e hipodermóclise" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="iCare Hipodermóclise | Guia para profissionais de saúde" />
+    <meta
+      name="twitter:description"
+      content="Guia de hipodermóclise para profissionais de saúde, com técnica, medicamentos, compatibilidade, prescrição e pediatria."
+    />
+    <meta name="twitter:image" content="https://icare-hipodermoclise.com.br/assets/hero-care.png" />
+    <link rel="icon" type="image/png" href="assets/icare-logo.png" />
     <meta name="google-adsense-account" content="ca-pub-1435631700716852" />
     <script
       async
@@ -24,6 +52,33 @@
       gtag('config', 'G-VNR1FJ5SVK');
     </script>
     <link rel="stylesheet" href="styles.css" />
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@type": ["MedicalWebPage", "WebApplication"],
+        "name": "iCare Hipodermóclise",
+        "applicationCategory": "HealthApplication",
+        "operatingSystem": "Web",
+        "url": "https://icare-hipodermoclise.com.br/",
+        "inLanguage": "pt-BR",
+        "description": "Guia sobre hipodermóclise para profissionais de saúde, com técnica de punção, materiais, medicamentos, compatibilidade, prescrição, pediatria e orientações ao cuidador.",
+        "about": {
+          "@type": "MedicalProcedure",
+          "name": "Hipodermóclise",
+          "alternateName": "Via subcutânea"
+        },
+        "audience": {
+          "@type": "MedicalAudience",
+          "audienceType": "Profissionais de saúde"
+        },
+        "publisher": {
+          "@type": "Organization",
+          "name": "iCare Hipodermóclise",
+          "email": "icarehipodermoclise@gmail.com"
+        },
+        "image": "https://icare-hipodermoclise.com.br/assets/hero-care.png"
+      }
+    </script>
   </head>
   <body class="access-pending">
     <div class="access-gate" id="accessGate" role="dialog" aria-modal="true" aria-labelledby="accessGateTitle">
@@ -56,7 +111,11 @@
 
     <main class="app" aria-hidden="true">
       <header class="masthead">
-        <div class="visit-counter" aria-live="polite">
+        <div
+          class="visit-counter"
+          aria-live="polite"
+          title="Contabiliza uma visita por navegador a cada 12 horas após confirmação de profissional de saúde, sem contar pré-visualizações locais."
+        >
           <span>Visitas ao site</span>
           <strong id="visitCounter">0</strong>
           <small>Desde 10 de maio de 2026</small>
@@ -88,6 +147,9 @@
           </button>
           <button class="tab-trigger" role="tab" aria-selected="false" data-tab="compatibilidade">
             Compatibilidade
+          </button>
+          <button class="tab-trigger" role="tab" aria-selected="false" data-tab="pediatria">
+            Pediatria
           </button>
           <button class="tab-trigger" role="tab" aria-selected="false" data-tab="prescricao">
             Prescrição
@@ -800,11 +862,326 @@
           </div>
         </article>
 
+        <article id="pediatria" class="tab-panel" role="tabpanel">
+          <div class="card">
+            <div class="card-content stack">
+              <h2>Pediatria</h2>
+              <div class="pediatric-subtabs" role="tablist" aria-label="Conteúdos de pediatria">
+                <button
+                  class="pediatric-subtab"
+                  type="button"
+                  role="tab"
+                  aria-selected="true"
+                  data-pediatric-subtab="uso"
+                >
+                  Uso pediátrico
+                </button>
+                <button
+                  class="pediatric-subtab"
+                  type="button"
+                  role="tab"
+                  aria-selected="false"
+                  tabindex="-1"
+                  data-pediatric-subtab="considerar"
+                >
+                  Quando considerar
+                </button>
+                <button
+                  class="pediatric-subtab"
+                  type="button"
+                  role="tab"
+                  aria-selected="false"
+                  tabindex="-1"
+                  data-pediatric-subtab="evitar"
+                >
+                  Quando evitar
+                </button>
+                <button
+                  class="pediatric-subtab"
+                  type="button"
+                  role="tab"
+                  aria-selected="false"
+                  tabindex="-1"
+                  data-pediatric-subtab="tecnica"
+                >
+                  Técnica
+                </button>
+                <button
+                  class="pediatric-subtab"
+                  type="button"
+                  role="tab"
+                  aria-selected="false"
+                  tabindex="-1"
+                  data-pediatric-subtab="medicamentos"
+                >
+                  Medicamentos e soluções
+                </button>
+                <button
+                  class="pediatric-subtab"
+                  type="button"
+                  role="tab"
+                  aria-selected="false"
+                  tabindex="-1"
+                  data-pediatric-subtab="compatibilidade"
+                >
+                  Compatibilidade
+                </button>
+                <button
+                  class="pediatric-subtab"
+                  type="button"
+                  role="tab"
+                  aria-selected="false"
+                  tabindex="-1"
+                  data-pediatric-subtab="seguranca"
+                >
+                  Segurança
+                </button>
+              </div>
+
+              <section class="pediatric-subtab-panel active" data-pediatric-panel="uso">
+                <section class="status-panel warning">
+                  <h2>Uso pediátrico exige avaliação individual</h2>
+                  <p>
+                    A hipodermóclise em pediatria pode ser considerada quando a via oral está
+                    limitada e o acesso venoso é difícil, especialmente em cuidados paliativos ou
+                    acompanhamento domiciliar, desde que exista prescrição individualizada,
+                    equipe treinada e plano de monitoramento. A literatura pediátrica ainda é
+                    limitada, mas descreve a via como alternativa viável em crianças selecionadas,
+                    com foco em conforto, menor número de punções e manejo de sintomas.<sup class="ref-mark">1,2</sup>
+                  </p>
+                </section>
+              </section>
+
+              <section class="pediatric-subtab-panel" data-pediatric-panel="considerar" hidden>
+                <section class="status-panel success">
+                  <h2>Quando considerar</h2>
+                  <ul class="quick-list">
+                    <li>Hidratação de manutenção ou reposição lenta, quando não houver necessidade de ressuscitação volêmica rápida.<sup class="ref-mark">1,6,7</sup></li>
+                    <li>Administração subcutânea de medicamentos compatíveis quando a via oral não é possível e a via intravenosa não é desejável ou não está disponível.<sup class="ref-mark">2</sup></li>
+                    <li>Controle de sintomas em cuidado paliativo pediátrico, com acompanhamento próximo da equipe e orientação do cuidador.<sup class="ref-mark">2,3</sup></li>
+                    <li>Uso domiciliar apenas quando houver protocolo, material adequado, prescrição clara e acesso rápido à equipe de referência.<sup class="ref-mark">2,3</sup></li>
+                    <li>Crianças com desidratação leve a moderada ou necessidade de terapias selecionadas, sempre após avaliação clínica e definição de limites de volume e velocidade pela equipe.<sup class="ref-mark">6,7</sup></li>
+                  </ul>
+                </section>
+              </section>
+
+              <section class="pediatric-subtab-panel" data-pediatric-panel="evitar" hidden>
+                <section class="status-panel danger">
+                  <h2>Quando evitar ou suspender</h2>
+                  <ul class="quick-list">
+                    <li>Choque, desidratação grave, instabilidade hemodinâmica ou necessidade de infusão rápida de grande volume.</li>
+                    <li>Edema importante, infecção, lesão, dor intensa, perfusão ruim ou tecido subcutâneo inadequado no local escolhido.<sup class="ref-mark">1,4</sup></li>
+                    <li>Rubor progressivo, calor, endurecimento, extravasamento, vazamento, sangramento, bolha, necrose ou dor persistente no sítio.<sup class="ref-mark">2,4</sup></li>
+                    <li>Febre, calafrios, piora clínica ou qualquer sinal que sugira reação sistêmica, infecção ou falha da via.</li>
+                  </ul>
+                </section>
+              </section>
+
+              <section class="pediatric-subtab-panel" data-pediatric-panel="tecnica" hidden>
+                <section class="status-panel">
+                  <h2>Técnica e acompanhamento</h2>
+                  <ol class="procedure-steps">
+                    <li>
+                      <strong>Confirmar indicação e prescrição.</strong>
+                      <span>Validar objetivo terapêutico, medicamento, diluente, concentração, volume total, velocidade, tempo de infusão, sítio previsto e critérios de suspensão. Em pediatria, não extrapolar parâmetros de adultos.</span>
+                    </li>
+                    <li>
+                      <strong>Avaliar a criança e o tecido subcutâneo.</strong>
+                      <span>Considerar idade, peso, hidratação, perfusão, edema, mobilidade, dor, fragilidade cutânea e espessura do subcutâneo. O estudo domiciliar pediátrico utilizou principalmente coxa anterolateral e deltoide.<sup class="ref-mark">2</sup></span>
+                    </li>
+                    <li>
+                      <strong>Escolher o sítio de punção.</strong>
+                      <span>Priorizar área com tecido subcutâneo preservado e curativo facilmente visível. Evitar proeminência óssea, dobra, área de pressão, infecção, irritação, edema, hematoma, lesão, dor intensa ou região de muita movimentação.<sup class="ref-mark">4</sup></span>
+                    </li>
+                    <li>
+                      <strong>Preparar a criança e o cuidador.</strong>
+                      <span>Explicar o procedimento em linguagem adequada, reduzir medo e dor, orientar o cuidador sobre o objetivo da via, sinais de alerta e necessidade de não manipular volume, gotejamento ou medicação sem autorização.</span>
+                    </li>
+                    <li>
+                      <strong>Realizar técnica asséptica e fixação segura.</strong>
+                      <span>Higienizar as mãos, preparar materiais, fazer antissepsia conforme protocolo local, inserir o dispositivo adequado ao tamanho da criança e fixar sem tração. O curativo deve permitir inspeção do sítio.<sup class="ref-mark">4</sup></span>
+                    </li>
+                    <li>
+                      <strong>Iniciar em velocidade prescrita e observar tolerância.</strong>
+                      <span>Conferir dor, resistência à infusão, vazamento, edema local e conforto. No estudo domiciliar pediátrico, infusões contínuas foram realizadas em baixas taxas, e maior velocidade se associou a mais induração.<sup class="ref-mark">2</sup></span>
+                    </li>
+                    <li>
+                      <strong>Monitorar e registrar evolução.</strong>
+                      <span>Registrar sítio, dispositivo, medicamento, volume, velocidade, horário, resposta clínica e eventos locais. Reavaliar dor, sedação, controle do sintoma e sinais de reação no local.</span>
+                    </li>
+                    <li>
+                      <strong>Trocar ou suspender quando houver sinal de falha.</strong>
+                      <span>Suspender ou trocar o sítio se houver dor persistente, rubor progressivo, calor, endurecimento, edema importante, extravasamento, sangramento, vazamento, bolha, necrose, febre ou piora clínica.</span>
+                    </li>
+                  </ol>
+                </section>
+              </section>
+
+              <section class="pediatric-subtab-panel" data-pediatric-panel="medicamentos" hidden>
+                <div class="status-panel">
+                  <h2>Medicamentos e soluções</h2>
+                  <p>
+                    Lista otimizada para medicamentos de controle de sintomas e soluções com
+                    uso descrito por hipodermóclise pediátrica. A dose, o volume e a velocidade
+                    devem ser individualizados por peso, indicação, exposição prévia, função
+                    renal/hepática, hidratação e protocolo local.
+                  </p>
+                  <div class="table-wrap">
+                    <table class="compat-table">
+                      <caption>Controle de sintomas e hidratação em cuidados paliativos pediátricos</caption>
+                      <thead>
+                        <tr>
+                          <th>Item</th>
+                          <th>Indicação descrita</th>
+                          <th>Posologia ou uso descrito</th>
+                          <th>Observação de segurança</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        <tr>
+                          <td>Morfina</td>
+                          <td>Dor e dispneia.</td>
+                          <td>Estudo domiciliar pediátrico descreveu uso principalmente em infusão subcutânea contínua; taxa global das infusões entre 0,1 e 1,5mL/h. Como dose inicial de referência para fim de vida: 0,1mg/kg SC/IV a cada 4h ou infusão contínua/PCA de 50mcg/kg/h.<sup class="ref-mark">2,5</sup></td>
+                          <td>Titular conforme resposta e eventos adversos; monitorar sedação, depressão respiratória, prurido, constipação, retenção urinária e sinais locais.</td>
+                        </tr>
+                        <tr>
+                          <td>Midazolam</td>
+                          <td>Crises epilépticas, dispneia, sedação e irritabilidade neurológica.</td>
+                          <td>Estudo domiciliar pediátrico descreveu uso principalmente em infusão subcutânea contínua; em dois casos houve bolus SC de 0,4mL e 1mL. A taxa global das infusões contínuas ficou entre 0,1 e 1,5mL/h.<sup class="ref-mark">2</sup></td>
+                          <td>Definir dose em mg/kg por protocolo pediátrico; monitorar sedação, depressão respiratória, agitação paradoxal e induração local.</td>
+                        </tr>
+                        <tr>
+                          <td>Haloperidol</td>
+                          <td>Náuseas, vômitos e irritabilidade neurológica.</td>
+                          <td>Estudo domiciliar pediátrico descreveu uso para náuseas/vômitos e irritabilidade neurológica, mas não informou posologia em mg/kg.<sup class="ref-mark">2</sup></td>
+                          <td>Usar apenas com prescrição e protocolo pediátrico; observar sintomas extrapiramidais, sedação e risco de prolongamento de QT.</td>
+                        </tr>
+                        <tr>
+                          <td>Clonidina</td>
+                          <td>Crise/distonia em contexto de cuidado paliativo pediátrico.</td>
+                          <td>Estudo domiciliar pediátrico descreveu uso em um episódio de distonia, mas não informou posologia em mg/kg.<sup class="ref-mark">2</sup></td>
+                          <td>Monitorar pressão arterial, frequência cardíaca e sonolência; retirada abrupta pode causar rebote hipertensivo.</td>
+                        </tr>
+                        <tr>
+                          <td>Solução isotônica para reidratação</td>
+                          <td>Reidratação subcutânea em crianças com desidratação leve a moderada.</td>
+                          <td>Estudos de reidratação subcutânea pediátrica descrevem 20mL/kg na primeira hora, com continuidade conforme necessidade clínica até reidratação.<sup class="ref-mark">6,7</sup></td>
+                          <td>Não usar em choque, desidratação grave, instabilidade hemodinâmica ou necessidade de expansão rápida.</td>
+                        </tr>
+                        <tr>
+                          <td>Soro glicosado 5% / dextrose</td>
+                          <td>Hidratação por hipodermóclise em cuidado paliativo pediátrico.</td>
+                          <td>Estudo domiciliar pediátrico descreveu um caso de hipodermóclise com dextrose, sem informar posologia padronizada em mL/kg ou velocidade específica para uso geral.<sup class="ref-mark">2</sup></td>
+                          <td>Definir indicação, volume e velocidade por prescrição individualizada; monitorar tolerância local e equilíbrio hidroeletrolítico.</td>
+                        </tr>
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+              </section>
+
+              <section class="pediatric-subtab-panel" data-pediatric-panel="compatibilidade" hidden>
+                <div class="status-panel">
+                  <h2>Compatibilidade por hipodermóclise</h2>
+                  <p>
+                    Em pediatria, a compatibilidade de misturas por via subcutânea deve ser
+                    confirmada por farmacêutico ou protocolo institucional. A estabilidade depende
+                    de concentração final, diluente, tempo de infusão, material do dispositivo e
+                    número de medicamentos na mesma seringa ou circuito.
+                  </p>
+                  <div class="table-wrap">
+                    <table class="compat-table">
+                      <caption>Compatibilidade dos medicamentos listados para controle de sintomas</caption>
+                      <thead>
+                        <tr>
+                          <th>Associação</th>
+                          <th>Resultado</th>
+                          <th>Base utilizada</th>
+                          <th>Conduta prática</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        <tr>
+                          <td>Morfina + Midazolam</td>
+                          <td><span class="status-pill ok">Uso conjunto descrito</span></td>
+                          <td>Estudo domiciliar pediátrico descreveu uso de tratamentos subcutâneos com um, dois ou três componentes e uso frequente de morfina e midazolam para sintomas como dor, dispneia e crises epilépticas.<sup class="ref-mark">2</sup></td>
+                          <td>Preferir validação farmacêutica da concentração final. Se não houver protocolo de mistura, usar sítios ou horários separados.</td>
+                        </tr>
+                        <tr>
+                          <td>Morfina + Haloperidol</td>
+                          <td><span class="status-pill warn">Dados pediátricos insuficientes</span></td>
+                          <td>A fonte pediátrica descreve ambos os medicamentos, mas não detalha estabilidade físico-química da mistura em mg/mL, diluente e tempo de infusão.<sup class="ref-mark">2</sup></td>
+                          <td>Não misturar sem protocolo institucional ou validação farmacêutica.</td>
+                        </tr>
+                        <tr>
+                          <td>Midazolam + Haloperidol</td>
+                          <td><span class="status-pill warn">Dados pediátricos insuficientes</span></td>
+                          <td>Uso dos dois medicamentos foi descrito no contexto de sintomas neurológicos, mas sem dados diretos de compatibilidade da mistura.<sup class="ref-mark">2</sup></td>
+                          <td>Preferir administração separada quando não houver matriz local de compatibilidade.</td>
+                        </tr>
+                        <tr>
+                          <td>Clonidina + Morfina, Midazolam ou Haloperidol</td>
+                          <td><span class="status-pill warn">Dados insuficientes</span></td>
+                          <td>A clonidina aparece em apenas um episódio de distonia no estudo pediátrico, sem informação de compatibilidade com outros fármacos.<sup class="ref-mark">2</sup></td>
+                          <td>Usar via/sítio separado ou confirmar com farmácia clínica antes de associar no mesmo circuito.</td>
+                        </tr>
+                        <tr>
+                          <td>Soluções de hidratação + medicamentos</td>
+                          <td><span class="status-pill warn">Dados pediátricos insuficientes</span></td>
+                          <td>As fontes pediátricas descrevem hidratação e medicamentos por via subcutânea, mas não estabelecem compatibilidade físico-química padronizada para misturar soluções e fármacos no mesmo circuito.<sup class="ref-mark">2,6,7</sup></td>
+                          <td>Preferir prescrição separada ou validação farmacêutica da concentração, diluente e tempo de infusão antes de associar.</td>
+                        </tr>
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+              </section>
+
+              <section class="pediatric-subtab-panel" data-pediatric-panel="seguranca" hidden>
+                <section class="status-panel">
+                  <h2>Pontos de segurança</h2>
+                  <ul class="quick-list">
+                    <li>Evitar misturas de medicamentos sem validação farmacêutica ou protocolo pediátrico institucional.</li>
+                    <li>Registrar indicação, sítio, dispositivo, dose, volume, velocidade, resposta clínica e eventos locais.</li>
+                    <li>Em estudos pediátricos domiciliares, a induração no sítio foi uma das principais causas de retirada do dispositivo, reforçando a necessidade de vigilância local.<sup class="ref-mark">2</sup></li>
+                    <li>A evidência em crianças ainda é pequena; por isso, a decisão deve ser individualizada e reavaliada continuamente.<sup class="ref-mark">1,2</sup></li>
+                    <li>A opção Pediatria na aba Prescrição funciona apenas como identificação do perfil; o site não realiza cálculo pediátrico automático.</li>
+                  </ul>
+                </section>
+              </section>
+
+              <details class="references">
+                <summary>Referências usadas nesta aba</summary>
+                <ol class="reference-list">
+                  <li><a href="https://pubmed.ncbi.nlm.nih.gov/32537962/" target="_blank" rel="noopener">Smith A, Brimble MJ. Use of subcutaneous fluids in palliative care with children: a case study. Nursing Children and Young People. 2020.</a></li>
+                  <li><a href="https://doi.org/10.1016/j.jpainsymman.2023.05.011" target="_blank" rel="noopener">García-López I, Chocarro-González L, Martín-Romero I, Vázquez-Sánchez JM, Avilés-Martínez M, Martino-Alba R. Pediatric Palliative Care at Home: A Prospective Study on Subcutaneous Drug Administration. Journal of Pain and Symptom Management. 2023.</a></li>
+                  <li><a href="https://www.health.nsw.gov.au/palliativecare/Pages/services-for-children.aspx" target="_blank" rel="noopener">NSW Health. Palliative care services for children with a life-limiting illness.</a></li>
+                  <li><a href="https://www.rch.org.au/uploadedFiles/Main/Content/rchcpg/indwelling_Subcutaneous__insuflon__management_guideline.pdf" target="_blank" rel="noopener">The Royal Children's Hospital Melbourne. Indwelling Subcutaneous Insuflon Management Guideline.</a></li>
+                  <li><a href="https://www.childrensmercy.org/health-care-providers/evidence-based-practice/cpgs-cpms-and-eras-pathways/end-of-life/starting-doses-of-opioids/" target="_blank" rel="noopener">Children's Mercy Kansas City. Starting Doses of Opioids. End-of-life pathway.</a></li>
+                  <li><a href="https://doi.org/10.1542/peds.2008-3588" target="_blank" rel="noopener">Allen CH, Etzwiler LS, Miller MK, et al. Recombinant Human Hyaluronidase-Enabled Subcutaneous Pediatric Rehydration. Pediatrics. 2009.</a></li>
+                  <li><a href="https://doi.org/10.1016/j.clinthera.2012.09.011" target="_blank" rel="noopener">Spandorfer PR, Mace SE, Okada PJ, et al. Recombinant human hyaluronidase-facilitated subcutaneous versus intravenous rehydration in children. Clinical Therapeutics. 2012.</a></li>
+                </ol>
+              </details>
+            </div>
+          </div>
+        </article>
+
         <article id="prescricao" class="tab-panel" role="tabpanel">
           <div class="module-grid">
             <div class="card">
               <div class="card-content stack">
                 <h2>Prescrição</h2>
+                <fieldset class="prescription-profile" aria-label="Tipo de prescrição">
+                  <legend>Tipo de prescrição</legend>
+                  <label>
+                    <input type="radio" name="prescriptionProfile" value="adulto" checked />
+                    <span>Adulto</span>
+                  </label>
+                  <label>
+                    <input type="radio" name="prescriptionProfile" value="pediatria" />
+                    <span>Pediatria</span>
+                  </label>
+                </fieldset>
                 <div class="prescription-list" id="prescriptionItems">
                   <label class="form-row">
                     <span>Item 1</span>

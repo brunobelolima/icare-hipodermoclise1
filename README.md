@@ -6,8 +6,10 @@ Aplicação web sobre o uso de hipodermóclise baseado em evidências.
 
 - `index.html`: conteúdo e estrutura do site.
 - `styles.css`: estilos visuais e responsividade.
-- `app.js`: interações, abas, checklists, seletor de idioma e contador de visitas.
+- `app.js`: interações, abas, checklists, seletor de idioma e contador de visitas. O contador registra uma visita por navegador a cada 12 horas após a confirmação de profissional de saúde e não incrementa em pré-visualizações locais.
 - `assets/`: imagens usadas no site.
+- `robots.txt`: orienta mecanismos de busca a indexarem o site.
+- `sitemap.xml`: informa a URL pública `https://icare-hipodermoclise.com.br/` para mecanismos de busca.
 - `.nojekyll`: evita processamento pelo Jekyll no GitHub Pages.
 - `.gitignore`: evita envio de arquivos grandes ou temporários para o GitHub.
 

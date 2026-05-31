@@ -24,11 +24,14 @@ const dropSubtabs = Array.from(document.querySelectorAll(".drop-subtab"));
 const dropSubtabPanels = Array.from(document.querySelectorAll("[data-drop-panel]"));
 const managerSubtabs = Array.from(document.querySelectorAll(".manager-subtab"));
 const managerSubtabPanels = Array.from(document.querySelectorAll("[data-manager-panel]"));
+const pediatricSubtabs = Array.from(document.querySelectorAll(".pediatric-subtab"));
+const pediatricSubtabPanels = Array.from(document.querySelectorAll("[data-pediatric-panel]"));
 const compatItemA = document.querySelector("#compatItemA");
 const compatItemB = document.querySelector("#compatItemB");
 const compatInteractiveResult = document.querySelector("#compatInteractiveResult");
 const prescriptionItemsContainer = document.querySelector("#prescriptionItems");
 const addPrescriptionItemButton = document.querySelector("#addPrescriptionItem");
+const prescriptionProfileControls = Array.from(document.querySelectorAll("input[name='prescriptionProfile']"));
 let prescriptionItemControls = Array.from(document.querySelectorAll(".prescription-item"));
 const punctureHighlight = document.querySelector("#punctureHighlight");
 const punctureGroups = document.querySelector("#punctureGroups");
@@ -68,7 +71,13 @@ const accessStorageKey = "icare-health-professional-access";
 const languageStorageKey = "icare-selected-language";
 const storageKey = "icare-model-checklist";
 const materialStorageKey = "icare-material-checklist";
-const visitCounterUrl = "https://abacus.jasoncameron.dev/hit/icare-hipodermoclise2/visitas";
+const visitCounterNamespace = "icare-hipodermoclise2";
+const visitCounterKey = "visitas";
+const visitCounterHitUrl = `https://abacus.jasoncameron.dev/hit/${visitCounterNamespace}/${visitCounterKey}`;
+const visitCounterGetUrl = `https://abacus.jasoncameron.dev/get/${visitCounterNamespace}/${visitCounterKey}`;
+const visitCounterStorageKey = "icare-visit-counted-at";
+const visitCounterSessionMs = 12 * 60 * 60 * 1000;
+let visitCounterLoaded = false;
 let dropCameraStream = null;
 let dropTimestamps = [];
 let dropTimer = null;
@@ -172,6 +181,7 @@ function allowProfessionalAccess() {
   document.body.classList.remove("access-pending", "access-denied");
   if (accessGate) accessGate.hidden = true;
   if (appShell) appShell.removeAttribute("aria-hidden");
+  updateVisitCounter({ incrementIfNewSession: true });
   scrollToActivePanel({ behavior: "auto" });
 }
 
@@ -204,12 +214,49 @@ function initializeAccessGate() {
 
 initializeAccessGate();
 
-async function updateVisitCounter() {
-  if (!visitCounter) return;
+function lastCountedVisitAt() {
   try {
-    const response = await fetch(visitCounterUrl, { cache: "no-store" });
+    return Number(localStorage.getItem(visitCounterStorageKey)) || 0;
+  } catch {
+    return 0;
+  }
+}
+
+function rememberCountedVisit() {
+  try {
+    localStorage.setItem(visitCounterStorageKey, String(Date.now()));
+  } catch {
+    // Local storage can be unavailable in restrictive browser modes.
+  }
+}
+
+function shouldCountNewVisit() {
+  const countedAt = lastCountedVisitAt();
+  return !countedAt || Date.now() - countedAt > visitCounterSessionMs;
+}
+
+function isLocalPreview() {
+  return (
+    window.location.protocol === "file:" ||
+    window.location.hostname === "localhost" ||
+    window.location.hostname === "127.0.0.1"
+  );
+}
+
+async function updateVisitCounter({ incrementIfNewSession = false } = {}) {
+  if (!visitCounter) return;
+  if (visitCounterLoaded) return;
+
+  const shouldIncrement = incrementIfNewSession && shouldCountNewVisit() && !isLocalPreview();
+  const targetUrl = shouldIncrement ? visitCounterHitUrl : visitCounterGetUrl;
+
+  try {
+    const response = await fetch(targetUrl, { cache: "no-store" });
+    if (!response.ok) throw new Error("Visit counter request failed");
     const data = await response.json();
     visitCounter.textContent = String(data.value);
+    if (shouldIncrement) rememberCountedVisit();
+    visitCounterLoaded = true;
   } catch {
     visitCounter.textContent = "--";
   }
@@ -717,6 +764,32 @@ function moveDropSubtabFocus(currentTrigger, direction) {
   nextTrigger.focus();
 }
 
+function activatePediatricSubtab(trigger) {
+  const target = trigger.dataset.pediatricSubtab;
+
+  pediatricSubtabs.forEach((item) => {
+    const isActive = item === trigger;
+    item.setAttribute("aria-selected", String(isActive));
+    item.setAttribute("tabindex", isActive ? "0" : "-1");
+  });
+
+  pediatricSubtabPanels.forEach((panel) => {
+    const isActive = panel.dataset.pediatricPanel === target;
+    panel.hidden = !isActive;
+    panel.classList.toggle("active", isActive);
+  });
+}
+
+function movePediatricSubtabFocus(currentTrigger, direction) {
+  const currentIndex = pediatricSubtabs.indexOf(currentTrigger);
+  if (currentIndex < 0) return;
+
+  const nextIndex = (currentIndex + direction + pediatricSubtabs.length) % pediatricSubtabs.length;
+  const nextTrigger = pediatricSubtabs[nextIndex];
+  activatePediatricSubtab(nextTrigger);
+  nextTrigger.focus();
+}
+
 function toggleManagerSubtab(trigger) {
   const target = trigger.dataset.managerSubtab;
   const shouldOpen = trigger.getAttribute("aria-expanded") !== "true";
@@ -900,6 +973,7 @@ const compatibilityLabels = {
   haloperidol: "Haloperidol",
   midazolam: "Midazolam",
   metoclopramida: "Metoclopramida",
+  clonidina: "Clonidina",
   sf: "Soro fisiológico 0,9% (SF)",
   sg5: "Soro glicosado 5% (SG 5%)",
 };
@@ -1136,6 +1210,73 @@ const prescriptionData = {
   },
 };
 
+const pediatricPrescriptionData = {
+  morfina: {
+    dose:
+      "Dor e dispneia: estudo pediátrico descreve uso principalmente em infusão subcutânea contínua; dose inicial de referência para fim de vida: 0,1mg/kg SC/IV a cada 4h ou infusão contínua/PCA de 50mcg/kg/h",
+    dilution:
+      "Definir concentração e diluente por prescrição, peso e protocolo local; validar concentração final com farmácia clínica",
+    time: "Infusão subcutânea contínua; no estudo pediátrico, taxa global das infusões entre 0,1 e 1,5mL/h",
+    minVolume: "",
+    comments:
+      "Titular conforme resposta e eventos adversos. Monitorar sedação, depressão respiratória, prurido, constipação, retenção urinária e sinais locais.",
+    reference: "Pediatria refs. 2, 5",
+  },
+  midazolam: {
+    dose:
+      "Crises epilépticas, dispneia, sedação e irritabilidade neurológica: estudo pediátrico descreve uso principalmente em infusão subcutânea contínua; em dois casos houve bolus SC de 0,4mL e 1mL",
+    dilution:
+      "Definir dose em mg/kg, concentração e diluente por protocolo pediátrico; validar concentração final com farmácia clínica",
+    time: "Bolus SC quando prescrito ou infusão subcutânea contínua; no estudo pediátrico, taxa global das infusões entre 0,1 e 1,5mL/h",
+    minVolume: "",
+    comments:
+      "Monitorar sedação, depressão respiratória, agitação paradoxal e induração local.",
+    reference: "Pediatria ref. 2",
+  },
+  haloperidol: {
+    dose:
+      "Náuseas, vômitos e irritabilidade neurológica: estudo pediátrico descreve uso por via subcutânea, mas não informa posologia em mg/kg",
+    dilution:
+      "Usar apenas com prescrição pediátrica e protocolo local; validar diluente e concentração final com farmácia clínica",
+    time: "Conforme prescrição e protocolo pediátrico local",
+    minVolume: "",
+    comments:
+      "Observar sintomas extrapiramidais, sedação e risco de prolongamento de QT.",
+    reference: "Pediatria ref. 2",
+  },
+  clonidina: {
+    dose:
+      "Crise/distonia: estudo pediátrico descreve uso em um episódio, mas não informa posologia em mg/kg",
+    dilution:
+      "Usar apenas com prescrição pediátrica e protocolo local; validar diluente e concentração final com farmácia clínica",
+    time: "Conforme prescrição e protocolo pediátrico local",
+    minVolume: "",
+    comments:
+      "Monitorar pressão arterial, frequência cardíaca e sonolência; retirada abrupta pode causar rebote hipertensivo.",
+    reference: "Pediatria ref. 2",
+  },
+  sf: {
+    dose:
+      "Solução isotônica para reidratação leve a moderada: estudos de reidratação subcutânea pediátrica descrevem 20mL/kg na primeira hora, com continuidade conforme necessidade clínica até reidratação",
+    dilution: "Solução pronta para infusão; não usar como substituto de expansão volêmica rápida",
+    time: "Conforme prescrição pediátrica, tolerância local e protocolo institucional",
+    minVolume: "",
+    comments:
+      "Não usar em choque, desidratação grave, instabilidade hemodinâmica ou necessidade de expansão rápida. Monitorar edema, dor, induração, balanço hídrico e eletrólitos.",
+    reference: "Pediatria refs. 6, 7",
+  },
+  sg5: {
+    dose:
+      "Hidratação por hipodermóclise em cuidado paliativo pediátrico: estudo domiciliar descreveu um caso com dextrose, sem posologia padronizada em mL/kg",
+    dilution: "Solução pronta para infusão; definir indicação, volume e velocidade por prescrição individualizada",
+    time: "Conforme prescrição pediátrica, tolerância local e protocolo institucional",
+    minVolume: "",
+    comments:
+      "Monitorar tolerância local e equilíbrio hidroeletrolítico. Preferir validação do plano de hidratação pela equipe pediátrica.",
+    reference: "Pediatria ref. 2",
+  },
+};
+
 function compatibilityKey(first, second) {
   return [first, second].sort().join("::");
 }
@@ -1248,8 +1389,69 @@ function getCompatibility(first, second) {
   );
 }
 
+function getActivePrescriptionProfile() {
+  return prescriptionProfileControls.find((control) => control.checked)?.value || "adulto";
+}
+
+function getActivePrescriptionData() {
+  return getActivePrescriptionProfile() === "pediatria" ? pediatricPrescriptionData : prescriptionData;
+}
+
+function getPrescriptionCompatibility(first, second) {
+  if (getActivePrescriptionProfile() !== "pediatria") {
+    return getCompatibility(first, second);
+  }
+
+  if (first === second) {
+    return { status: "compatível", className: "success", source: "Mesmo item" };
+  }
+
+  const key = compatibilityKey(first, second);
+  const pediatricPairs = {
+    "midazolam::morfina": {
+      status: "uso conjunto descrito",
+      className: "warning",
+      source: "Pediatria ref. 2",
+    },
+    "haloperidol::morfina": {
+      status: "dados pediátricos insuficientes",
+      className: "warning",
+      source: "Pediatria ref. 2",
+    },
+    "haloperidol::midazolam": {
+      status: "dados pediátricos insuficientes",
+      className: "warning",
+      source: "Pediatria ref. 2",
+    },
+  };
+
+  if (first === "clonidina" || second === "clonidina") {
+    return {
+      status: "dados insuficientes",
+      className: "warning",
+      source: "Pediatria ref. 2",
+    };
+  }
+
+  if (first === "sf" || second === "sf" || first === "sg5" || second === "sg5") {
+    return {
+      status: "dados pediátricos insuficientes",
+      className: "warning",
+      source: "Pediatria",
+    };
+  }
+
+  return (
+    pediatricPairs[key] || {
+      status: "dados insuficientes",
+      className: "warning",
+      source: "Pediatria",
+    }
+  );
+}
+
 function canSharePuncture(item, group) {
-  return group.every((existing) => getCompatibility(item, existing).status === "compatível");
+  return group.every((existing) => getPrescriptionCompatibility(item, existing).status === "compatível");
 }
 
 function groupItemsByCompatibility(items) {
@@ -1274,18 +1476,31 @@ function syncPrescriptionOptions() {
 }
 
 function updatePrescriptionOptionAvailability() {
+  const activeData = getActivePrescriptionData();
   const selectedItems = selectedPrescriptionItems();
   prescriptionItemControls.forEach((control) => {
     Array.from(control.options).forEach((option) => {
       option.disabled =
         Boolean(option.value) &&
-        option.value !== control.value &&
-        selectedItems.includes(option.value);
+        (!activeData[option.value] ||
+          (option.value !== control.value && selectedItems.includes(option.value)));
     });
   });
 }
 
 function prescriptionOptionMarkup() {
+  if (getActivePrescriptionProfile() === "pediatria") {
+    return `
+      <option value="">Nenhum item</option>
+      <option value="morfina">Morfina</option>
+      <option value="midazolam">Midazolam</option>
+      <option value="haloperidol">Haloperidol</option>
+      <option value="clonidina">Clonidina</option>
+      <option value="sf">Soro fisiológico 0,9% / solução isotônica</option>
+      <option value="sg5">Soro glicosado 5% / dextrose</option>
+    `;
+  }
+
   return `
     <option value="">Nenhum item</option>
     <option value="morfina">Morfina</option>
@@ -1300,6 +1515,16 @@ function prescriptionOptionMarkup() {
     <option value="sf">Soro fisiológico 0,9% (SF)</option>
     <option value="sg5">Soro glicosado 5% (SG 5%)</option>
   `;
+}
+
+function refreshPrescriptionOptionsForProfile() {
+  const activeData = getActivePrescriptionData();
+  prescriptionItemControls.forEach((control) => {
+    const selectedValue = control.value;
+    control.innerHTML = prescriptionOptionMarkup();
+    control.value = activeData[selectedValue] ? selectedValue : "";
+  });
+  updatePrescriptionOptionAvailability();
 }
 
 function refreshPrescriptionItemLabels() {
@@ -1345,7 +1570,7 @@ function prescriptionCompatibilityLines(items) {
     for (let j = i + 1; j < items.length; j += 1) {
       const first = items[i];
       const second = items[j];
-      const result = getCompatibility(first, second);
+      const result = getPrescriptionCompatibility(first, second);
       lines.push(
         `- ${compatibilityLabels[first]} + ${compatibilityLabels[second]}: ${result.status}`,
       );
@@ -1355,17 +1580,20 @@ function prescriptionCompatibilityLines(items) {
 }
 
 function prescriptionItemLines(item) {
-  const data = prescriptionData[item];
+  const data = getActivePrescriptionData()[item];
   const lines = [
     `  - ${compatibilityLabels[item]}: ${data.dose}; diluição: ${data.dilution}; tempo de infusão: ${data.time}.`,
   ];
   if (data.minVolume) lines.push(`    Menor volume: ${data.minVolume}`);
   if (data.comments) lines.push(`    Comentários: ${data.comments}`);
-  lines.push(`    Referências da aba Medicamentos e soluções: ${data.reference}`);
+  const referenceContext =
+    getActivePrescriptionProfile() === "pediatria" ? "Referências da aba Pediatria" : "Referências da aba Medicamentos e soluções";
+  lines.push(`    ${referenceContext}: ${data.reference}`);
   return lines;
 }
 
 function renderPunctureGroups(groups) {
+  const activeData = getActivePrescriptionData();
   punctureGroups.innerHTML = groups
     .map(
       (group, index) => `
@@ -1374,7 +1602,7 @@ function renderPunctureGroups(groups) {
           <ul>
             ${group
               .map((item) => {
-                const data = prescriptionData[item];
+                const data = activeData[item];
                 return `
                   <li>
                     <strong>${compatibilityLabels[item]}</strong>
@@ -1394,11 +1622,12 @@ function renderPunctureGroups(groups) {
 
 function generatePrescription() {
   const items = selectedPrescriptionItems();
+  const isPediatric = getActivePrescriptionProfile() === "pediatria";
   if (!items.length) {
     punctureHighlight.className = "status-panel prescription-highlight warning";
     punctureHighlight.innerHTML = `
       <h2>Quantidade de hipodermóclises sugerida:</h2>
-      <p>Selecione pelo menos um item.</p>
+      <p>${isPediatric ? "Selecione pelo menos um medicamento pediátrico." : "Selecione pelo menos um item."}</p>
     `;
     punctureGroups.innerHTML = "";
     return;
@@ -1410,6 +1639,11 @@ function generatePrescription() {
   punctureHighlight.innerHTML = `
     <h2>Quantidade de hipodermóclises sugerida:</h2>
     <p>${groups.length} ${punctureWord} para ${items.length} item(ns) selecionado(s).</p>
+    ${
+      isPediatric
+        ? "<p>Perfil pediátrico: usar apenas com prescrição individualizada, validação de concentração/diluente e protocolo local. Misturas sem compatibilidade pediátrica direta devem ficar em sítios ou horários separados.</p>"
+        : ""
+    }
   `;
   renderPunctureGroups(groups);
 }
@@ -1450,6 +1684,13 @@ if (closeMaterialChecklistPanelButton) {
 
 prescriptionItemControls.forEach(bindPrescriptionItem);
 
+prescriptionProfileControls.forEach((control) => {
+  control.addEventListener("change", () => {
+    refreshPrescriptionOptionsForProfile();
+    generatePrescription();
+  });
+});
+
 if (addPrescriptionItemButton) {
   addPrescriptionItemButton.addEventListener("click", addPrescriptionItem);
 }
@@ -1460,6 +1701,7 @@ document.querySelector("#clearPrescription").addEventListener("click", () => {
   });
   syncPrescriptionOptions();
   refreshPrescriptionItemLabels();
+  updatePrescriptionOptionAvailability();
   punctureHighlight.className = "status-panel prescription-highlight";
   punctureHighlight.innerHTML = `
     <h2>Quantidade de hipodermóclises sugerida:</h2>
@@ -1615,6 +1857,34 @@ dropSubtabs.forEach((trigger) => {
   });
 });
 
+pediatricSubtabs.forEach((trigger) => {
+  trigger.addEventListener("click", () => activatePediatricSubtab(trigger));
+  trigger.addEventListener("keydown", (event) => {
+    if (event.key === "ArrowRight" || event.key === "ArrowDown") {
+      event.preventDefault();
+      movePediatricSubtabFocus(trigger, 1);
+    }
+
+    if (event.key === "ArrowLeft" || event.key === "ArrowUp") {
+      event.preventDefault();
+      movePediatricSubtabFocus(trigger, -1);
+    }
+
+    if (event.key === "Home") {
+      event.preventDefault();
+      activatePediatricSubtab(pediatricSubtabs[0]);
+      pediatricSubtabs[0].focus();
+    }
+
+    if (event.key === "End") {
+      event.preventDefault();
+      const lastTrigger = pediatricSubtabs[pediatricSubtabs.length - 1];
+      activatePediatricSubtab(lastTrigger);
+      lastTrigger.focus();
+    }
+  });
+});
+
 managerSubtabs.forEach((trigger) => {
   trigger.addEventListener("click", () => toggleManagerSubtab(trigger));
   trigger.addEventListener("keydown", (event) => {
@@ -1674,6 +1944,5 @@ markActiveLanguage(currentLanguage());
 renderCompatibilityResult();
 syncPrescriptionOptions();
 updatePrescriptionOptionAvailability();
-updateVisitCounter();
 initializeDropCameraAccess();
 openHashTab();
