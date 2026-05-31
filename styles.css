@@ -43,6 +43,10 @@ body.access-denied .app {
   display: none;
 }
 
+body.access-limited .tab-trigger:not([data-tab="nao-profissionais"]):not([data-tab="contato"]) {
+  display: none;
+}
+
 button,
 input,
 select,
@@ -389,6 +393,30 @@ h1 {
 .document-card .secondary-button {
   margin-top: 4px;
   text-decoration: none;
+}
+
+.nonprofessional-image {
+  overflow: hidden;
+  margin: 0;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: #fbffff;
+}
+
+.nonprofessional-image img {
+  display: block;
+  width: 100%;
+  max-height: 380px;
+  object-fit: cover;
+}
+
+.nonprofessional-image figcaption {
+  border-top: 1px solid var(--line);
+  color: var(--muted);
+  font-size: 0.9rem;
+  line-height: 1.4;
+  padding: 10px 14px;
+  text-align: center;
 }
 
 .manager-document-card .primary-button,

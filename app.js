@@ -89,6 +89,8 @@ let baselineDropBrightness = null;
 let smoothedDropDifference = 0;
 let autoDropCalibration = [];
 let lastAutoDropAt = 0;
+
+const limitedAccessTabs = new Set(["nao-profissionais", "contato"]);
 const dropDetectionCanvas = document.createElement("canvas");
 const dropDetectionContext = dropDetectionCanvas.getContext("2d", { willReadFrequently: true });
 
@@ -178,7 +180,7 @@ function hasProfessionalAccess() {
 
 function allowProfessionalAccess() {
   rememberProfessionalAccess();
-  document.body.classList.remove("access-pending", "access-denied");
+  document.body.classList.remove("access-pending", "access-denied", "access-limited");
   if (accessGate) accessGate.hidden = true;
   if (appShell) appShell.removeAttribute("aria-hidden");
   updateVisitCounter({ incrementIfNewSession: true });
@@ -186,17 +188,12 @@ function allowProfessionalAccess() {
 }
 
 function denyProfessionalAccess() {
-  document.body.classList.remove("access-pending");
-  document.body.classList.add("access-denied");
-  if (appShell) appShell.setAttribute("aria-hidden", "true");
-  if (accessGateTitle) accessGateTitle.textContent = "Acesso bloqueado";
-  const accessGateText = accessGate?.querySelector("p");
-  if (accessGateText) {
-    accessGateText.textContent =
-      "Este conteúdo é destinado exclusivamente a profissionais de saúde.";
-  }
-  if (confirmHealthProfessionalButton) confirmHealthProfessionalButton.hidden = true;
-  if (denyHealthProfessionalButton) denyHealthProfessionalButton.hidden = true;
+  document.body.classList.remove("access-pending", "access-denied");
+  document.body.classList.add("access-limited");
+  if (accessGate) accessGate.hidden = true;
+  if (appShell) appShell.removeAttribute("aria-hidden");
+  const publicTab = tabs.find((tab) => tab.dataset.tab === "nao-profissionais");
+  if (publicTab) activateTab(publicTab, { scrollToPanel: true });
 }
 
 function initializeAccessGate() {
@@ -287,7 +284,12 @@ function scrollToActivePanel({ behavior = "smooth" } = {}) {
 }
 
 function activateTab(tab, { scrollToPanel: shouldMoveToPanel = false } = {}) {
-  const targetId = tab.dataset.tab;
+  let targetId = tab.dataset.tab;
+
+  if (document.body.classList.contains("access-limited") && !limitedAccessTabs.has(targetId)) {
+    targetId = "nao-profissionais";
+    tab = tabs.find((item) => item.dataset.tab === targetId) || tab;
+  }
 
   tabs.forEach((item) => {
     item.setAttribute("aria-selected", String(item === tab));
