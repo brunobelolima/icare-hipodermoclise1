@@ -90,7 +90,7 @@ let smoothedDropDifference = 0;
 let autoDropCalibration = [];
 let lastAutoDropAt = 0;
 
-const limitedAccessTabs = new Set(["nao-profissionais", "contato"]);
+const limitedAccessTabs = new Set(["nao-profissionais", "contato", "privacidade"]);
 const dropDetectionCanvas = document.createElement("canvas");
 const dropDetectionContext = dropDetectionCanvas.getContext("2d", { willReadFrequently: true });
 
