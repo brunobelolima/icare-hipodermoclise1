@@ -24,6 +24,8 @@ const dropSubtabs = Array.from(document.querySelectorAll(".drop-subtab"));
 const dropSubtabPanels = Array.from(document.querySelectorAll("[data-drop-panel]"));
 const managerSubtabs = Array.from(document.querySelectorAll(".manager-subtab"));
 const managerSubtabPanels = Array.from(document.querySelectorAll("[data-manager-panel]"));
+const catheterSubtabs = Array.from(document.querySelectorAll(".catheter-subtab"));
+const catheterSubtabPanels = Array.from(document.querySelectorAll("[data-catheter-panel]"));
 const pediatricSubtabs = Array.from(document.querySelectorAll(".pediatric-subtab"));
 const pediatricSubtabPanels = Array.from(document.querySelectorAll("[data-pediatric-panel]"));
 const compatItemA = document.querySelector("#compatItemA");
@@ -90,7 +92,8 @@ let smoothedDropDifference = 0;
 let autoDropCalibration = [];
 let lastAutoDropAt = 0;
 
-const limitedAccessTabs = new Set(["nao-profissionais", "contato", "privacidade"]);
+const publicOnlyTabs = new Set(["nao-profissionais", "idealizadores"]);
+const limitedAccessTabs = new Set(["nao-profissionais", "idealizadores", "contato", "privacidade"]);
 const dropDetectionCanvas = document.createElement("canvas");
 const dropDetectionContext = dropDetectionCanvas.getContext("2d", { willReadFrequently: true });
 
@@ -296,7 +299,7 @@ function activateTab(tab, { scrollToPanel: shouldMoveToPanel = false } = {}) {
     tab = tabs.find((item) => item.dataset.tab === targetId) || tab;
   }
 
-  if (!document.body.classList.contains("access-limited") && targetId === "nao-profissionais") {
+  if (!document.body.classList.contains("access-limited") && publicOnlyTabs.has(targetId)) {
     targetId = "boas-vindas";
     tab = tabs.find((item) => item.dataset.tab === targetId) || tab;
   }
@@ -818,6 +821,32 @@ function toggleManagerSubtab(trigger) {
     panel.hidden = !isTarget;
     panel.classList.toggle("active", isTarget);
   });
+}
+
+function activateCatheterSubtab(trigger) {
+  const target = trigger.dataset.catheterSubtab;
+
+  catheterSubtabs.forEach((item) => {
+    const isActive = item === trigger;
+    item.setAttribute("aria-selected", String(isActive));
+    item.setAttribute("tabindex", isActive ? "0" : "-1");
+  });
+
+  catheterSubtabPanels.forEach((panel) => {
+    const isActive = panel.dataset.catheterPanel === target;
+    panel.hidden = !isActive;
+    panel.classList.toggle("active", isActive);
+  });
+}
+
+function moveCatheterSubtabFocus(currentTrigger, direction) {
+  const currentIndex = catheterSubtabs.indexOf(currentTrigger);
+  if (currentIndex < 0) return;
+
+  const nextIndex = (currentIndex + direction + catheterSubtabs.length) % catheterSubtabs.length;
+  const nextTrigger = catheterSubtabs[nextIndex];
+  activateCatheterSubtab(nextTrigger);
+  nextTrigger.focus();
 }
 
 function openDocumentChecklist() {
@@ -1903,6 +1932,26 @@ managerSubtabs.forEach((trigger) => {
     if (event.key === "Enter" || event.key === " ") {
       event.preventDefault();
       toggleManagerSubtab(trigger);
+    }
+  });
+});
+
+catheterSubtabs.forEach((trigger) => {
+  trigger.addEventListener("click", () => activateCatheterSubtab(trigger));
+  trigger.addEventListener("keydown", (event) => {
+    if (event.key === "Enter" || event.key === " ") {
+      event.preventDefault();
+      activateCatheterSubtab(trigger);
+    }
+
+    if (event.key === "ArrowRight" || event.key === "ArrowDown") {
+      event.preventDefault();
+      moveCatheterSubtabFocus(trigger, 1);
+    }
+
+    if (event.key === "ArrowLeft" || event.key === "ArrowUp") {
+      event.preventDefault();
+      moveCatheterSubtabFocus(trigger, -1);
     }
   });
 });

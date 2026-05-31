@@ -43,11 +43,12 @@ body.access-denied .app {
   display: none;
 }
 
-body.access-limited .tab-trigger:not([data-tab="nao-profissionais"]):not([data-tab="contato"]) {
+body.access-limited .tab-trigger:not([data-tab="nao-profissionais"]):not([data-tab="idealizadores"]):not([data-tab="contato"]):not([data-tab="privacidade"]) {
   display: none;
 }
 
-body:not(.access-limited) .tab-trigger[data-tab="nao-profissionais"] {
+body:not(.access-limited) .tab-trigger[data-tab="nao-profissionais"],
+body:not(.access-limited) .tab-trigger[data-tab="idealizadores"] {
   display: none;
 }
 
@@ -1266,6 +1267,8 @@ a.secondary-button:focus-visible {
   text-align: left;
   vertical-align: top;
   line-height: 1.4;
+  overflow-wrap: anywhere;
+  hyphens: auto;
 }
 
 .compat-table th {
@@ -1507,6 +1510,12 @@ details.references summary {
   gap: 8px;
 }
 
+.catheter-subtabs {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 8px;
+}
+
 .pediatric-subtabs {
   grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
 }
@@ -1514,7 +1523,8 @@ details.references summary {
 .drop-subtabs,
 .technique-subtabs,
 .pediatric-subtabs,
-.manager-subtabs {
+.manager-subtabs,
+.catheter-subtabs {
   align-items: stretch;
 }
 
@@ -1523,7 +1533,8 @@ details.references summary {
 .drop-subtab,
 .technique-subtab,
 .pediatric-subtab,
-.manager-subtab {
+.manager-subtab,
+.catheter-subtab {
   min-height: 48px;
   border: 1px solid var(--line);
   border-radius: 6px;
@@ -1545,7 +1556,8 @@ details.references summary {
 .drop-subtab[aria-selected="true"],
 .technique-subtab[aria-selected="true"],
 .pediatric-subtab[aria-selected="true"],
-.manager-subtab[aria-selected="true"] {
+.manager-subtab[aria-selected="true"],
+.catheter-subtab[aria-selected="true"] {
   background: var(--accent);
   color: white;
   box-shadow: 0 8px 18px rgba(8, 145, 178, 0.22);
@@ -1553,8 +1565,14 @@ details.references summary {
 
 .drop-subtab-panel[hidden],
 .pediatric-subtab-panel[hidden],
-.manager-subtab-panel[hidden] {
+.manager-subtab-panel[hidden],
+.catheter-subtab-panel[hidden] {
   display: none;
+}
+
+.catheter-subtab-panels {
+  display: grid;
+  gap: 16px;
 }
 
 .material-checklist-panels {
@@ -1814,7 +1832,8 @@ details.references summary {
   .material-subtab,
   .material-list-subtab,
   .technique-subtab,
-  .manager-subtab {
+  .manager-subtab,
+  .catheter-subtab {
     width: 100%;
   }
 
@@ -1830,8 +1849,10 @@ details.references summary {
   }
 
   .technique-subtabs,
-  .drop-subtabs {
+  .drop-subtabs,
+  .catheter-subtabs {
     gap: 10px;
+    grid-template-columns: 1fr;
   }
 
   .procedure-variant,
@@ -1890,6 +1911,22 @@ details.references summary {
     min-width: 0;
   }
 
+  #para-gestores .table-wrap {
+    overflow-x: visible;
+    border: 0;
+    background: transparent;
+  }
+
+  #para-gestores .manager-cost-table caption {
+    display: block;
+    border: 1px solid var(--line);
+    border-bottom: 0;
+    border-radius: 8px 8px 0 0;
+    background: var(--surface-2);
+    font-size: 0.94rem;
+    line-height: 1.25;
+  }
+
   #para-gestores .manager-cost-table thead {
     display: none;
   }
@@ -1904,27 +1941,34 @@ details.references summary {
 
   #para-gestores .manager-cost-table tr {
     border-bottom: 1px solid var(--line);
+    border-inline: 1px solid var(--line);
+    background: white;
     padding: 10px 0;
   }
 
   #para-gestores .manager-cost-table tr:last-child {
-    border-bottom: 0;
+    border-bottom: 1px solid var(--line);
+    border-radius: 0 0 8px 8px;
   }
 
   #para-gestores .manager-cost-table th,
   #para-gestores .manager-cost-table td {
     display: grid;
-    grid-template-columns: minmax(118px, 0.45fr) minmax(0, 0.55fr);
-    gap: 10px;
+    grid-template-columns: 1fr;
+    gap: 4px;
     border-bottom: 0;
     padding: 8px 10px;
-    font-size: 0.86rem;
+    font-size: 0.9rem;
+    line-height: 1.45;
   }
 
   #para-gestores .manager-cost-table td::before {
     content: attr(data-label);
     color: var(--accent-2);
+    font-size: 0.74rem;
     font-weight: 900;
+    letter-spacing: 0;
+    text-transform: uppercase;
   }
 
   #indicacoes .status-panel {
