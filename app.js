@@ -28,6 +28,15 @@ const catheterSubtabs = Array.from(document.querySelectorAll(".catheter-subtab")
 const catheterSubtabPanels = Array.from(document.querySelectorAll("[data-catheter-panel]"));
 const pediatricSubtabs = Array.from(document.querySelectorAll(".pediatric-subtab"));
 const pediatricSubtabPanels = Array.from(document.querySelectorAll("[data-pediatric-panel]"));
+const pediatricFlowchart = document.querySelector("[data-pediatric-flowchart]");
+const pediatricFlowNodes = Array.from(document.querySelectorAll("[data-flow-node]"));
+const pediatricFlowStep = document.querySelector("[data-flow-step]");
+const pediatricFlowBackButton = document.querySelector("[data-flow-back]");
+const pediatricFlowResetButton = document.querySelector("[data-flow-reset]");
+const caregiverSubtabs = Array.from(document.querySelectorAll(".caregiver-subtab"));
+const caregiverSubtabPanels = Array.from(document.querySelectorAll("[data-caregiver-panel]"));
+const nonprofessionalSubtabs = Array.from(document.querySelectorAll(".nonprofessional-subtab"));
+const nonprofessionalSubtabPanels = Array.from(document.querySelectorAll("[data-nonprofessional-panel]"));
 const compatItemA = document.querySelector("#compatItemA");
 const compatItemB = document.querySelector("#compatItemB");
 const compatInteractiveResult = document.querySelector("#compatInteractiveResult");
@@ -814,6 +823,116 @@ function movePediatricSubtabFocus(currentTrigger, direction) {
   const nextIndex = (currentIndex + direction + pediatricSubtabs.length) % pediatricSubtabs.length;
   const nextTrigger = pediatricSubtabs[nextIndex];
   activatePediatricSubtab(nextTrigger);
+  nextTrigger.focus();
+}
+
+const pediatricFlowState = {
+  current: "necessidade",
+  history: [],
+};
+
+const pediatricFlowStepMap = {
+  necessidade: "Etapa 1 de 6",
+  "via-oral": "Etapa 2 de 6",
+  emergencia: "Etapa 3 de 6",
+  contexto: "Etapa 4 de 6",
+  contraindacao: "Etapa 5 de 6",
+  indicada: "Resultado",
+  "sem-indicacao": "Resultado",
+  "usar-oral": "Resultado",
+  "acesso-venoso": "Resultado",
+  reavaliar: "Resultado",
+  contraindicada: "Resultado",
+};
+
+function showPediatricFlowNode(nodeName, options = {}) {
+  if (!pediatricFlowchart) return;
+
+  const { pushHistory = true } = options;
+  const nextNode = pediatricFlowNodes.find((node) => node.dataset.flowNode === nodeName);
+  if (!nextNode) return;
+
+  if (pushHistory && pediatricFlowState.current !== nodeName) {
+    pediatricFlowState.history.push(pediatricFlowState.current);
+  }
+
+  pediatricFlowState.current = nodeName;
+
+  pediatricFlowNodes.forEach((node) => {
+    const isActive = node.dataset.flowNode === nodeName;
+    node.hidden = !isActive;
+  });
+
+  if (pediatricFlowStep) {
+    pediatricFlowStep.textContent = pediatricFlowStepMap[nodeName] || "Fluxograma";
+  }
+
+  if (pediatricFlowBackButton) {
+    pediatricFlowBackButton.disabled = pediatricFlowState.history.length === 0;
+  }
+}
+
+function resetPediatricFlowchart() {
+  pediatricFlowState.current = "necessidade";
+  pediatricFlowState.history = [];
+  showPediatricFlowNode("necessidade", { pushHistory: false });
+}
+
+function goBackPediatricFlowchart() {
+  const previousNode = pediatricFlowState.history.pop();
+  if (!previousNode) return;
+  showPediatricFlowNode(previousNode, { pushHistory: false });
+}
+
+function activateCaregiverSubtab(trigger) {
+  const target = trigger.dataset.caregiverSubtab;
+
+  caregiverSubtabs.forEach((item) => {
+    const isActive = item === trigger;
+    item.setAttribute("aria-selected", String(isActive));
+    item.setAttribute("tabindex", isActive ? "0" : "-1");
+  });
+
+  caregiverSubtabPanels.forEach((panel) => {
+    const isActive = panel.dataset.caregiverPanel === target;
+    panel.hidden = !isActive;
+    panel.classList.toggle("active", isActive);
+  });
+}
+
+function moveCaregiverSubtabFocus(currentTrigger, direction) {
+  const currentIndex = caregiverSubtabs.indexOf(currentTrigger);
+  if (currentIndex < 0) return;
+
+  const nextIndex = (currentIndex + direction + caregiverSubtabs.length) % caregiverSubtabs.length;
+  const nextTrigger = caregiverSubtabs[nextIndex];
+  activateCaregiverSubtab(nextTrigger);
+  nextTrigger.focus();
+}
+
+function activateNonprofessionalSubtab(trigger) {
+  const target = trigger.dataset.nonprofessionalSubtab;
+
+  nonprofessionalSubtabs.forEach((item) => {
+    const isActive = item === trigger;
+    item.setAttribute("aria-selected", String(isActive));
+    item.setAttribute("tabindex", isActive ? "0" : "-1");
+  });
+
+  nonprofessionalSubtabPanels.forEach((panel) => {
+    const isActive = panel.dataset.nonprofessionalPanel === target;
+    panel.hidden = !isActive;
+    panel.classList.toggle("active", isActive);
+  });
+}
+
+function moveNonprofessionalSubtabFocus(currentTrigger, direction) {
+  const currentIndex = nonprofessionalSubtabs.indexOf(currentTrigger);
+  if (currentIndex < 0) return;
+
+  const nextIndex = (currentIndex + direction + nonprofessionalSubtabs.length) % nonprofessionalSubtabs.length;
+  const nextTrigger = nonprofessionalSubtabs[nextIndex];
+  activateNonprofessionalSubtab(nextTrigger);
   nextTrigger.focus();
 }
 
@@ -1933,6 +2052,80 @@ pediatricSubtabs.forEach((trigger) => {
       event.preventDefault();
       const lastTrigger = pediatricSubtabs[pediatricSubtabs.length - 1];
       activatePediatricSubtab(lastTrigger);
+      lastTrigger.focus();
+    }
+  });
+});
+
+if (pediatricFlowchart) {
+  pediatricFlowchart.addEventListener("click", (event) => {
+    const nextButton = event.target.closest("[data-flow-next]");
+    if (!nextButton) return;
+    showPediatricFlowNode(nextButton.dataset.flowNext);
+  });
+}
+
+if (pediatricFlowBackButton) {
+  pediatricFlowBackButton.addEventListener("click", goBackPediatricFlowchart);
+}
+
+if (pediatricFlowResetButton) {
+  pediatricFlowResetButton.addEventListener("click", resetPediatricFlowchart);
+}
+
+resetPediatricFlowchart();
+
+caregiverSubtabs.forEach((trigger) => {
+  trigger.addEventListener("click", () => activateCaregiverSubtab(trigger));
+  trigger.addEventListener("keydown", (event) => {
+    if (event.key === "ArrowRight" || event.key === "ArrowDown") {
+      event.preventDefault();
+      moveCaregiverSubtabFocus(trigger, 1);
+    }
+
+    if (event.key === "ArrowLeft" || event.key === "ArrowUp") {
+      event.preventDefault();
+      moveCaregiverSubtabFocus(trigger, -1);
+    }
+
+    if (event.key === "Home") {
+      event.preventDefault();
+      activateCaregiverSubtab(caregiverSubtabs[0]);
+      caregiverSubtabs[0].focus();
+    }
+
+    if (event.key === "End") {
+      event.preventDefault();
+      const lastTrigger = caregiverSubtabs[caregiverSubtabs.length - 1];
+      activateCaregiverSubtab(lastTrigger);
+      lastTrigger.focus();
+    }
+  });
+});
+
+nonprofessionalSubtabs.forEach((trigger) => {
+  trigger.addEventListener("click", () => activateNonprofessionalSubtab(trigger));
+  trigger.addEventListener("keydown", (event) => {
+    if (event.key === "ArrowRight" || event.key === "ArrowDown") {
+      event.preventDefault();
+      moveNonprofessionalSubtabFocus(trigger, 1);
+    }
+
+    if (event.key === "ArrowLeft" || event.key === "ArrowUp") {
+      event.preventDefault();
+      moveNonprofessionalSubtabFocus(trigger, -1);
+    }
+
+    if (event.key === "Home") {
+      event.preventDefault();
+      activateNonprofessionalSubtab(nonprofessionalSubtabs[0]);
+      nonprofessionalSubtabs[0].focus();
+    }
+
+    if (event.key === "End") {
+      event.preventDefault();
+      const lastTrigger = nonprofessionalSubtabs[nonprofessionalSubtabs.length - 1];
+      activateNonprofessionalSubtab(lastTrigger);
       lastTrigger.focus();
     }
   });
