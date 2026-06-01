@@ -80,6 +80,7 @@ const visitCounterGetUrl = `https://abacus.jasoncameron.dev/get/${visitCounterNa
 const visitCounterStorageKey = "icare-visit-counted-at";
 const visitCounterSessionMs = 12 * 60 * 60 * 1000;
 let visitCounterLoaded = false;
+let visitCounterIncremented = false;
 let dropCameraStream = null;
 let dropTimestamps = [];
 let dropTimer = null;
@@ -246,9 +247,15 @@ function isLocalPreview() {
 
 async function updateVisitCounter({ incrementIfNewSession = false } = {}) {
   if (!visitCounters.length) return;
-  if (visitCounterLoaded) return;
 
-  const shouldIncrement = incrementIfNewSession && shouldCountNewVisit() && !isLocalPreview();
+  const shouldIncrement =
+    incrementIfNewSession &&
+    !visitCounterIncremented &&
+    shouldCountNewVisit() &&
+    !isLocalPreview();
+
+  if (visitCounterLoaded && !shouldIncrement) return;
+
   const targetUrl = shouldIncrement ? visitCounterHitUrl : visitCounterGetUrl;
 
   try {
@@ -258,7 +265,10 @@ async function updateVisitCounter({ incrementIfNewSession = false } = {}) {
     visitCounters.forEach((counter) => {
       counter.textContent = String(data.value);
     });
-    if (shouldIncrement) rememberCountedVisit();
+    if (shouldIncrement) {
+      rememberCountedVisit();
+      visitCounterIncremented = true;
+    }
     visitCounterLoaded = true;
   } catch {
     visitCounters.forEach((counter) => {
@@ -266,6 +276,8 @@ async function updateVisitCounter({ incrementIfNewSession = false } = {}) {
     });
   }
 }
+
+updateVisitCounter();
 
 function shouldScrollToPanel() {
   return window.matchMedia("(pointer: coarse)").matches || window.matchMedia("(max-width: 820px)").matches;

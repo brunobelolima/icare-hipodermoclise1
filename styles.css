@@ -288,7 +288,9 @@ h1 {
   cursor: pointer;
   font-weight: 700;
   line-height: 1.2;
-  overflow-wrap: anywhere;
+  overflow-wrap: break-word;
+  word-break: normal;
+  hyphens: none;
   padding: 8px;
   text-align: center;
   transition:
@@ -929,6 +931,28 @@ li {
   line-height: 1.45;
 }
 
+.dosage-list {
+  display: grid;
+  gap: 8px;
+}
+
+.dosage-list p,
+.dosage-list ul {
+  margin: 0;
+}
+
+.dosage-list ul {
+  padding-left: 18px;
+}
+
+.dosage-list li {
+  margin: 5px 0;
+}
+
+.dosage-list strong {
+  color: var(--accent-2);
+}
+
 .technique-summary {
   display: grid;
   gap: 12px;
@@ -1267,8 +1291,9 @@ a.secondary-button:focus-visible {
   text-align: left;
   vertical-align: top;
   line-height: 1.4;
-  overflow-wrap: anywhere;
-  hyphens: auto;
+  overflow-wrap: break-word;
+  word-break: normal;
+  hyphens: none;
 }
 
 .compat-table th {
@@ -1276,6 +1301,14 @@ a.secondary-button:focus-visible {
   color: var(--ink);
   font-size: 0.82rem;
   text-transform: uppercase;
+}
+
+#pediatria .compat-table th:first-child,
+#pediatria .compat-table td:first-child {
+  min-width: 150px;
+  overflow-wrap: normal;
+  word-break: normal;
+  hyphens: none;
 }
 
 .compat-table caption {
@@ -1517,7 +1550,12 @@ details.references summary {
 }
 
 .pediatric-subtabs {
-  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
+}
+
+.pediatric-subtab[data-pediatric-subtab="compatibilidade"] {
+  min-width: 170px;
+  white-space: nowrap;
 }
 
 .drop-subtabs,
@@ -1544,7 +1582,9 @@ details.references summary {
   font: inherit;
   font-weight: 800;
   line-height: 1.2;
-  overflow-wrap: anywhere;
+  overflow-wrap: break-word;
+  word-break: normal;
+  hyphens: none;
   padding: 0 14px;
   text-align: center;
   touch-action: manipulation;
