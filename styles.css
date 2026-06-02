@@ -304,10 +304,30 @@ h1 {
   color: var(--ink);
 }
 
+.tab-trigger[data-tab="prescricao"] {
+  border: 1px solid rgba(8, 145, 178, 0.16);
+  background: rgba(240, 253, 250, 0.58);
+  color: var(--accent-2);
+  box-shadow: 0 4px 10px rgba(8, 145, 178, 0.06);
+  font-weight: 800;
+}
+
+.tab-trigger[data-tab="prescricao"]:hover {
+  background: rgba(204, 251, 241, 0.64);
+  color: var(--accent-2);
+  transform: translateY(-1px);
+}
+
 .tab-trigger[aria-selected="true"] {
   background: var(--accent);
   color: white;
   box-shadow: 0 8px 18px rgba(8, 145, 178, 0.22);
+}
+
+.tab-trigger[data-tab="prescricao"][aria-selected="true"] {
+  background: var(--accent);
+  color: white;
+  box-shadow: 0 8px 18px rgba(8, 145, 178, 0.18);
 }
 
 .tab-panel {
@@ -765,6 +785,21 @@ li {
   background: #ecfdf5;
   border-color: var(--accent);
   color: var(--accent-2);
+}
+
+.pediatric-age-row {
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: #f8fffc;
+  padding: 12px;
+}
+
+.pediatric-age-row[hidden] {
+  display: none;
+}
+
+.pediatric-age-row select {
+  width: 100%;
 }
 
 .puncture-groups {

@@ -43,6 +43,8 @@ const compatInteractiveResult = document.querySelector("#compatInteractiveResult
 const prescriptionItemsContainer = document.querySelector("#prescriptionItems");
 const addPrescriptionItemButton = document.querySelector("#addPrescriptionItem");
 const prescriptionProfileControls = Array.from(document.querySelectorAll("input[name='prescriptionProfile']"));
+const pediatricAgeRow = document.querySelector("#pediatricAgeRow");
+const pediatricAgeRange = document.querySelector("#pediatricAgeRange");
 let prescriptionItemControls = Array.from(document.querySelectorAll(".prescription-item"));
 const punctureHighlight = document.querySelector("#punctureHighlight");
 const punctureGroups = document.querySelector("#punctureGroups");
@@ -86,7 +88,7 @@ const visitCounterNamespace = "icare-hipodermoclise2";
 const visitCounterKey = "visitas";
 const visitCounterHitUrl = `https://abacus.jasoncameron.dev/hit/${visitCounterNamespace}/${visitCounterKey}`;
 const visitCounterGetUrl = `https://abacus.jasoncameron.dev/get/${visitCounterNamespace}/${visitCounterKey}`;
-const visitCounterStorageKey = "icare-visit-counted-at";
+const visitCounterStorageKey = "icare-shared-visit-counted-at";
 const visitCounterSessionMs = 12 * 60 * 60 * 1000;
 let visitCounterLoaded = false;
 let visitCounterIncremented = false;
@@ -167,7 +169,7 @@ window.googleTranslateElementInit = function googleTranslateElementInit() {
   new window.google.translate.TranslateElement(
     {
       pageLanguage: "pt",
-      includedLanguages: "pt,en,es,fr",
+      includedLanguages: "pt,en,es,fr,de,zh-CN",
       autoDisplay: false,
     },
     "google_translate_element",
@@ -1145,9 +1147,15 @@ const compatibilityLabels = {
   haloperidol: "Haloperidol",
   midazolam: "Midazolam",
   metoclopramida: "Metoclopramida",
+  fentanil: "Fentanil",
+  ondansetrona: "Ondansetrona",
+  ciclizina: "Ciclizina",
   clonidina: "Clonidina",
+  antissecretores: "Escopolamina ou glicopirrolato",
+  fenobarbital: "Fenobarbital",
   sf: "Soro fisiológico 0,9% (SF)",
   sg5: "Soro glicosado 5% (SG 5%)",
+  diluente: "Soro fisiológico 0,9% ou água para injeção",
 };
 
 const compatibilityPairs = {
@@ -1385,47 +1393,111 @@ const prescriptionData = {
 const pediatricPrescriptionData = {
   morfina: {
     dose:
-      "Dor e dispneia: estudo pediátrico descreve uso principalmente em infusão subcutânea contínua; dose inicial de referência para fim de vida: 0,1mg/kg SC/IV a cada 4h ou infusão contínua/PCA de 50mcg/kg/h",
+      "Dor e dispneia. Dose inicial para dor em paciente sem opioide: neonato 40mcg/kg/dose SC a cada 6h ou 160mcg/kg/24h; 1-2 meses 60mcg/kg a cada 6h ou 240mcg/kg/24h; 3-5 meses 60mcg/kg a cada 4h ou 360mcg/kg/24h; 6-23 meses 80mcg/kg a cada 4h ou 480mcg/kg/24h; 2-11 anos 80-100mcg/kg a cada 4h, máximo 5mg/dose, ou 480-600mcg/kg/24h, máximo 20mg/24h; 12 anos ou mais 80-100mcg/kg a cada 4h, máximo 5mg/dose, ou 2,5-5mg a cada 4h; infusão 480-600mcg/kg/24h, máximo 30mg/24h, ou 20-30mg/24h",
     dilution:
-      "Definir concentração e diluente por prescrição, peso e protocolo local; validar concentração final com farmácia clínica",
-    time: "Infusão subcutânea contínua; no estudo pediátrico, taxa global das infusões entre 0,1 e 1,5mL/h",
+      "Não especificada; definir concentração final pela rotina local",
+    time: "SC a cada 4-6h conforme faixa etária ou infusão contínua em 24h; no estudo pediátrico domiciliar, infusão entre 0,1 e 1,5mL/h",
     minVolume: "",
     comments:
       "Titular conforme resposta e eventos adversos. Monitorar sedação, depressão respiratória, prurido, constipação, retenção urinária e sinais locais.",
-    reference: "Pediatria refs. 2, 5",
+    reference: "Pediatria refs. 2, 9",
   },
   midazolam: {
     dose:
-      "Crises epilépticas, dispneia, sedação e irritabilidade neurológica: estudo pediátrico descreve uso principalmente em infusão subcutânea contínua; em dois casos houve bolus SC de 0,4mL e 1mL",
+      "Crises epilépticas, dispneia, sedação e irritabilidade neurológica. Crise epiléptica no fim de vida: infusão SC/IV contínua inicial de 1mg/kg/24h, com aumento gradual até 7mg/kg/24h. A partir de 1 mês: máximo habitual 60mg/24h; doses maiores apenas sob orientação especializada. Ansiedade/agitação no fim de vida: bolus SC de 50mcg/kg e infusão de 200mcg/kg/24h, com máximos iniciais por idade",
     dilution:
-      "Definir dose em mg/kg, concentração e diluente por protocolo pediátrico; validar concentração final com farmácia clínica",
-    time: "Bolus SC quando prescrito ou infusão subcutânea contínua; no estudo pediátrico, taxa global das infusões entre 0,1 e 1,5mL/h",
+      "Não especificada; considerar volume da seringa e compatibilidade",
+    time: "Bolus SC quando prescrito ou infusão contínua em 24h",
     minVolume: "",
     comments:
       "Monitorar sedação, depressão respiratória, agitação paradoxal e induração local.",
-    reference: "Pediatria ref. 2",
+    reference: "Pediatria refs. 2, 9",
+  },
+  fentanil: {
+    dose:
+      "Dor moderada a intensa quando opioide potente é indicado. Paciente sem opioide, infusão SC/IV contínua: neonato a 11 meses 0,15-0,5mcg/kg/h; 1 ano ou mais 0,25-1mcg/kg/h, máximo inicial 50mcg/h. Paciente já em opioide forte: converter pela dose equivalente de morfina oral ou parenteral",
+    dilution: "Não especificada na fonte consultada",
+    time: "Infusão SC/IV contínua; titular conforme resposta e monitoramento especializado",
+    minVolume: "",
+    comments:
+      "Uso especializado; titular conforme opioide prévio, função respiratória, sedação e resposta analgésica.",
+    reference: "Pediatria ref. 9",
   },
   haloperidol: {
     dose:
-      "Náuseas, vômitos e irritabilidade neurológica: estudo pediátrico descreve uso por via subcutânea, mas não informa posologia em mg/kg",
+      "Náuseas, vômitos, delirium ou agitação no fim de vida, por infusão SC/IV contínua: 1 mês-11 anos 20mcg/kg/24h, máximo 1mg/24h; pode aumentar até 90mcg/kg/24h. 12 anos ou mais: 1mg/24h; pode aumentar até 5mg/24h",
     dilution:
-      "Usar apenas com prescrição pediátrica e protocolo local; validar diluente e concentração final com farmácia clínica",
-    time: "Conforme prescrição e protocolo pediátrico local",
+      "Não especificada; ajustar para infusão contínua quando indicada",
+    time: "Infusão contínua em 24h conforme prescrição e protocolo pediátrico",
     minVolume: "",
     comments:
       "Observar sintomas extrapiramidais, sedação e risco de prolongamento de QT.",
-    reference: "Pediatria ref. 2",
+    reference: "Pediatria refs. 2, 9",
+  },
+  metoclopramida: {
+    dose:
+      "Náuseas e vômitos. 1-18 anos: 100-150mcg/kg por via oral, intramuscular, SC ou IV lenta, até 3 vezes ao dia. Máximos: 500mcg/kg/24h, 10mg/dose e 30mg/dia. A dose diária total pode ser administrada por infusão SC/IV em 24h",
+    dilution:
+      "Não especificada; a dose diária total pode ser preparada para infusão contínua em 24h",
+    time: "Até 3 vezes ao dia ou infusão contínua em 24h",
+    minVolume: "",
+    comments:
+      "Pode causar reações cutâneas e sintomas extrapiramidais; evitar quando houver suspeita de obstrução intestinal completa ou contraindicação clínica.",
+    reference: "Pediatria ref. 9",
+  },
+  ondansetrona: {
+    dose:
+      "Náuseas e vômitos. Guia pediátrico lista ondansetrona entre antieméticos em infusão subcutânea; o APPM informa que a injeção não é licenciada para administração SC. A partir de 6 meses, por via oral ou IV lenta/infusão IV: 100-150mcg/kg/dose a cada 8-12h, máximo 8mg/dose",
+    dilution:
+      "A fonte consultada informa que a injeção não é licenciada para administração subcutânea; diluição para uso SC não especificada",
+    time: "Se considerada por protocolo especializado, definir via, intervalo e monitoramento individualmente",
+    minVolume: "",
+    comments:
+      "Monitorar constipação, cefaleia e risco de prolongamento de QT em pacientes suscetíveis.",
+    reference: "Pediatria refs. 8, 9",
+  },
+  ciclizina: {
+    dose:
+      "Náusea intensa. Infusão SC/IV contínua: 1-23 meses 1,5-3mg/kg/24h, máximo 25mg/24h; 2-5 anos 25-50mg/24h; 6-11 anos 37,5-75mg/24h; 12 anos ou mais 75-150mg/24h",
+    dilution:
+      "Compatibilidade descrita apenas com água para injeção; sem evidência de compatibilidade com outros agentes",
+    time: "Infusão contínua em 24h",
+    minVolume: "",
+    comments:
+      "Separar via/sítio quando não houver validação; observar sonolência, efeitos anticolinérgicos e reação local.",
+    reference: "Pediatria refs. 8, 9",
+  },
+  antissecretores: {
+    dose:
+      "Secreções respiratórias excessivas. Hioscina hidrobrometo SC/IV, 1 mês-17 anos: 10mcg/kg, máximo 600mcg, a cada 4-8h; ou 40-60mcg/kg/24h em infusão contínua, máximo sugerido 2,4mg/24h. Glicopirrolato SC/IV: 1 mês-11 anos 4mcg/kg 3-4 vezes ao dia, podendo aumentar até 10mcg/kg 3-4 vezes ao dia, máximo 200mcg/dose 4 vezes ao dia; 12 anos ou mais 200mcg 3-4 vezes ao dia. Glicopirrolato em infusão contínua: 1 mês-11 anos 12mcg/kg/24h, podendo aumentar até 40mcg/kg/24h, máximo 1,2mg/24h; 12 anos ou mais 600mcg/24h, podendo aumentar até 1,2mg/24h",
+    dilution: "Não especificada; definir conforme volume e compatibilidade",
+    time: "Bolus em intervalos prescritos ou infusão contínua em 24h",
+    minVolume: "",
+    comments:
+      "Monitorar retenção urinária, boca seca, constipação, taquicardia e espessamento de secreções.",
+    reference: "Pediatria refs. 8, 9",
+  },
+  fenobarbital: {
+    dose:
+      "Crises refratárias ou sedação. Dose de ataque, todas as idades: 20mg/kg, máximo 1g, por via oral, intramuscular, IV lenta ou infusão SC por pelo menos 20min. Em morte ativa, alguns centros usam meia dose inicial de 10mg/kg. Manutenção: neonato 2,5-5mg/kg 1-2 vezes ao dia; 1 mês-11 anos 2,5-5mg/kg, máximo 300mg/dose, 1-2 vezes ao dia ou dose diária total em infusão contínua; 12 anos ou mais 300mg 2 vezes ao dia ou dose diária total em infusão contínua",
+    dilution:
+      "Administrar em sítio separado por incompatibilidade com outros medicamentos",
+    time: "Dose de ataque por infusão SC por pelo menos 20min; manutenção em doses divididas ou infusão contínua conforme prescrição",
+    minVolume: "",
+    comments:
+      "Uso especializado; não misturar com outros medicamentos no mesmo circuito. Monitorar sedação profunda, depressão respiratória e tolerância local.",
+    reference: "Pediatria refs. 8, 9",
   },
   clonidina: {
     dose:
-      "Crise/distonia: estudo pediátrico descreve uso em um episódio, mas não informa posologia em mg/kg",
+      "Crise/distonia em contexto de cuidado paliativo pediátrico. Infusão SC/IV contínua, criança maior de 1 mês: 0,1-2mcg/kg/h, aproximadamente 2,5-50mcg/kg/24h. Doses iniciais usuais: menor de 6 meses 0,4mcg/kg/h, aproximadamente 10mcg/kg/24h; 6 meses ou mais 0,6mcg/kg/h, aproximadamente 14mcg/kg/24h. A dose diária total também pode ser administrada como injeção SC em duas doses divididas",
     dilution:
-      "Usar apenas com prescrição pediátrica e protocolo local; validar diluente e concentração final com farmácia clínica",
-    time: "Conforme prescrição e protocolo pediátrico local",
+      "Não especificada; ajustar para infusão contínua se necessário",
+    time: "Infusão contínua em 24h ou duas doses SC divididas conforme prescrição",
     minVolume: "",
     comments:
       "Monitorar pressão arterial, frequência cardíaca e sonolência; retirada abrupta pode causar rebote hipertensivo.",
-    reference: "Pediatria ref. 2",
+    reference: "Pediatria refs. 2, 9",
   },
   sf: {
     dose:
@@ -1435,7 +1507,7 @@ const pediatricPrescriptionData = {
     minVolume: "",
     comments:
       "Não usar em choque, desidratação grave, instabilidade hemodinâmica ou necessidade de expansão rápida. Monitorar edema, dor, induração, balanço hídrico e eletrólitos.",
-    reference: "Pediatria refs. 6, 7",
+    reference: "Pediatria refs. 6, 7, 8",
   },
   sg5: {
     dose:
@@ -1446,6 +1518,133 @@ const pediatricPrescriptionData = {
     comments:
       "Monitorar tolerância local e equilíbrio hidroeletrolítico. Preferir validação do plano de hidratação pela equipe pediátrica.",
     reference: "Pediatria ref. 2",
+  },
+  diluente: {
+    dose:
+      "Diluente para infusão subcutânea contínua em bomba. Medicamentos em infusão subcutânea costumam ser preparados em soro fisiológico 0,9% ou água para injeção; há maior tendência de precipitação quando mais de um medicamento é usado e quando fármacos são misturados com soro fisiológico",
+    dilution:
+      "Usar como diluente conforme compatibilidade do medicamento, concentração final, volume da seringa e protocolo local",
+    time: "Conforme medicamento preparado e prescrição individualizada",
+    minVolume: "",
+    comments:
+      "Escolher diluente conforme compatibilidade, concentração final e volume disponível.",
+    reference: "Pediatria refs. 8, 9",
+  },
+};
+
+const pediatricAgeRanges = {
+  neonato: "Neonato",
+  "1-2-meses": "1-2 meses",
+  "3-5-meses": "3-5 meses",
+  "6-23-meses": "6-23 meses",
+  "2-11-anos": "2-11 anos",
+  "12-anos-ou-mais": "12 anos ou mais",
+};
+
+const pediatricAgeGuidance = {
+  morfina: {
+    neonato: "40mcg/kg/dose SC a cada 6h ou 160mcg/kg/24h.",
+    "1-2-meses": "60mcg/kg SC a cada 6h ou 240mcg/kg/24h.",
+    "3-5-meses": "60mcg/kg SC a cada 4h ou 360mcg/kg/24h.",
+    "6-23-meses": "80mcg/kg SC a cada 4h ou 480mcg/kg/24h.",
+    "2-11-anos": "80-100mcg/kg SC a cada 4h, máximo 5mg/dose, ou 480-600mcg/kg/24h, máximo 20mg/24h.",
+    "12-anos-ou-mais": "80-100mcg/kg SC a cada 4h, máximo 5mg/dose, ou 2,5-5mg a cada 4h; infusão 480-600mcg/kg/24h, máximo 30mg/24h, ou 20-30mg/24h.",
+  },
+  fentanil: {
+    neonato: "Infusão SC/IV contínua: 0,15-0,5mcg/kg/h.",
+    "1-2-meses": "Infusão SC/IV contínua: 0,15-0,5mcg/kg/h.",
+    "3-5-meses": "Infusão SC/IV contínua: 0,15-0,5mcg/kg/h.",
+    "6-23-meses": "Infusão SC/IV contínua: 0,15-0,5mcg/kg/h até 11 meses; a partir de 1 ano, 0,25-1mcg/kg/h, máximo inicial 50mcg/h.",
+    "2-11-anos": "Infusão SC/IV contínua: 0,25-1mcg/kg/h, máximo inicial 50mcg/h.",
+    "12-anos-ou-mais": "Infusão SC/IV contínua: 0,25-1mcg/kg/h, máximo inicial 50mcg/h.",
+  },
+  midazolam: {
+    neonato: "Sem posologia SC definida nesta tabela para neonato; usar apenas com protocolo especializado.",
+    "1-2-meses": "Crise epiléptica no fim de vida: infusão SC/IV contínua inicial de 1mg/kg/24h, com aumento gradual até 7mg/kg/24h. Ansiedade/agitação: bolus SC de 50mcg/kg e infusão de 200mcg/kg/24h, respeitando máximos iniciais por idade.",
+    "3-5-meses": "Crise epiléptica no fim de vida: infusão SC/IV contínua inicial de 1mg/kg/24h, com aumento gradual até 7mg/kg/24h. Ansiedade/agitação: bolus SC de 50mcg/kg e infusão de 200mcg/kg/24h, respeitando máximos iniciais por idade.",
+    "6-23-meses": "Crise epiléptica no fim de vida: infusão SC/IV contínua inicial de 1mg/kg/24h, com aumento gradual até 7mg/kg/24h. Ansiedade/agitação: bolus SC de 50mcg/kg e infusão de 200mcg/kg/24h, respeitando máximos iniciais por idade.",
+    "2-11-anos": "Crise epiléptica no fim de vida: infusão SC/IV contínua inicial de 1mg/kg/24h, com aumento gradual até 7mg/kg/24h. Máximo habitual 60mg/24h; doses maiores apenas sob orientação especializada.",
+    "12-anos-ou-mais": "Crise epiléptica no fim de vida: infusão SC/IV contínua inicial de 1mg/kg/24h, com aumento gradual até 7mg/kg/24h. Máximo habitual 60mg/24h; doses maiores apenas sob orientação especializada.",
+  },
+  haloperidol: {
+    neonato: "Sem posologia SC/IV contínua definida nesta tabela para neonato.",
+    "1-2-meses": "20mcg/kg/24h, máximo 1mg/24h; pode aumentar até 90mcg/kg/24h.",
+    "3-5-meses": "20mcg/kg/24h, máximo 1mg/24h; pode aumentar até 90mcg/kg/24h.",
+    "6-23-meses": "20mcg/kg/24h, máximo 1mg/24h; pode aumentar até 90mcg/kg/24h.",
+    "2-11-anos": "20mcg/kg/24h, máximo 1mg/24h; pode aumentar até 90mcg/kg/24h.",
+    "12-anos-ou-mais": "1mg/24h; pode aumentar até 5mg/24h.",
+  },
+  metoclopramida: {
+    neonato: "Não indicada nesta tabela para menores de 1 mês.",
+    "1-2-meses": "100-150mcg/kg por via oral, IM, SC ou IV lenta, até 3 vezes ao dia; máximos 500mcg/kg/24h, 10mg/dose e 30mg/dia.",
+    "3-5-meses": "100-150mcg/kg por via oral, IM, SC ou IV lenta, até 3 vezes ao dia; máximos 500mcg/kg/24h, 10mg/dose e 30mg/dia.",
+    "6-23-meses": "100-150mcg/kg por via oral, IM, SC ou IV lenta, até 3 vezes ao dia; máximos 500mcg/kg/24h, 10mg/dose e 30mg/dia.",
+    "2-11-anos": "100-150mcg/kg por via oral, IM, SC ou IV lenta, até 3 vezes ao dia; máximos 500mcg/kg/24h, 10mg/dose e 30mg/dia.",
+    "12-anos-ou-mais": "100-150mcg/kg por via oral, IM, SC ou IV lenta, até 3 vezes ao dia; máximos 500mcg/kg/24h, 10mg/dose e 30mg/dia.",
+  },
+  ondansetrona: {
+    neonato: "Não indicada nesta tabela para neonato.",
+    "1-2-meses": "Não indicada nesta tabela para menores de 6 meses.",
+    "3-5-meses": "Não indicada nesta tabela para menores de 6 meses.",
+    "6-23-meses": "A partir de 6 meses, por via oral ou IV lenta/infusão IV: 100-150mcg/kg/dose a cada 8-12h, máximo 8mg/dose. Uso SC não licenciado na fonte consultada.",
+    "2-11-anos": "Por via oral ou IV lenta/infusão IV: 100-150mcg/kg/dose a cada 8-12h, máximo 8mg/dose. Uso SC não licenciado na fonte consultada.",
+    "12-anos-ou-mais": "Por via oral ou IV lenta/infusão IV: 100-150mcg/kg/dose a cada 8-12h, máximo 8mg/dose. Uso SC não licenciado na fonte consultada.",
+  },
+  ciclizina: {
+    neonato: "Não indicada nesta tabela para menores de 1 mês.",
+    "1-2-meses": "Infusão SC/IV contínua: 1,5-3mg/kg/24h, máximo 25mg/24h.",
+    "3-5-meses": "Infusão SC/IV contínua: 1,5-3mg/kg/24h, máximo 25mg/24h.",
+    "6-23-meses": "Infusão SC/IV contínua: 1,5-3mg/kg/24h, máximo 25mg/24h.",
+    "2-11-anos": "2-5 anos: 25-50mg/24h; 6-11 anos: 37,5-75mg/24h.",
+    "12-anos-ou-mais": "75-150mg/24h.",
+  },
+  antissecretores: {
+    neonato: "Não indicada nesta tabela para menores de 1 mês.",
+    "1-2-meses": "Hioscina hidrobrometo: 10mcg/kg a cada 4-8h ou 40-60mcg/kg/24h; glicopirrolato: 4mcg/kg 3-4 vezes ao dia ou 12mcg/kg/24h em infusão contínua.",
+    "3-5-meses": "Hioscina hidrobrometo: 10mcg/kg a cada 4-8h ou 40-60mcg/kg/24h; glicopirrolato: 4mcg/kg 3-4 vezes ao dia ou 12mcg/kg/24h em infusão contínua.",
+    "6-23-meses": "Hioscina hidrobrometo: 10mcg/kg a cada 4-8h ou 40-60mcg/kg/24h; glicopirrolato: 4mcg/kg 3-4 vezes ao dia ou 12mcg/kg/24h em infusão contínua.",
+    "2-11-anos": "Hioscina hidrobrometo: 10mcg/kg a cada 4-8h ou 40-60mcg/kg/24h; glicopirrolato: 4mcg/kg 3-4 vezes ao dia ou 12mcg/kg/24h em infusão contínua.",
+    "12-anos-ou-mais": "Hioscina hidrobrometo: 10mcg/kg, máximo 600mcg, a cada 4-8h ou 40-60mcg/kg/24h; glicopirrolato: 200mcg 3-4 vezes ao dia ou 600mcg/24h em infusão contínua.",
+  },
+  fenobarbital: {
+    neonato: "Dose de ataque: 20mg/kg, máximo 1g; manutenção 2,5-5mg/kg 1-2 vezes ao dia.",
+    "1-2-meses": "Dose de ataque: 20mg/kg, máximo 1g; manutenção 2,5-5mg/kg, máximo 300mg/dose, 1-2 vezes ao dia ou dose diária total em infusão contínua.",
+    "3-5-meses": "Dose de ataque: 20mg/kg, máximo 1g; manutenção 2,5-5mg/kg, máximo 300mg/dose, 1-2 vezes ao dia ou dose diária total em infusão contínua.",
+    "6-23-meses": "Dose de ataque: 20mg/kg, máximo 1g; manutenção 2,5-5mg/kg, máximo 300mg/dose, 1-2 vezes ao dia ou dose diária total em infusão contínua.",
+    "2-11-anos": "Dose de ataque: 20mg/kg, máximo 1g; manutenção 2,5-5mg/kg, máximo 300mg/dose, 1-2 vezes ao dia ou dose diária total em infusão contínua.",
+    "12-anos-ou-mais": "Dose de ataque: 20mg/kg, máximo 1g; manutenção 300mg 2 vezes ao dia ou dose diária total em infusão contínua.",
+  },
+  clonidina: {
+    neonato: "Não indicada nesta tabela para menores de 1 mês.",
+    "1-2-meses": "Infusão SC/IV contínua: 0,1-2mcg/kg/h; dose inicial usual menor de 6 meses: 0,4mcg/kg/h, aproximadamente 10mcg/kg/24h.",
+    "3-5-meses": "Infusão SC/IV contínua: 0,1-2mcg/kg/h; dose inicial usual menor de 6 meses: 0,4mcg/kg/h, aproximadamente 10mcg/kg/24h.",
+    "6-23-meses": "Infusão SC/IV contínua: 0,1-2mcg/kg/h; dose inicial usual a partir de 6 meses: 0,6mcg/kg/h, aproximadamente 14mcg/kg/24h.",
+    "2-11-anos": "Infusão SC/IV contínua: 0,1-2mcg/kg/h, aproximadamente 2,5-50mcg/kg/24h.",
+    "12-anos-ou-mais": "Infusão SC/IV contínua: 0,1-2mcg/kg/h, aproximadamente 2,5-50mcg/kg/24h.",
+  },
+  sf: {
+    neonato: "Não usar como substituto de expansão volêmica rápida; definir volume por prescrição individualizada.",
+    "1-2-meses": "Desidratação leve a moderada: 20mL/kg na primeira hora, com continuidade conforme necessidade clínica.",
+    "3-5-meses": "Desidratação leve a moderada: 20mL/kg na primeira hora, com continuidade conforme necessidade clínica.",
+    "6-23-meses": "Desidratação leve a moderada: 20mL/kg na primeira hora, com continuidade conforme necessidade clínica.",
+    "2-11-anos": "Desidratação leve a moderada: 20mL/kg na primeira hora, com continuidade conforme necessidade clínica.",
+    "12-anos-ou-mais": "Definir volume e velocidade conforme prescrição pediátrica/adolescente, tolerância local e protocolo institucional.",
+  },
+  sg5: {
+    neonato: "Definir indicação, volume e velocidade por prescrição individualizada.",
+    "1-2-meses": "Definir indicação, volume e velocidade por prescrição individualizada.",
+    "3-5-meses": "Definir indicação, volume e velocidade por prescrição individualizada.",
+    "6-23-meses": "Definir indicação, volume e velocidade por prescrição individualizada.",
+    "2-11-anos": "Definir indicação, volume e velocidade por prescrição individualizada.",
+    "12-anos-ou-mais": "Definir indicação, volume e velocidade por prescrição individualizada.",
+  },
+  diluente: {
+    neonato: "Definir diluente conforme medicamento, concentração final, volume da seringa e protocolo local.",
+    "1-2-meses": "Definir diluente conforme medicamento, concentração final, volume da seringa e protocolo local.",
+    "3-5-meses": "Definir diluente conforme medicamento, concentração final, volume da seringa e protocolo local.",
+    "6-23-meses": "Definir diluente conforme medicamento, concentração final, volume da seringa e protocolo local.",
+    "2-11-anos": "Definir diluente conforme medicamento, concentração final, volume da seringa e protocolo local.",
+    "12-anos-ou-mais": "Definir diluente conforme medicamento, concentração final, volume da seringa e protocolo local.",
   },
 };
 
@@ -1565,6 +1764,33 @@ function getActivePrescriptionProfile() {
   return prescriptionProfileControls.find((control) => control.checked)?.value || "adulto";
 }
 
+function selectedPediatricAgeRange() {
+  return pediatricAgeRange?.value || "";
+}
+
+function activePediatricAgeLabel() {
+  return pediatricAgeRanges[selectedPediatricAgeRange()] || "";
+}
+
+function ageSpecificGuidance(item) {
+  if (getActivePrescriptionProfile() !== "pediatria") return "";
+  const age = selectedPediatricAgeRange();
+  return pediatricAgeGuidance[item]?.[age] || "";
+}
+
+function prescriptionDoseText(item) {
+  const data = getActivePrescriptionData()[item];
+  const ageGuidance = ageSpecificGuidance(item);
+  if (getActivePrescriptionProfile() === "pediatria" && ageGuidance) return ageGuidance;
+  return data.dose;
+}
+
+function updatePediatricAgeVisibility() {
+  const isPediatric = getActivePrescriptionProfile() === "pediatria";
+  if (pediatricAgeRow) pediatricAgeRow.hidden = !isPediatric;
+  if (!isPediatric && pediatricAgeRange) pediatricAgeRange.value = "";
+}
+
 function getActivePrescriptionData() {
   return getActivePrescriptionProfile() === "pediatria" ? pediatricPrescriptionData : prescriptionData;
 }
@@ -1584,24 +1810,67 @@ function getPrescriptionCompatibility(first, second) {
       status: "uso conjunto descrito",
       className: "warning",
       source: "Pediatria ref. 2",
+      detail: "Validar concentração final; se não houver protocolo, separar sítios ou horários.",
     },
     "haloperidol::morfina": {
       status: "dados pediátricos insuficientes",
       className: "warning",
       source: "Pediatria ref. 2",
+      detail: "Não misturar sem validação local.",
     },
     "haloperidol::midazolam": {
       status: "dados pediátricos insuficientes",
       className: "warning",
       source: "Pediatria ref. 2",
+      detail: "Separar a administração se não houver matriz local.",
+    },
+    "fentanil::midazolam": {
+      status: "dados insuficientes",
+      className: "warning",
+      source: "Pediatria refs. 8, 9",
+      detail: "Preferir sítios, horários ou circuitos separados sem validação farmacêutica local.",
+    },
+    "fentanil::morfina": {
+      status: "não recomendado na mesma prescrição de conversão sem revisão especializada",
+      className: "warning",
+      source: "Pediatria refs. 5, 9",
+      detail: "Usar conversão/rotação de opioide com monitoramento especializado, sem associação automática no mesmo sítio.",
     },
   };
+
+  if (first === "fenobarbital" || second === "fenobarbital") {
+    return {
+      status: "sítio separado",
+      className: "warning",
+      source: "Pediatria refs. 8, 9",
+      detail: "Administrar em sítio separado por incompatibilidade com outros medicamentos.",
+    };
+  }
+
+  if (first === "ciclizina" || second === "ciclizina") {
+    return {
+      status: "sítio separado se não houver validação",
+      className: "warning",
+      source: "Pediatria refs. 8, 9",
+      detail: "Compatibilidade descrita apenas com água para injeção; separar se não houver validação.",
+    };
+  }
 
   if (first === "clonidina" || second === "clonidina") {
     return {
       status: "dados insuficientes",
       className: "warning",
       source: "Pediatria ref. 2",
+      detail: "Separar via/sítio ou confirmar a associação antes do uso.",
+    };
+  }
+
+  if (first === "diluente" || second === "diluente") {
+    return {
+      status: "validar diluente e concentração",
+      className: "warning",
+      source: "Pediatria refs. 8, 9",
+      detail: "Usar como diluente conforme compatibilidade do medicamento, concentração final, volume da seringa e protocolo local.",
     };
   }
 
@@ -1610,6 +1879,7 @@ function getPrescriptionCompatibility(first, second) {
       status: "dados pediátricos insuficientes",
       className: "warning",
       source: "Pediatria",
+      detail: "Prescrever separadamente ou validar concentração, diluente e tempo de infusão.",
     };
   }
 
@@ -1618,12 +1888,18 @@ function getPrescriptionCompatibility(first, second) {
       status: "dados insuficientes",
       className: "warning",
       source: "Pediatria",
+      detail: "Na ausência de validação, preferir sítios, horários ou circuitos separados.",
     }
   );
 }
 
+function canSharePrescriptionStatus(result) {
+  if (result.status === "compatível") return true;
+  return getActivePrescriptionProfile() === "pediatria" && result.status === "uso conjunto descrito";
+}
+
 function canSharePuncture(item, group) {
-  return group.every((existing) => getPrescriptionCompatibility(item, existing).status === "compatível");
+  return group.every((existing) => canSharePrescriptionStatus(getPrescriptionCompatibility(item, existing)));
 }
 
 function groupItemsByCompatibility(items) {
@@ -1666,10 +1942,17 @@ function prescriptionOptionMarkup() {
       <option value="">Nenhum item</option>
       <option value="morfina">Morfina</option>
       <option value="midazolam">Midazolam</option>
+      <option value="fentanil">Fentanil</option>
       <option value="haloperidol">Haloperidol</option>
+      <option value="metoclopramida">Metoclopramida</option>
+      <option value="ondansetrona">Ondansetrona</option>
+      <option value="ciclizina">Ciclizina</option>
+      <option value="antissecretores">Escopolamina ou glicopirrolato</option>
+      <option value="fenobarbital">Fenobarbital</option>
       <option value="clonidina">Clonidina</option>
       <option value="sf">Soro fisiológico 0,9% / solução isotônica</option>
       <option value="sg5">Soro glicosado 5% / dextrose</option>
+      <option value="diluente">Soro fisiológico 0,9% ou água para injeção</option>
     `;
   }
 
@@ -1744,7 +2027,7 @@ function prescriptionCompatibilityLines(items) {
       const second = items[j];
       const result = getPrescriptionCompatibility(first, second);
       lines.push(
-        `- ${compatibilityLabels[first]} + ${compatibilityLabels[second]}: ${result.status}`,
+        `- ${compatibilityLabels[first]} + ${compatibilityLabels[second]}: ${result.status}${result.detail ? `; conduta: ${result.detail}` : ""}`,
       );
     }
   }
@@ -1753,9 +2036,13 @@ function prescriptionCompatibilityLines(items) {
 
 function prescriptionItemLines(item) {
   const data = getActivePrescriptionData()[item];
+  const ageGuidance = ageSpecificGuidance(item);
   const lines = [
-    `  - ${compatibilityLabels[item]}: ${data.dose}; diluição: ${data.dilution}; tempo de infusão: ${data.time}.`,
+    `  - ${compatibilityLabels[item]}: ${prescriptionDoseText(item)}; diluição: ${data.dilution}; tempo de infusão: ${data.time}.`,
   ];
+  if (getActivePrescriptionProfile() === "pediatria" && activePediatricAgeLabel()) {
+    lines.push(`    Faixa etária selecionada: ${activePediatricAgeLabel()}.`);
+  }
   if (data.minVolume) lines.push(`    Menor volume: ${data.minVolume}`);
   if (data.comments) lines.push(`    Comentários: ${data.comments}`);
   const referenceContext =
@@ -1766,6 +2053,7 @@ function prescriptionItemLines(item) {
 
 function renderPunctureGroups(groups) {
   const activeData = getActivePrescriptionData();
+  const ageLabel = activePediatricAgeLabel();
   punctureGroups.innerHTML = groups
     .map(
       (group, index) => `
@@ -1775,10 +2063,17 @@ function renderPunctureGroups(groups) {
             ${group
               .map((item) => {
                 const data = activeData[item];
+                const ageGuidance = ageSpecificGuidance(item);
                 return `
                   <li>
                     <strong>${compatibilityLabels[item]}</strong>
-                    <span>Dose: ${data.dose}</span>
+                    ${ageLabel ? `<span>Faixa etária: ${ageLabel}</span>` : ""}
+                    <span>Dose: ${prescriptionDoseText(item)}</span>
+                    ${
+                      getActivePrescriptionProfile() === "pediatria" && !ageGuidance
+                        ? "<span>Selecione uma faixa etária para ajustar o texto da dose quando houver dado específico.</span>"
+                        : ""
+                    }
                     <span>Diluição: ${data.dilution}</span>
                     <span>Tempo: ${data.time}</span>
                   </li>
@@ -1807,15 +2102,25 @@ function generatePrescription() {
 
   const groups = groupItemsByCompatibility(items);
   const punctureWord = groups.length === 1 ? "punção de hipodermóclise" : "punções de hipodermóclises";
+  const compatibilityList = prescriptionCompatibilityLines(items)
+    .map((line) => `<li>${line.replace(/^- /, "")}</li>`)
+    .join("");
   punctureHighlight.className = "status-panel prescription-highlight success";
   punctureHighlight.innerHTML = `
     <h2>Quantidade de hipodermóclises sugerida:</h2>
     <p>${groups.length} ${punctureWord} para ${items.length} item(ns) selecionado(s).</p>
     ${
       isPediatric
-        ? "<p>Perfil pediátrico: usar apenas com prescrição individualizada, validação de concentração/diluente e protocolo local. Misturas sem compatibilidade pediátrica direta devem ficar em sítios ou horários separados.</p>"
+        ? "<p>Perfil pediátrico: o número de hipodermóclises é calculado pela compatibilidade medicamentosa. Apenas associações compatíveis ou com uso conjunto descrito podem ficar na mesma punção; as demais ficam em punções, horários ou circuitos separados.</p>"
         : ""
     }
+    ${
+      isPediatric && !activePediatricAgeLabel()
+        ? "<p>Selecione a faixa etária pediátrica para gerar o texto da prescrição com a posologia correspondente.</p>"
+        : ""
+    }
+    <h3>Compatibilidade entre itens selecionados</h3>
+    <ul>${compatibilityList}</ul>
   `;
   renderPunctureGroups(groups);
 }
@@ -1858,10 +2163,15 @@ prescriptionItemControls.forEach(bindPrescriptionItem);
 
 prescriptionProfileControls.forEach((control) => {
   control.addEventListener("change", () => {
+    updatePediatricAgeVisibility();
     refreshPrescriptionOptionsForProfile();
     generatePrescription();
   });
 });
+
+if (pediatricAgeRange) {
+  pediatricAgeRange.addEventListener("change", generatePrescription);
+}
 
 if (addPrescriptionItemButton) {
   addPrescriptionItemButton.addEventListener("click", addPrescriptionItem);
@@ -1871,6 +2181,7 @@ document.querySelector("#clearPrescription").addEventListener("click", () => {
   prescriptionItemControls.forEach((control) => {
     control.value = "";
   });
+  if (pediatricAgeRange) pediatricAgeRange.value = "";
   syncPrescriptionOptions();
   refreshPrescriptionItemLabels();
   updatePrescriptionOptionAvailability();
@@ -1881,6 +2192,8 @@ document.querySelector("#clearPrescription").addEventListener("click", () => {
   `;
   punctureGroups.innerHTML = "";
 });
+
+updatePediatricAgeVisibility();
 
 if (startDropCameraButton) {
   startDropCameraButton.addEventListener("click", startDropCamera);

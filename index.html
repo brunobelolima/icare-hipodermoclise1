@@ -99,6 +99,12 @@
             <button class="language-button" type="button" data-language="fr" aria-label="Francês" title="Francês">
               <span>francês</span>
             </button>
+            <button class="language-button" type="button" data-language="de" aria-label="Alemão" title="Alemão">
+              <span>alemão</span>
+            </button>
+            <button class="language-button" type="button" data-language="zh-CN" aria-label="Mandarim" title="Mandarim">
+              <span>mandarim</span>
+            </button>
           </div>
           <div id="google_translate_element" aria-hidden="true"></div>
         </div>
@@ -114,7 +120,7 @@
         <div
           class="visit-counter"
           aria-live="polite"
-          title="Contabiliza uma visita por navegador a cada 12 horas, sem contar pré-visualizações locais."
+          title="Contabiliza profissionais e não profissionais em um único total, uma visita por navegador a cada 12 horas, sem contar pré-visualizações locais."
         >
           <span>Visitas ao site</span>
           <strong id="visitCounter" data-visit-counter-value>0</strong>
@@ -1905,6 +1911,18 @@
                     <span>Pediatria</span>
                   </label>
                 </fieldset>
+                <label class="form-row pediatric-age-row" id="pediatricAgeRow" hidden>
+                  <span>Faixa etária pediátrica</span>
+                  <select id="pediatricAgeRange">
+                    <option value="">Selecione a faixa etária</option>
+                    <option value="neonato">Neonato</option>
+                    <option value="1-2-meses">1-2 meses</option>
+                    <option value="3-5-meses">3-5 meses</option>
+                    <option value="6-23-meses">6-23 meses</option>
+                    <option value="2-11-anos">2-11 anos</option>
+                    <option value="12-anos-ou-mais">12 anos ou mais</option>
+                  </select>
+                </label>
                 <div class="prescription-list" id="prescriptionItems">
                   <label class="form-row">
                     <span>Item 1</span>
