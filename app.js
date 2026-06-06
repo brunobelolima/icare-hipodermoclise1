@@ -66,6 +66,7 @@ const manualDropsMinute = document.querySelector("#manualDropsMinute");
 const manualMlHour = document.querySelector("#manualMlHour");
 const contactForm = document.querySelector("#contactForm");
 const contactResult = document.querySelector("#contactResult");
+const contactProfileSelect = document.querySelector("#contactForm select[name='profile']");
 const techniqueVideo = document.querySelector("#techniqueVideo");
 const techniqueVideoFallback = document.querySelector("#techniqueVideoFallback");
 const visitCounters = Array.from(document.querySelectorAll("[data-visit-counter-value]"));
@@ -193,9 +194,15 @@ function hasProfessionalAccess() {
   }
 }
 
+function setContactProfileOption(label) {
+  if (!contactProfileSelect) return;
+  contactProfileSelect.replaceChildren(new Option(label, label));
+}
+
 function allowProfessionalAccess() {
   rememberProfessionalAccess();
   document.body.classList.remove("access-pending", "access-denied", "access-limited");
+  setContactProfileOption("Profissional de saúde");
   if (accessGate) accessGate.hidden = true;
   if (appShell) appShell.removeAttribute("aria-hidden");
   updateVisitCounter({ incrementIfNewSession: true });
@@ -205,6 +212,7 @@ function allowProfessionalAccess() {
 function denyProfessionalAccess() {
   document.body.classList.remove("access-pending", "access-denied");
   document.body.classList.add("access-limited");
+  setContactProfileOption("Não profissional de saúde");
   if (accessGate) accessGate.hidden = true;
   if (appShell) appShell.removeAttribute("aria-hidden");
   updateVisitCounter({ incrementIfNewSession: true });
@@ -1147,6 +1155,7 @@ const compatibilityLabels = {
   haloperidol: "Haloperidol",
   midazolam: "Midazolam",
   metoclopramida: "Metoclopramida",
+  furosemida: "Furosemida",
   fentanil: "Fentanil",
   ondansetrona: "Ondansetrona",
   ciclizina: "Ciclizina",
@@ -1289,12 +1298,12 @@ const prescriptionData = {
   morfina: {
     dose: "Bolus SC: 2-3mg a cada 4 horas; infusão contínua: 10-20mg/dia, com ajuste individualizado",
     dilution:
-      "Preferir soro fisiológico 0,9%; diluir a dose prescrita em SF 0,9% conforme volume planejado. É possível fazer sem diluição (OE)",
+      'Preferir soro fisiológico 0,9%; diluir a dose prescrita em SF 0,9% conforme volume planejado. É possível fazer sem diluição.<sup class="ref-mark">OE</sup>',
     time:
       "Bolus ou infusão contínua; velocidade usual entre 20-100mL/h, equivalente a aproximadamente 7-33 gotas/min em equipo de macrogotas",
     minVolume: "",
     comments:
-      "Não existe dose máxima definida. Iniciar com doses menores em idosos, pacientes frágeis ou com doença renal, monitorando sedação, depressão respiratória, edema, irritação, hematoma ou infecção local. Preferir diluição da medicação que será infundida em 24h no lugar de solução 1:1 a fim de evitar desperdício de medicação (OE).",
+      'Não existe dose máxima definida. Iniciar com doses menores em idosos, pacientes frágeis ou com doença renal, monitorando sedação, depressão respiratória, edema, irritação, hematoma ou infecção local. Preferir diluição da medicação que será infundida em 24h no lugar de solução 1:1 a fim de evitar desperdício de medicação.<sup class="ref-mark">OE</sup>',
     reference: "1, 2, 4, OE",
   },
   escopolamina: {
@@ -1317,7 +1326,7 @@ const prescriptionData = {
     dose:
       "1 a 2g SC a cada 24h, conforme indicação clínica, prescrição e protocolo local. Em coorte com pacientes acima de 75 anos, a dose média foi próxima de 1g/dia",
     dilution: "Diluição em SF 0,9% 100 ml",
-    time: "Infundir em 60min (OE)",
+    time: 'Infundir em 60min.<sup class="ref-mark">OE</sup>',
     minVolume: "",
     comments:
       "Evidências em adultos, especialmente idosos, descrevem uso SC como alternativa viável quando o acesso venoso é difícil. No estudo prospectivo em cuidados paliativos, não houve suspensão por intolerância local; quando houve irritação, foi manejada com troca do ponto de infusão. Reações locais, como edema, dor, induração, rubor ou irritação, devem ser monitoradas.",
@@ -1325,8 +1334,8 @@ const prescriptionData = {
   },
   dipirona: {
     dose: "1 a 2g até 6/6h, conforme protocolo local",
-    dilution: "Diluir em 50mL de SF (OE)",
-    time: "Infundir em 30min (OE)",
+    dilution: 'Diluir em 50mL de SF.<sup class="ref-mark">OE</sup>',
+    time: 'Infundir em 30min.<sup class="ref-mark">OE</sup>',
     minVolume: "",
     comments:
       "As fontes revisadas não encontraram estudos com parâmetros específicos de volume, diluição ou taxa de infusão para metamizol/dipirona por hipodermóclise.",
@@ -1334,11 +1343,11 @@ const prescriptionData = {
   },
   dexametasona: {
     dose: "2 a 16mg a cada 24h",
-    dilution: "Diluir em 50mL de SF (OE)",
-    time: "Infundir em 30min (OE)",
+    dilution: 'Diluir em 50mL de SF.<sup class="ref-mark">OE</sup>',
+    time: 'Infundir em 30min.<sup class="ref-mark">OE</sup>',
     minVolume: "",
     comments:
-      "Geralmente utilizada em via exclusiva, porém é possível utilizar outras medicações no mesmo sítio desde que seja respeitado o intervalo de no mínimo 60min (OE). Estudos descrevem uso subcutâneo frequente em cuidados paliativos, mas não trazem volume, concentração ou taxa em mL/h específicos para dexametasona.",
+      'Geralmente utilizada em via exclusiva, porém é possível utilizar outras medicações no mesmo sítio desde que seja respeitado o intervalo de no mínimo 60min.<sup class="ref-mark">OE</sup> Estudos descrevem uso subcutâneo frequente em cuidados paliativos, mas não trazem volume, concentração ou taxa em mL/h específicos para dexametasona.',
     reference: "4, 8, 9, OE",
   },
   haloperidol: {
@@ -1362,13 +1371,21 @@ const prescriptionData = {
   metoclopramida: {
     dose:
       "10 a 20mg a cada 6-8h ou 30 a 60mg em bolus, conforme prescrição e protocolo local; estudos descrevem infusão subcutânea contínua de 60-90mg/dia e 120-240mg/24h em contextos oncológicos",
-    dilution:
-      "SF 50mL; em estudos com infusor portátil, foi usado volume total de 48mL/24h",
+    dilution: "SF 50mL; menor volume descrito: SF 1:1mL para infusão lenta em bolus",
     time: "50min ou infusão subcutânea contínua em 24h quando prescrita em bomba",
-    minVolume: "SF 1:1mL, infusão lenta em bolus",
+    minVolume: "",
     comments:
       "Monitorar probabilidade de efeitos extrapiramidais. É irritante, sendo comum a ocorrência de reação no local de aplicação; estudos também descreveram sonolência, acatisia e irritação local.",
     reference: "4, 21, 22",
+  },
+  furosemida: {
+    dose: "Intermitente: até 60mg de 6/6h. Contínua: até 240mg em 24h",
+    dilution: "Intermitente: diluir em 2mL de SF 0,9%. Contínua: diluir em 100mL de SF 0,9%",
+    time: "Intermitente: bolus lento. Contínua: em 24h",
+    minVolume: "",
+    comments:
+      "Uso descrito para edema. Efeitos locais descritos: dor, edema, eritema e infecção local, em 3-23% das aplicações. A compatibilidade com outros medicamentos está classificada como dados insuficientes na aba Compatibilidade.",
+    reference: "23, 24, 25",
   },
   sf: {
     dose: "Máximo de 1500mL em 24h conforme sítio de punção",
@@ -1376,7 +1393,7 @@ const prescriptionData = {
     time: "Infusão contínua conforme prescrição e tolerância local",
     minVolume: "",
     comments:
-      "Atentar para tolerância volêmica de acordo com o tecido subcutâneo do paciente (OE). Volume de infusão máximo 62,5mL/h, equivalente a aproximadamente 21 gotas/min em equipo de macrogotas. Considerar o limite de volume conforme o sítio de punção escolhido.",
+      'Atentar para tolerância volêmica de acordo com o tecido subcutâneo do paciente.<sup class="ref-mark">OE</sup> Volume de infusão máximo 62,5mL/h, equivalente a aproximadamente 21 gotas/min em equipo de macrogotas. Considerar o limite de volume conforme o sítio de punção escolhido.',
     reference: "4, 5, 6, OE",
   },
   sg5: {
@@ -1385,7 +1402,7 @@ const prescriptionData = {
     time: "Infusão contínua conforme prescrição e tolerância local",
     minVolume: "",
     comments:
-      "Atentar para tolerância volêmica de acordo com o tecido subcutâneo do paciente (OE). Volume de infusão máximo 62,5mL/h, equivalente a aproximadamente 21 gotas/min em equipo de macrogotas. Considerar o limite de volume conforme o sítio de punção escolhido.",
+      'Atentar para tolerância volêmica de acordo com o tecido subcutâneo do paciente.<sup class="ref-mark">OE</sup> Volume de infusão máximo 62,5mL/h, equivalente a aproximadamente 21 gotas/min em equipo de macrogotas. Considerar o limite de volume conforme o sítio de punção escolhido.',
     reference: "4, 20",
   },
 };
@@ -1701,6 +1718,14 @@ function renderCompatibilityResult() {
       detail:
         'Não há dado específico de mistura, na mesma seringa ou bomba subcutânea, envolvendo ceftriaxona com os demais medicamentos desta matriz.<sup class="ref-mark">2,5,6</sup>',
     };
+  } else if (first === "furosemida" || second === "furosemida") {
+    result = {
+      status: "dados insuficientes",
+      className: "warning",
+      source: "Compatibilidade ref. 12",
+      detail:
+        'A furosemida é descrita como medicamento usado por via subcutânea/hipodermóclise, mas não há estudo analítico detalhado de compatibilidade em misturas com os demais medicamentos desta matriz.<sup class="ref-mark">12</sup>',
+    };
   } else if (first === "dipirona" || second === "dipirona") {
     result = {
       status: "dados insuficientes",
@@ -1744,6 +1769,9 @@ function getCompatibility(first, second) {
   }
   if (first === "ceftriaxona" || second === "ceftriaxona") {
     return { status: "dados insuficientes", className: "warning", source: "Compatibilidade refs. 2, 5, 6" };
+  }
+  if (first === "furosemida" || second === "furosemida") {
+    return { status: "dados insuficientes", className: "warning", source: "Compatibilidade ref. 12" };
   }
   if (first === "dipirona" || second === "dipirona") {
     return { status: "dados insuficientes", className: "warning", source: "Dados insuficientes" };
@@ -1967,6 +1995,7 @@ function prescriptionOptionMarkup() {
     <option value="haloperidol">Haloperidol</option>
     <option value="midazolam">Midazolam</option>
     <option value="metoclopramida">Metoclopramida</option>
+    <option value="furosemida">Furosemida</option>
     <option value="sf">Soro fisiológico 0,9% (SF)</option>
     <option value="sg5">Soro glicosado 5% (SG 5%)</option>
   `;
@@ -2109,11 +2138,6 @@ function generatePrescription() {
   punctureHighlight.innerHTML = `
     <h2>Quantidade de hipodermóclises sugerida:</h2>
     <p>${groups.length} ${punctureWord} para ${items.length} item(ns) selecionado(s).</p>
-    ${
-      isPediatric
-        ? "<p>Perfil pediátrico: o número de hipodermóclises é calculado pela compatibilidade medicamentosa. Apenas associações compatíveis ou com uso conjunto descrito podem ficar na mesma punção; as demais ficam em punções, horários ou circuitos separados.</p>"
-        : ""
-    }
     ${
       isPediatric && !activePediatricAgeLabel()
         ? "<p>Selecione a faixa etária pediátrica para gerar o texto da prescrição com a posologia correspondente.</p>"
