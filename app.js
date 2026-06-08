@@ -80,6 +80,7 @@ const documentChecklistTrigger = document.querySelector("#documentChecklistTrigg
 const documentChecklistPanel = document.querySelector("#checklist");
 const closeChecklistButton = document.querySelector("#closeChecklist");
 const languageButtons = Array.from(document.querySelectorAll("[data-language]"));
+const supportedLanguages = new Set(["pt", "en", "es", "zh-CN"]);
 const contactEmail = "icarehipodermoclise@gmail.com";
 const accessStorageKey = "icare-health-professional-access";
 const languageStorageKey = "icare-selected-language";
@@ -121,12 +122,12 @@ function clearCookie(name) {
 function currentLanguage() {
   try {
     const storedLanguage = localStorage.getItem(languageStorageKey);
-    if (storedLanguage) return storedLanguage;
+    if (supportedLanguages.has(storedLanguage)) return storedLanguage;
   } catch {
     // Local storage can be unavailable in restrictive browser modes.
   }
   const match = document.cookie.match(/(?:^|;\s*)googtrans=\/pt\/([^;]+)/);
-  return match?.[1] || "pt";
+  return supportedLanguages.has(match?.[1]) ? match[1] : "pt";
 }
 
 function rememberLanguage(language) {
@@ -153,6 +154,7 @@ function applyGoogleTranslateLanguage(language) {
 }
 
 function changeLanguage(language) {
+  if (!supportedLanguages.has(language)) return;
   rememberLanguage(language);
   if (language === "pt") {
     clearCookie("googtrans");
@@ -170,7 +172,7 @@ window.googleTranslateElementInit = function googleTranslateElementInit() {
   new window.google.translate.TranslateElement(
     {
       pageLanguage: "pt",
-      includedLanguages: "pt,en,es,fr,de,zh-CN",
+      includedLanguages: "pt,en,es,zh-CN",
       autoDisplay: false,
     },
     "google_translate_element",
@@ -1384,7 +1386,7 @@ const prescriptionData = {
     time: "Intermitente: bolus lento. Contínua: em 24h",
     minVolume: "",
     comments:
-      "Uso descrito para edema. Efeitos locais descritos: dor, edema, eritema e infecção local, em 3-23% das aplicações. A compatibilidade com outros medicamentos está classificada como dados insuficientes na aba Compatibilidade.",
+      "Efeitos locais descritos: dor, edema, eritema e infecção local, em 3-23% das aplicações. A compatibilidade com outros medicamentos está classificada como dados insuficientes na aba Compatibilidade.",
     reference: "23, 24, 25",
   },
   sf: {
