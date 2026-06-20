@@ -874,6 +874,25 @@
                 <section class="card">
                   <div class="card-content medicine-card">
                     <header>
+                      <h3>Ondansetrona</h3>
+                    </header>
+                    <div class="field-grid">
+                      <div class="field"><strong>Dose<sup>4</sup></strong><span>4-8mg de 8/8h; infusão contínua: 16-24mg em 24h.</span></div>
+                      <div class="field"><strong>Diluição<sup>4</sup></strong><span>Diluir em SF 0,9%, água destilada ou SG 5%. Pode ser diluída em pequenos volumes, inclusive para bombas de infusão portáteis.</span></div>
+                      <div class="field"><strong>Tempo de infusão<sup>4</sup></strong><span>Administração intermitente conforme prescrição ou infusão contínua em 24h.</span></div>
+                    </div>
+                    <div class="clinical-note">
+                      No estudo observacional de Pontalti et al., ondansetrona foi prescrita por hipodermóclise em 29 de 80 pacientes (36,3%).<sup class="ref-mark">26</sup>
+                    </div>
+                    <div class="clinical-note">
+                      Revisar risco de alargamento do intervalo QT, especialmente com outras medicações que tenham o mesmo efeito. Também pode causar constipação, cefaleia e irritação local.<sup class="ref-mark">4</sup>
+                    </div>
+                  </div>
+                </section>
+
+                <section class="card">
+                  <div class="card-content medicine-card">
+                    <header>
                       <h3>Furosemida</h3>
                     </header>
                     <div class="field-grid">
@@ -1005,6 +1024,9 @@
                   <li>
                     <a href="https://doi.org/10.1191/026921601666624292" target="_blank" rel="noopener">O'Doherty CA, Hall EJ, Schofield L, Zeppetella G. Drugs and syringe drivers: a survey of adult specialist palliative care practice in the United Kingdom and Eire. Palliative Medicine. 2001;15(2):149-154.</a>
                   </li>
+                  <li>
+                    <a href="https://doi.org/10.5902/2179769228551" target="_blank" rel="noopener">Pontalti G, Riboldi CO, Santos L, Longaray VK, Guzzo DA, Echer IC. Hipodermóclise em pacientes com câncer em cuidados paliativos. Revista de Enfermagem da UFSM. 2018;8(2):276-287.</a>
+                  </li>
                 </ol>
               </details>
             </div>
@@ -1017,11 +1039,11 @@
               <h2>Compatibilidade</h2>
               <div class="card">
                 <div class="card-content stack">
-                  <h2>Verificar dois itens</h2>
-                  <div class="form-grid">
-                    <label class="form-row">
-                      <span>Item 1</span>
-                      <select id="compatItemA">
+                  <h2>Verificar compatibilidade</h2>
+                  <div class="form-grid compatibility-check-list" id="compatibilityItems">
+                    <label class="form-row compatibility-item-row">
+                      <span data-compatibility-label>Item 1</span>
+                      <select id="compatItemA" class="compatibility-item">
                         <option value="morfina">Morfina</option>
                         <option value="escopolamina">Escopolamina</option>
                         <option value="clorpromazina">Clorpromazina</option>
@@ -1031,14 +1053,15 @@
                         <option value="haloperidol">Haloperidol</option>
                         <option value="midazolam">Midazolam</option>
                         <option value="metoclopramida">Metoclopramida</option>
+                        <option value="ondansetrona">Ondansetrona</option>
                         <option value="furosemida">Furosemida</option>
                         <option value="sf">Soro fisiológico 0,9% (SF)</option>
                         <option value="sg5">Soro glicosado 5% (SG 5%)</option>
                       </select>
                     </label>
-                    <label class="form-row">
-                      <span>Item 2</span>
-                      <select id="compatItemB">
+                    <label class="form-row compatibility-item-row">
+                      <span data-compatibility-label>Item 2</span>
+                      <select id="compatItemB" class="compatibility-item">
                         <option value="escopolamina">Escopolamina</option>
                         <option value="morfina">Morfina</option>
                         <option value="clorpromazina">Clorpromazina</option>
@@ -1048,12 +1071,14 @@
                         <option value="haloperidol">Haloperidol</option>
                         <option value="midazolam">Midazolam</option>
                         <option value="metoclopramida">Metoclopramida</option>
+                        <option value="ondansetrona">Ondansetrona</option>
                         <option value="furosemida">Furosemida</option>
                         <option value="sf">Soro fisiológico 0,9% (SF)</option>
                         <option value="sg5">Soro glicosado 5% (SG 5%)</option>
                       </select>
                     </label>
                   </div>
+                  <button class="secondary-button" id="addCompatibilityItem" type="button">Adicionar item</button>
                   <div class="status-panel" id="compatInteractiveResult" aria-live="polite">
                     <h2>Compatível</h2>
                     <p>Morfina + Escopolamina: compatibilidade provável por suporte indireto para opioides com escopolamina em contexto paliativo.<sup class="ref-mark">2,5</sup></p>
@@ -1064,7 +1089,7 @@
                 <table class="compat-table compatibility-matrix">
                   <caption>
                     Compatibilidade entre Morfina, Escopolamina, Clorpromazina, Ceftriaxona, Dipirona,
-                    Dexametasona, Haloperidol, Midazolam, Metoclopramida, Furosemida, SF 0,9% e SG 5%
+                    Dexametasona, Haloperidol, Midazolam, Metoclopramida, Ondansetrona, Furosemida, SF 0,9% e SG 5%
                   </caption>
                   <thead>
                     <tr>
@@ -1167,7 +1192,22 @@
                     <tr>
                       <td>Furosemida + outros medicamentos</td>
                       <td><span class="status-pill warn">Dados insuficientes</span></td>
-                      <td>A furosemida é descrita como medicamento usado por via subcutânea/hipodermóclise, mas não há estudo analítico detalhado de compatibilidade em misturas com os demais medicamentos desta matriz.<sup class="ref-mark">12</sup></td>
+                      <td>A furosemida é descrita como medicamento usado por via subcutânea/hipodermóclise, mas as fontes diretas não apresentam estudo analítico detalhado de compatibilidade em misturas com os demais medicamentos desta matriz.<sup class="ref-mark">12,16</sup></td>
+                    </tr>
+                    <tr>
+                      <td>Ondansetrona + outros medicamentos</td>
+                      <td><span class="status-pill warn">Dados insuficientes</span></td>
+                      <td>Há registro de uso de ondansetrona por hipodermóclise, mas a fonte observacional não descreve compatibilidade físico-química da mistura com os demais medicamentos desta matriz; há apenas relato de caso específico envolvendo hidromorfona, metoclopramida e ondansetrona.<sup class="ref-mark">13,15</sup></td>
+                    </tr>
+                    <tr>
+                      <td>Hidromorfona + Metoclopramida + Ondansetrona</td>
+                      <td><span class="status-pill warn">Compatibilidade em relato de caso</span></td>
+                      <td>Relato de caso descreveu infusão subcutânea contínua em um único cassete, com compatibilidade química confirmada e controle de dor/náusea por 9 meses; a evidência é limitada a um caso e não valida misturas com os demais itens da matriz.<sup class="ref-mark">15</sup></td>
+                    </tr>
+                    <tr>
+                      <td>Ondansetrona + SF 0,9% ou SG 5%</td>
+                      <td><span class="status-pill ok">Compatível como diluente</span></td>
+                      <td>SF 0,9% e SG 5% são descritos como diluentes possíveis para ondansetrona por via subcutânea.<sup class="ref-mark">14</sup></td>
                     </tr>
                     <tr>
                       <td>SF 0,9% com as combinações citadas</td>
@@ -1185,9 +1225,14 @@
                       <td>Não há dados diretos de compatibilidade físico-química ou segurança local para essas misturas em soro glicosado 5%, com ou sem SF 0,9%.<sup class="ref-mark">6-8</sup></td>
                     </tr>
                     <tr>
+                      <td>Infusões subcutâneas contínuas com 2-3 medicamentos</td>
+                      <td><span class="status-pill warn">Dados variáveis</span></td>
+                      <td>Em revisão de 616 infusões subcutâneas contínuas com 2-3 medicamentos, 60% tinham suporte laboratorial de compatibilidade e 40% eram usadas sem dados de compatibilidade, reforçando a necessidade de validação farmacêutica antes de ampliar combinações.<sup class="ref-mark">6</sup></td>
+                    </tr>
+                    <tr>
                       <td>Todos juntos na mesma seringa</td>
                       <td><span class="status-pill warn">Dados insuficientes</span></td>
-                      <td>Não há estudo avaliando uma única mistura contendo ceftriaxona, morfina, escopolamina, clorpromazina, dipirona, dexametasona, haloperidol, midazolam, metoclopramida, furosemida, SF 0,9% e SG 5%.<sup class="ref-mark">2,5-12</sup></td>
+                      <td>Não há estudo avaliando uma única mistura contendo ceftriaxona, morfina, escopolamina, clorpromazina, dipirona, dexametasona, haloperidol, midazolam, metoclopramida, ondansetrona, furosemida, SF 0,9% e SG 5%.<sup class="ref-mark">2,5-16</sup></td>
                     </tr>
                   </tbody>
                 </table>
@@ -1206,7 +1251,11 @@
                   <li><a href="https://doi.org/10.30574/gscbps.2022.18.2.0070" target="_blank" rel="noopener">Bosch M, Rojas F, Ojeda C. Compatibility and stability of drug mixtures: an overview. GSC Biological and Pharmaceutical Sciences. 2022.</a></li>
                   <li><a href="https://doi.org/10.1007/s005200100303" target="_blank" rel="noopener">Negro S, Azuara M, Sánchez Y, Reyes R, Barcia E. Physical compatibility and in vivo evaluation of drug mixtures for subcutaneous infusion to cancer patients in palliative care. Supportive Care in Cancer. 2002.</a></li>
                   <li><a href="https://doi.org/10.1590/s2175-97902018000217352" target="_blank" rel="noopener">María E, Fuensanta S, Catalina B. Determination of compatibility and stability of haloperidol and morphine mixtures used in palliative care. Brazilian Journal of Pharmaceutical Sciences. 2018.</a></li>
-                  <li><a href="https://docs.google.com/document/d/1aCRhvmL4xEectK4E9Qm3aq5VNPmIoh4wgwDpTUDd1i4/edit?usp=sharing" target="_blank" rel="noopener">Misturas por hipodermóclise em paliativos: o que se sabe sobre compatibilidade.</a></li>
+                  <li><a href="https://doi.org/10.1177/0269216311399490" target="_blank" rel="noopener">Zacharias H, Raw J, Nunn A, Parsons S, Johnson M. Is there a role for subcutaneous furosemide in the community and hospice management of end-stage heart failure? Palliative Medicine. 2011;25(6):658-663.</a></li>
+                  <li><a href="https://doi.org/10.5902/2179769228551" target="_blank" rel="noopener">Pontalti G, Riboldi CO, Santos L, Longaray VK, Guzzo DA, Echer IC. Hipodermóclise em pacientes com câncer em cuidados paliativos. Revista de Enfermagem da UFSM. 2018;8(2):276-287.</a></li>
+                  <li><a href="https://drive.google.com/file/d/1PtxNlxYwLHTiw74_ZzsYXo2U-NJFa3si/view?usp=sharing" target="_blank" rel="noopener">Manual Hipodermóclise da Sociedade Brasileira de Geriatria e Gerontologia (SBGG) 2025. O uso da via subcutânea na geriatria e em cuidados paliativos. 3ª edição.</a></li>
+                  <li><a href="https://doi.org/10.17140/pmhcoj-3-118" target="_blank" rel="noopener">Aoun L, Zakaria J. A Case Report of Continuous Subcutaneous Infusion of Hydromorphone, Metoclopramide and Ondansetron Used To Treat Refractory Pain and Nausea in an Ambulatory Palliative Clinic. Palliative Medicine and Hospice Care Open Journal. 2017.</a></li>
+                  <li><a href="https://doi.org/10.1136/bmjspcare-2019-002158" target="_blank" rel="noopener">Brown A, Westley K, Robson J, Armstrong L, Matthews I, Runnett C, Ripley D, Thomas H. Furosemide in end-stage heart failure: community subcutaneous infusions. BMJ Supportive &amp; Palliative Care. 2020.</a></li>
                 </ol>
               </details>
             </div>
@@ -1978,6 +2027,7 @@
                       <option value="haloperidol">Haloperidol</option>
                       <option value="midazolam">Midazolam</option>
                       <option value="metoclopramida">Metoclopramida</option>
+                      <option value="ondansetrona">Ondansetrona</option>
                       <option value="furosemida">Furosemida</option>
                       <option value="sf">Soro fisiológico 0,9% (SF)</option>
                       <option value="sg5">Soro glicosado 5% (SG 5%)</option>
@@ -1996,6 +2046,7 @@
                       <option value="haloperidol">Haloperidol</option>
                       <option value="midazolam">Midazolam</option>
                       <option value="metoclopramida">Metoclopramida</option>
+                      <option value="ondansetrona">Ondansetrona</option>
                       <option value="furosemida">Furosemida</option>
                       <option value="sf">Soro fisiológico 0,9% (SF)</option>
                       <option value="sg5">Soro glicosado 5% (SG 5%)</option>

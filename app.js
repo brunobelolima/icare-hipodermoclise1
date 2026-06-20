@@ -37,8 +37,10 @@ const caregiverSubtabs = Array.from(document.querySelectorAll(".caregiver-subtab
 const caregiverSubtabPanels = Array.from(document.querySelectorAll("[data-caregiver-panel]"));
 const nonprofessionalSubtabs = Array.from(document.querySelectorAll(".nonprofessional-subtab"));
 const nonprofessionalSubtabPanels = Array.from(document.querySelectorAll("[data-nonprofessional-panel]"));
+const compatibilityItemsContainer = document.querySelector("#compatibilityItems");
 const compatItemA = document.querySelector("#compatItemA");
 const compatItemB = document.querySelector("#compatItemB");
+const addCompatibilityItemButton = document.querySelector("#addCompatibilityItem");
 const compatInteractiveResult = document.querySelector("#compatInteractiveResult");
 const prescriptionItemsContainer = document.querySelector("#prescriptionItems");
 const addPrescriptionItemButton = document.querySelector("#addPrescriptionItem");
@@ -94,6 +96,7 @@ const visitCounterStorageKey = "icare-shared-visit-counted-at";
 const visitCounterSessionMs = 12 * 60 * 60 * 1000;
 let visitCounterLoaded = false;
 let visitCounterIncremented = false;
+let compatibilityItemControls = Array.from(document.querySelectorAll(".compatibility-item"));
 let dropCameraStream = null;
 let dropTimestamps = [];
 let dropTimer = null;
@@ -1252,6 +1255,27 @@ const compatibilityPairs = {
     detail:
       'A associação 2/3 glicose 5% + 1/3 SF 0,9% foi descrita em hipodermóclise.<sup class="ref-mark">7,8</sup>',
   },
+  "ondansetrona::sf": {
+    status: "compatível",
+    className: "success",
+    source: "Compatibilidade ref. 14",
+    detail:
+      'SF 0,9% é descrito como diluente possível para ondansetrona por via subcutânea.<sup class="ref-mark">14</sup>',
+  },
+  "ondansetrona::sg5": {
+    status: "compatível",
+    className: "success",
+    source: "Compatibilidade ref. 14",
+    detail:
+      'SG 5% é descrito como diluente possível para ondansetrona por via subcutânea.<sup class="ref-mark">14</sup>',
+  },
+  "metoclopramida::ondansetrona": {
+    status: "dados insuficientes",
+    className: "warning",
+    source: "Compatibilidade ref. 15",
+    detail:
+      'Há relato de caso de hidromorfona + metoclopramida + ondansetrona em infusão subcutânea contínua, com compatibilidade química confirmada, mas isso não valida a mistura isolada ondansetrona + metoclopramida nem combinações com outros itens desta matriz.<sup class="ref-mark">15</sup>',
+  },
   "clorpromazina::morfina": {
     status: "dados insuficientes",
     className: "warning",
@@ -1379,6 +1403,16 @@ const prescriptionData = {
     comments:
       "Monitorar probabilidade de efeitos extrapiramidais. É irritante, sendo comum a ocorrência de reação no local de aplicação; estudos também descreveram sonolência, acatisia e irritação local.",
     reference: "4, 21, 22",
+  },
+  ondansetrona: {
+    dose: "4-8mg de 8/8h; infusão contínua: 16-24mg em 24h",
+    dilution:
+      "Diluir em SF 0,9%, água destilada ou SG 5%. Pode ser diluída em pequenos volumes, inclusive para bombas de infusão portáteis",
+    time: "Administração intermitente conforme prescrição ou infusão contínua em 24h",
+    minVolume: "",
+    comments:
+      "No estudo observacional de Pontalti et al., ondansetrona foi prescrita por hipodermóclise em 29 de 80 pacientes (36,3%). Revisar risco de alargamento do intervalo QT, especialmente com outras medicações que tenham o mesmo efeito. Também pode causar constipação, cefaleia e irritação local.",
+    reference: "4, 26",
   },
   furosemida: {
     dose: "Intermitente: até 60mg de 6/6h. Contínua: até 240mg em 24h",
@@ -1671,90 +1705,211 @@ function compatibilityKey(first, second) {
   return [first, second].sort().join("::");
 }
 
+function compatibilityOptionMarkup() {
+  return Object.entries(compatibilityLabels)
+    .map(([value, label]) => `<option value="${value}">${label}</option>`)
+    .join("");
+}
+
+function selectedCompatibilityItems() {
+  return compatibilityItemControls.map((control) => control.value).filter(Boolean);
+}
+
 function syncCompatibilityOptions() {
-  [compatItemA, compatItemB].forEach((control) => {
-    const other = control === compatItemA ? compatItemB : compatItemA;
+  compatibilityItemControls.forEach((control) => {
+    const selectedByOthers = selectedCompatibilityItems().filter((value) => value !== control.value);
     Array.from(control.options).forEach((option) => {
-      option.disabled = option.value !== control.value && option.value === other.value;
+      option.disabled = option.value !== control.value && selectedByOthers.includes(option.value);
     });
   });
 }
 
-function renderCompatibilityResult() {
-  if (compatItemA.value === compatItemB.value) {
-    const fallback = Array.from(compatItemB.options).find(
-      (option) => option.value && option.value !== compatItemA.value,
-    );
-    if (fallback) compatItemB.value = fallback.value;
-  }
+function normalizeCompatibilitySelections() {
+  const used = new Set();
 
-  syncCompatibilityOptions();
+  compatibilityItemControls.forEach((control) => {
+    if (!used.has(control.value)) {
+      used.add(control.value);
+      return;
+    }
 
-  const first = compatItemA.value;
-  const second = compatItemB.value;
-  let result;
+    const fallback = Array.from(control.options).find((option) => option.value && !used.has(option.value));
+    if (fallback) {
+      control.value = fallback.value;
+      used.add(fallback.value);
+    }
+  });
+}
+
+function getCompatibilityDetail(first, second) {
   const explicitPair = compatibilityPairs[compatibilityKey(first, second)];
 
-  if (explicitPair) {
-    result = explicitPair;
-  } else if (first === "sf" || second === "sf") {
-    result = {
+  if (explicitPair) return explicitPair;
+  if (first === second) {
+    return {
+      status: "compatível",
+      className: "success",
+      source: "Mesmo item",
+      detail: "Mesmo item selecionado.",
+    };
+  }
+  if (first === "sf" || second === "sf") {
+    return {
       status: "compatível",
       className: "success",
       source: "Compatibilidade refs. 1, 2, 3",
       detail: 'SF 0,9% é o diluente presente nas combinações com melhor suporte descritas na fonte.<sup class="ref-mark">1,2,3</sup>',
     };
-  } else if (first === "sg5" || second === "sg5") {
-    result = {
+  }
+  if (first === "sg5" || second === "sg5") {
+    return {
       status: "dados insuficientes",
       className: "warning",
       source: "Compatibilidade refs. 6-8",
       detail:
         'Não há dados diretos de compatibilidade físico-química ou segurança local para esta mistura em soro glicosado 5%, com ou sem SF 0,9%.<sup class="ref-mark">6-8</sup>',
     };
-  } else if (first === "ceftriaxona" || second === "ceftriaxona") {
-    result = {
+  }
+  if (first === "ceftriaxona" || second === "ceftriaxona") {
+    return {
       status: "dados insuficientes",
       className: "warning",
       source: "Compatibilidade refs. 2, 5, 6",
       detail:
         'Não há dado específico de mistura, na mesma seringa ou bomba subcutânea, envolvendo ceftriaxona com os demais medicamentos desta matriz.<sup class="ref-mark">2,5,6</sup>',
     };
-  } else if (first === "furosemida" || second === "furosemida") {
-    result = {
+  }
+  if (first === "furosemida" || second === "furosemida") {
+    return {
       status: "dados insuficientes",
       className: "warning",
-      source: "Compatibilidade ref. 12",
+      source: "Compatibilidade refs. 12, 16",
       detail:
-        'A furosemida é descrita como medicamento usado por via subcutânea/hipodermóclise, mas não há estudo analítico detalhado de compatibilidade em misturas com os demais medicamentos desta matriz.<sup class="ref-mark">12</sup>',
+        'A furosemida é descrita como medicamento usado por via subcutânea/hipodermóclise, mas as fontes diretas não apresentam estudo analítico detalhado de compatibilidade em misturas com os demais medicamentos desta matriz.<sup class="ref-mark">12,16</sup>',
     };
-  } else if (first === "dipirona" || second === "dipirona") {
-    result = {
+  }
+  if (first === "ondansetrona" || second === "ondansetrona") {
+    return {
+      status: "dados insuficientes",
+      className: "warning",
+      source: "Compatibilidade refs. 13, 15",
+      detail:
+        'Há registro de uso de ondansetrona por hipodermóclise, mas a fonte observacional não descreve compatibilidade físico-química da mistura com os demais medicamentos desta matriz; há apenas relato de caso específico envolvendo hidromorfona, metoclopramida e ondansetrona.<sup class="ref-mark">13,15</sup>',
+    };
+  }
+  if (first === "dipirona" || second === "dipirona") {
+    return {
       status: "dados insuficientes",
       className: "warning",
       source: "Dados insuficientes",
       detail: "As fontes não apresentam dado direto de compatibilidade da dipirona nessas misturas.",
     };
-  } else if (first === "metoclopramida" || second === "metoclopramida") {
-    result = {
+  }
+  if (first === "metoclopramida" || second === "metoclopramida") {
+    return {
       status: "dados insuficientes",
       className: "warning",
       source: "Dados insuficientes",
       detail: "Não há dado direto de compatibilidade da metoclopramida com este item nas fontes cadastradas.",
     };
-  } else {
-    result = {
-      status: "dados insuficientes",
-      className: "warning",
-      detail: "Não há dado direto na fonte para este par. Priorize confirmação farmacêutica ou sítio separado.",
-    };
   }
 
-  compatInteractiveResult.className = `status-panel ${result.className}`;
+  return {
+    status: "dados insuficientes",
+    className: "warning",
+    detail: "Não há dado direto na fonte para este par. Priorize confirmação farmacêutica ou sítio separado.",
+  };
+}
+
+function renderCompatibilityResult() {
+  normalizeCompatibilitySelections();
+  syncCompatibilityOptions();
+
+  const items = selectedCompatibilityItems();
+  if (items.length < 2) return;
+
+  const pairResults = [];
+  for (let firstIndex = 0; firstIndex < items.length; firstIndex += 1) {
+    for (let secondIndex = firstIndex + 1; secondIndex < items.length; secondIndex += 1) {
+      const first = items[firstIndex];
+      const second = items[secondIndex];
+      pairResults.push({ first, second, result: getCompatibilityDetail(first, second) });
+    }
+  }
+
+  const hasWarning = pairResults.some(({ result }) => result.className !== "success");
+  const resultClassName = hasWarning ? "warning" : "success";
+  const resultTitle = hasWarning ? "Dados insuficientes" : "Compatível";
+  const selectedItemsText = items.map((item) => compatibilityLabels[item]).join(" + ");
+  const complexNote =
+    items.length > 2
+      ? '<p>Para múltiplos itens, a verificação cruza todos os pares disponíveis. Misturas complexas devem ser confirmadas com farmácia clínica ou protocolo institucional antes do uso.<sup class="ref-mark">6</sup></p>'
+      : "";
+  const pairList = pairResults
+    .map(
+      ({ first, second, result }) => `
+        <li>
+          <strong>${compatibilityLabels[first]} + ${compatibilityLabels[second]}:</strong>
+          ${result.status}. ${result.detail || result.source || ""}
+        </li>
+      `,
+    )
+    .join("");
+
+  compatInteractiveResult.className = `status-panel ${resultClassName}`;
   compatInteractiveResult.innerHTML = `
-    <h2>${result.status}</h2>
-    <p>${compatibilityLabels[first]} + ${compatibilityLabels[second]}: ${result.detail}</p>
+    <h2>${resultTitle}</h2>
+    <p>${selectedItemsText}</p>
+    ${complexNote}
+    <ul class="compatibility-result-list">${pairList}</ul>
   `;
+}
+
+function bindCompatibilityItem(control) {
+  control.addEventListener("change", renderCompatibilityResult);
+}
+
+function refreshCompatibilityItemLabels() {
+  compatibilityItemControls.forEach((control, index) => {
+    const row = control.closest(".compatibility-item-row");
+    const labelText = row?.querySelector("[data-compatibility-label]");
+    if (labelText) labelText.textContent = `Item ${index + 1}`;
+  });
+}
+
+function removeCompatibilityItem(row) {
+  if (compatibilityItemControls.length <= 2) return;
+  row.remove();
+  compatibilityItemControls = Array.from(document.querySelectorAll(".compatibility-item"));
+  refreshCompatibilityItemLabels();
+  renderCompatibilityResult();
+}
+
+function addCompatibilityItem() {
+  if (!compatibilityItemsContainer) return;
+  const selectedItems = selectedCompatibilityItems();
+  const nextOption = Object.keys(compatibilityLabels).find((value) => !selectedItems.includes(value));
+  if (!nextOption) return;
+
+  const label = document.createElement("label");
+  label.className = "form-row compatibility-item-row";
+  label.innerHTML = `
+    <span data-compatibility-label>Item ${compatibilityItemControls.length + 1}</span>
+    <div class="compatibility-item-control">
+      <select class="compatibility-item">
+        ${compatibilityOptionMarkup()}
+      </select>
+      <button class="icon-button compatibility-remove" type="button" aria-label="Remover item">&times;</button>
+    </div>
+  `;
+
+  compatibilityItemsContainer.append(label);
+  const control = label.querySelector(".compatibility-item");
+  control.value = nextOption;
+  bindCompatibilityItem(control);
+  label.querySelector(".compatibility-remove").addEventListener("click", () => removeCompatibilityItem(label));
+  compatibilityItemControls = Array.from(document.querySelectorAll(".compatibility-item"));
+  renderCompatibilityResult();
 }
 
 function getCompatibility(first, second) {
@@ -1773,7 +1928,10 @@ function getCompatibility(first, second) {
     return { status: "dados insuficientes", className: "warning", source: "Compatibilidade refs. 2, 5, 6" };
   }
   if (first === "furosemida" || second === "furosemida") {
-    return { status: "dados insuficientes", className: "warning", source: "Compatibilidade ref. 12" };
+    return { status: "dados insuficientes", className: "warning", source: "Compatibilidade refs. 12, 16" };
+  }
+  if (first === "ondansetrona" || second === "ondansetrona") {
+    return { status: "dados insuficientes", className: "warning", source: "Compatibilidade refs. 13, 15" };
   }
   if (first === "dipirona" || second === "dipirona") {
     return { status: "dados insuficientes", className: "warning", source: "Dados insuficientes" };
@@ -1997,6 +2155,7 @@ function prescriptionOptionMarkup() {
     <option value="haloperidol">Haloperidol</option>
     <option value="midazolam">Midazolam</option>
     <option value="metoclopramida">Metoclopramida</option>
+    <option value="ondansetrona">Ondansetrona</option>
     <option value="furosemida">Furosemida</option>
     <option value="sf">Soro fisiológico 0,9% (SF)</option>
     <option value="sg5">Soro glicosado 5% (SG 5%)</option>
@@ -2181,9 +2340,11 @@ if (closeMaterialChecklistPanelButton) {
   closeMaterialChecklistPanelButton.addEventListener("click", closeMaterialChecklistPanel);
 }
 
-[compatItemA, compatItemB].forEach((control) => {
-  control.addEventListener("change", renderCompatibilityResult);
-});
+compatibilityItemControls.forEach(bindCompatibilityItem);
+
+if (addCompatibilityItemButton) {
+  addCompatibilityItemButton.addEventListener("click", addCompatibilityItem);
+}
 
 prescriptionItemControls.forEach(bindPrescriptionItem);
 

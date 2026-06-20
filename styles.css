@@ -1265,6 +1265,38 @@ li {
   text-transform: uppercase;
 }
 
+.compatibility-item-control {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 44px;
+  gap: 8px;
+}
+
+.compatibility-remove {
+  display: inline-grid;
+  place-items: center;
+  width: 44px;
+  height: 46px;
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  background: white;
+  color: var(--accent-2);
+  cursor: pointer;
+  font-size: 1.25rem;
+  font-weight: 900;
+  line-height: 1;
+}
+
+.compatibility-result-list {
+  display: grid;
+  gap: 8px;
+  margin: 10px 0 0;
+  padding-left: 18px;
+}
+
+.compatibility-result-list li {
+  line-height: 1.45;
+}
+
 .contact-email {
   border-left: 4px solid var(--accent);
   color: var(--muted);
