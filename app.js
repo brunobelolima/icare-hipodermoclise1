@@ -1412,7 +1412,7 @@ const prescriptionData = {
     minVolume: "",
     comments:
       "No estudo observacional de Pontalti et al., ondansetrona foi prescrita por hipodermóclise em 29 de 80 pacientes (36,3%). Revisar risco de alargamento do intervalo QT, especialmente com outras medicações que tenham o mesmo efeito. Também pode causar constipação, cefaleia e irritação local.",
-    reference: "4, 26",
+    reference: "25, 26, 27",
   },
   furosemida: {
     dose: "Intermitente: até 60mg de 6/6h. Contínua: até 240mg em 24h",
