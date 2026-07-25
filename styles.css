@@ -43,7 +43,7 @@ body.access-denied .app {
   display: none;
 }
 
-body.access-limited .tab-trigger:not([data-tab="nao-profissionais"]):not([data-tab="idealizadores"]):not([data-tab="contato"]):not([data-tab="privacidade"]) {
+body.access-limited .tab-trigger:not([data-tab="nao-profissionais"]):not([data-tab="idealizadores"]):not([data-tab="contador-gotas"]):not([data-tab="contato"]):not([data-tab="privacidade"]) {
   display: none;
 }
 
@@ -869,6 +869,38 @@ li {
   background: #0f172a;
 }
 
+.camera-frame::before,
+.camera-frame::after {
+  content: "";
+  position: absolute;
+  pointer-events: none;
+  z-index: 2;
+}
+
+.camera-frame::before {
+  top: 18%;
+  left: 42%;
+  width: 16%;
+  height: 62%;
+  border: 2px solid rgba(14, 165, 233, 0.92);
+  border-radius: 999px;
+  box-shadow: 0 0 0 999px rgba(15, 23, 42, 0.16), 0 0 18px rgba(14, 165, 233, 0.28);
+}
+
+.camera-frame::after {
+  right: 12px;
+  bottom: 10px;
+  max-width: min(220px, 58%);
+  padding: 5px 8px;
+  border-radius: 6px;
+  background: rgba(15, 23, 42, 0.72);
+  color: #ffffff;
+  content: "Centralize a câmara de gotejamento";
+  font-size: 0.72rem;
+  font-weight: 800;
+  line-height: 1.25;
+}
+
 .camera-frame video,
 .camera-placeholder {
   position: absolute;
@@ -1383,6 +1415,51 @@ a.secondary-button:focus-visible {
   gap: 10px;
 }
 
+.medication-search {
+  display: grid;
+  gap: 8px;
+  padding: 12px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: #fbffff;
+}
+
+.medication-search label {
+  display: grid;
+  gap: 7px;
+}
+
+.medication-search span {
+  color: var(--accent-2);
+  font-size: 0.78rem;
+  font-weight: 800;
+  letter-spacing: 0;
+  text-transform: uppercase;
+}
+
+.medication-search input {
+  width: 100%;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  padding: 11px 12px;
+  font: inherit;
+  color: var(--text);
+  background: white;
+}
+
+.medication-search input:focus {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px rgba(28, 111, 118, 0.14);
+  outline: none;
+}
+
+.medication-search-status {
+  margin: 0;
+  color: var(--muted);
+  font-size: 0.86rem;
+  font-weight: 700;
+}
+
 .medicine-card {
   display: grid;
   gap: 14px;
@@ -1398,6 +1475,25 @@ a.secondary-button:focus-visible {
 
 .medicine-card h3 {
   margin: 0;
+}
+
+.phenytoin-card {
+  border-color: #fecaca;
+  background: #fffafa;
+  box-shadow: 0 10px 24px rgba(153, 27, 27, 0.06);
+}
+
+.phenytoin-card .medicine-card h3 {
+  color: #991b1b;
+}
+
+.phenytoin-card .field {
+  border-left-color: #fecaca;
+}
+
+.phenytoin-card .clinical-note {
+  background: #fff1f2;
+  color: #7f1d1d;
 }
 
 .field-grid {

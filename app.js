@@ -47,6 +47,9 @@ const addPrescriptionItemButton = document.querySelector("#addPrescriptionItem")
 const prescriptionProfileControls = Array.from(document.querySelectorAll("input[name='prescriptionProfile']"));
 const pediatricAgeRow = document.querySelector("#pediatricAgeRow");
 const pediatricAgeRange = document.querySelector("#pediatricAgeRange");
+const medicationSearchInput = document.querySelector("#medicationSearch");
+const medicationSearchCount = document.querySelector("#medicationSearchCount");
+const medicationCards = Array.from(document.querySelectorAll("#medicamentos .drug-grid > .card"));
 let prescriptionItemControls = Array.from(document.querySelectorAll(".prescription-item"));
 const punctureHighlight = document.querySelector("#punctureHighlight");
 const punctureGroups = document.querySelector("#punctureGroups");
@@ -103,16 +106,22 @@ let dropTimer = null;
 let manualConversionLock = false;
 let autoDropActive = false;
 let autoDropFrame = null;
-let previousDropBrightness = null;
-let baselineDropBrightness = null;
-let smoothedDropDifference = 0;
-let autoDropCalibration = [];
+let dropBaselinePixels = null;
+let dropCalibrationSums = null;
+let dropCalibrationFrames = 0;
+let dropPresentFrames = 0;
+let dropMissingFrames = 0;
+let dropCandidateActive = false;
+let dropUnstableFrames = 0;
 let lastAutoDropAt = 0;
 
 const publicOnlyTabs = new Set(["nao-profissionais", "idealizadores"]);
-const limitedAccessTabs = new Set(["nao-profissionais", "idealizadores", "contato", "privacidade"]);
+const limitedAccessTabs = new Set(["nao-profissionais", "idealizadores", "contador-gotas", "contato", "privacidade"]);
 const dropDetectionCanvas = document.createElement("canvas");
 const dropDetectionContext = dropDetectionCanvas.getContext("2d", { willReadFrequently: true });
+const dropDetectionWidth = 72;
+const dropDetectionHeight = 144;
+const dropCalibrationFrameTarget = 36;
 
 function setCookie(name, value, maxAge = 31536000) {
   document.cookie = `${name}=${value};path=/;max-age=${maxAge};SameSite=Lax`;
@@ -120,6 +129,38 @@ function setCookie(name, value, maxAge = 31536000) {
 
 function clearCookie(name) {
   document.cookie = `${name}=;path=/;max-age=0;SameSite=Lax`;
+}
+
+function normalizeSearchText(value) {
+  return value
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .toLowerCase();
+}
+
+function filterMedicationCards() {
+  if (!medicationSearchInput) {
+    return;
+  }
+
+  const query = normalizeSearchText(medicationSearchInput.value.trim());
+  let visibleCount = 0;
+
+  medicationCards.forEach((card) => {
+    const searchableText = normalizeSearchText(card.textContent || "");
+    const isVisible = !query || searchableText.includes(query);
+    card.hidden = !isVisible;
+
+    if (isVisible) {
+      visibleCount += 1;
+    }
+  });
+
+  if (medicationSearchCount) {
+    medicationSearchCount.textContent = query
+      ? `${visibleCount} resultado${visibleCount === 1 ? "" : "s"} encontrado${visibleCount === 1 ? "" : "s"}.`
+      : `${medicationCards.length} itens disponíveis.`;
+  }
 }
 
 function currentLanguage() {
@@ -566,13 +607,13 @@ function readDropDetectionSignal() {
   const videoHeight = dropCameraPreview.videoHeight;
   if (!videoWidth || !videoHeight) return null;
 
-  const sampleWidth = Math.max(28, Math.round(videoWidth * 0.18));
-  const sampleHeight = Math.max(42, Math.round(videoHeight * 0.46));
+  const sampleWidth = Math.max(34, Math.round(videoWidth * 0.16));
+  const sampleHeight = Math.max(72, Math.round(videoHeight * 0.62));
   const sampleX = Math.round((videoWidth - sampleWidth) / 2);
   const sampleY = Math.round((videoHeight - sampleHeight) / 2);
 
-  dropDetectionCanvas.width = 48;
-  dropDetectionCanvas.height = 96;
+  dropDetectionCanvas.width = dropDetectionWidth;
+  dropDetectionCanvas.height = dropDetectionHeight;
   dropDetectionContext.drawImage(
     dropCameraPreview,
     sampleX,
@@ -581,41 +622,133 @@ function readDropDetectionSignal() {
     sampleHeight,
     0,
     0,
-    dropDetectionCanvas.width,
-    dropDetectionCanvas.height,
+    dropDetectionWidth,
+    dropDetectionHeight,
   );
 
   const { data } = dropDetectionContext.getImageData(
     0,
     0,
-    dropDetectionCanvas.width,
-    dropDetectionCanvas.height,
+    dropDetectionWidth,
+    dropDetectionHeight,
   );
-  let brightnessSum = 0;
-  let contrastSum = 0;
-  let darkPixelCount = 0;
+  const pixels = new Float32Array(dropDetectionWidth * dropDetectionHeight);
+  let brightnessTotal = 0;
   const pixelCount = data.length / 4;
 
-  for (let index = 0; index < data.length; index += 4) {
+  for (let index = 0, pixelIndex = 0; index < data.length; index += 4, pixelIndex += 1) {
     const brightness = (data[index] + data[index + 1] + data[index + 2]) / 3;
-    brightnessSum += brightness;
-    contrastSum += Math.abs(data[index] - data[index + 2]);
-    if (brightness < 95) darkPixelCount += 1;
+    pixels[pixelIndex] = brightness;
+    brightnessTotal += brightness;
   }
 
   return {
-    brightness: brightnessSum / pixelCount,
-    contrast: contrastSum / pixelCount,
-    darkRatio: darkPixelCount / pixelCount,
+    pixels,
+    meanBrightness: brightnessTotal / pixelCount,
   };
 }
 
 function resetAutoDropDetection() {
-  previousDropBrightness = null;
-  baselineDropBrightness = null;
-  smoothedDropDifference = 0;
-  autoDropCalibration = [];
+  dropBaselinePixels = null;
+  dropCalibrationSums = null;
+  dropCalibrationFrames = 0;
+  dropPresentFrames = 0;
+  dropMissingFrames = 0;
+  dropCandidateActive = false;
+  dropUnstableFrames = 0;
   lastAutoDropAt = 0;
+}
+
+function calibrateDropBackground(pixels) {
+  if (!dropCalibrationSums) {
+    dropCalibrationSums = new Float32Array(pixels.length);
+  }
+
+  for (let index = 0; index < pixels.length; index += 1) {
+    dropCalibrationSums[index] += pixels[index];
+  }
+
+  dropCalibrationFrames += 1;
+
+  if (dropCalibrationFrames < dropCalibrationFrameTarget) {
+    return false;
+  }
+
+  dropBaselinePixels = new Float32Array(pixels.length);
+  for (let index = 0; index < pixels.length; index += 1) {
+    dropBaselinePixels[index] = dropCalibrationSums[index] / dropCalibrationFrames;
+  }
+  dropCalibrationSums = null;
+  setDropCameraStatus(
+    "Detector pronto. Mantenha apenas a câmara de gotejamento dentro do retângulo central.",
+    "success",
+  );
+  return true;
+}
+
+function analyzeDropCandidate(pixels) {
+  if (!dropBaselinePixels) return null;
+
+  const rowCounts = new Uint16Array(dropDetectionHeight);
+  const columnCounts = new Uint16Array(dropDetectionWidth);
+  let changedPixels = 0;
+  let totalChange = 0;
+  let minRow = dropDetectionHeight;
+  let maxRow = -1;
+  let minColumn = dropDetectionWidth;
+  let maxColumn = -1;
+  let maxRowCount = 0;
+
+  for (let index = 0; index < pixels.length; index += 1) {
+    const change = Math.abs(pixels[index] - dropBaselinePixels[index]);
+    totalChange += change;
+  }
+
+  const averageChange = totalChange / pixels.length;
+  const changeThreshold = Math.max(18, Math.min(34, averageChange * 2.8 + 14));
+
+  for (let index = 0; index < pixels.length; index += 1) {
+    const change = Math.abs(pixels[index] - dropBaselinePixels[index]);
+    if (change < changeThreshold) continue;
+
+    const row = Math.floor(index / dropDetectionWidth);
+    const column = index % dropDetectionWidth;
+    changedPixels += 1;
+    rowCounts[row] += 1;
+    columnCounts[column] += 1;
+    if (row < minRow) minRow = row;
+    if (row > maxRow) maxRow = row;
+    if (column < minColumn) minColumn = column;
+    if (column > maxColumn) maxColumn = column;
+    if (rowCounts[row] > maxRowCount) maxRowCount = rowCounts[row];
+  }
+
+  const changedRatio = changedPixels / pixels.length;
+  const rowSpan = maxRow >= minRow ? maxRow - minRow + 1 : 0;
+  const columnSpan = maxColumn >= minColumn ? maxColumn - minColumn + 1 : 0;
+  const localizedChange =
+    changedPixels >= 10 &&
+    changedRatio >= 0.001 &&
+    changedRatio <= 0.07 &&
+    rowSpan >= 3 &&
+    rowSpan <= 58 &&
+    columnSpan >= 2 &&
+    columnSpan <= 42 &&
+    maxRowCount >= 2 &&
+    averageChange <= 24;
+
+  return {
+    averageChange,
+    changedRatio,
+    isCandidate: localizedChange,
+  };
+}
+
+function updateDropBaseline(pixels, learningRate = 0.015) {
+  if (!dropBaselinePixels) return;
+  for (let index = 0; index < pixels.length; index += 1) {
+    dropBaselinePixels[index] = dropBaselinePixels[index] * (1 - learningRate) + pixels[index] * learningRate;
+  }
 }
 
 function detectDropFrame() {
@@ -625,34 +758,49 @@ function detectDropFrame() {
   const now = Date.now();
 
   if (signal) {
-    if (autoDropCalibration.length < 24) {
-      autoDropCalibration.push(signal.brightness);
-      baselineDropBrightness =
-        autoDropCalibration.reduce((sum, value) => sum + value, 0) / autoDropCalibration.length;
-      setDropCameraStatus(
-        "Calibrando a imagem. Mantenha a câmara de gotejamento centralizada e iluminada.",
-        "success",
-      );
+    if (!dropBaselinePixels) {
+      const calibrated = calibrateDropBackground(signal.pixels);
+      if (!calibrated) {
+        setDropCameraStatus(
+          "Calibrando a imagem. Mantenha a câmara de gotejamento parada dentro do retângulo central.",
+          "success",
+        );
+      }
     } else {
-      const brightnessDifference = Math.max(0, (baselineDropBrightness || signal.brightness) - signal.brightness);
-      const motionDifference =
-        previousDropBrightness === null ? 0 : Math.max(0, previousDropBrightness - signal.brightness);
-      const signalStrength =
-        brightnessDifference * 0.55 + motionDifference * 0.85 + signal.darkRatio * 32 + signal.contrast * 0.08;
-      smoothedDropDifference = smoothedDropDifference * 0.72 + signalStrength * 0.28;
-      const threshold = Math.max(6.5, Math.min(18, Math.abs(baselineDropBrightness - signal.brightness) * 0.65 + 6));
+      const candidate = analyzeDropCandidate(signal.pixels);
 
-      if (smoothedDropDifference > threshold && now - lastAutoDropAt > 900) {
+      if (candidate && (candidate.changedRatio > 0.16 || candidate.averageChange > 30)) {
+        dropUnstableFrames += 1;
+      } else {
+        dropUnstableFrames = Math.max(0, dropUnstableFrames - 1);
+      }
+
+      if (dropUnstableFrames > 12) {
+        resetAutoDropDetection();
+        setDropCameraStatus(
+          "Imagem instável. Recalibrando: deixe a câmera parada e centralize a câmara de gotejamento.",
+          "warning",
+        );
+      } else if (candidate?.isCandidate) {
+        dropPresentFrames += 1;
+        dropMissingFrames = 0;
+      } else {
+        dropMissingFrames += 1;
+        dropPresentFrames = 0;
+        if (dropMissingFrames >= 3) {
+          dropCandidateActive = false;
+        }
+        if (candidate && candidate.averageChange < 10) {
+          updateDropBaseline(signal.pixels);
+        }
+      }
+
+      if (dropPresentFrames >= 2 && !dropCandidateActive && now - lastAutoDropAt > 850) {
         lastAutoDropAt = now;
-        smoothedDropDifference = 0;
-        baselineDropBrightness = baselineDropBrightness * 0.88 + signal.brightness * 0.12;
+        dropCandidateActive = true;
         recordDrop();
-      } else if (now - lastAutoDropAt > 1200) {
-        baselineDropBrightness = baselineDropBrightness * 0.96 + signal.brightness * 0.04;
       }
     }
-
-    previousDropBrightness = signal.brightness;
   }
 
   autoDropFrame = window.requestAnimationFrame(detectDropFrame);
@@ -1423,6 +1571,17 @@ const prescriptionData = {
       "Efeitos locais descritos: dor, edema, eritema e infecção local, em 3-23% das aplicações. A compatibilidade com outros medicamentos está classificada como dados insuficientes na aba Compatibilidade.",
     reference: "23, 24, 25",
   },
+  fenobarbital: {
+    dose:
+      "Controle de crises: CSCI de 150-960mg/dia, com dose de ataque SC de 65-130mg antes da infusão. Sedação paliativa: dose de ataque mais comum de 200mg SC e CSCI inicial mais comum de 800mg/24h, com máximo de 1800mg/24h; revisão retrospectiva descreveu uso típico de 800-1200mg/24h",
+    dilution:
+      'Não foi localizado esquema padronizado de diluição por hipodermóclise nas fontes diretas consultadas; definir conforme protocolo institucional, orientação farmacêutica e dispositivo disponível.<sup class="ref-mark">OE</sup>',
+    time: "Bolus SC seguido de CSCI ou CSCI em 24h, conforme objetivo clínico, dose prescrita e protocolo institucional",
+    minVolume: "",
+    comments:
+      "O uso por hipodermóclise foi descrito principalmente em cuidados paliativos para sedação de sintomas refratários, agitação e controle de crises quando a via oral não era possível. Fenobarbital é alcalino e tem maior possibilidade de incompatibilidade em mistura; administrar separadamente. Avaliar sítio com frequência, pois induração pode reduzir a biodisponibilidade.",
+    reference: "27, 30, 31, 32, 33, 34, OE",
+  },
   sf: {
     dose: "Máximo de 1500mL em 24h conforme sítio de punção",
     dilution: "Solução pronta para infusão",
@@ -1753,6 +1912,15 @@ function getCompatibilityDetail(first, second) {
       detail: "Mesmo item selecionado.",
     };
   }
+  if (first === "fenobarbital" || second === "fenobarbital") {
+    return {
+      status: "dados insuficientes",
+      className: "warning",
+      source: "Compatibilidade ref. 17",
+      detail:
+        'Fenobarbital é alcalino e tem maior possibilidade de incompatibilidade em mistura; administrar separadamente e confirmar com farmácia clínica/protocolo institucional antes de qualquer associação.<sup class="ref-mark">17</sup>',
+    };
+  }
   if (first === "sf" || second === "sf") {
     return {
       status: "compatível",
@@ -1918,6 +2086,9 @@ function getCompatibility(first, second) {
   }
   const explicitPair = compatibilityPairs[compatibilityKey(first, second)];
   if (explicitPair) return explicitPair;
+  if (first === "fenobarbital" || second === "fenobarbital") {
+    return { status: "dados insuficientes", className: "warning", source: "Compatibilidade ref. 17" };
+  }
   if (first === "sf" || second === "sf") {
     return { status: "compatível", className: "success", source: "Compatibilidade refs. 1, 2, 3" };
   }
@@ -2157,6 +2328,7 @@ function prescriptionOptionMarkup() {
     <option value="metoclopramida">Metoclopramida</option>
     <option value="ondansetrona">Ondansetrona</option>
     <option value="furosemida">Furosemida</option>
+    <option value="fenobarbital">Fenobarbital</option>
     <option value="sf">Soro fisiológico 0,9% (SF)</option>
     <option value="sg5">Soro glicosado 5% (SG 5%)</option>
   `;
@@ -2683,6 +2855,10 @@ languageButtons.forEach((button) => {
   button.addEventListener("click", () => changeLanguage(button.dataset.language));
 });
 
+if (medicationSearchInput) {
+  medicationSearchInput.addEventListener("input", filterMedicationCards);
+}
+
 contactForm.addEventListener("submit", (event) => {
   event.preventDefault();
   const formData = new FormData(contactForm);
@@ -2706,6 +2882,7 @@ contactForm.addEventListener("submit", (event) => {
 
 restoreChecklist();
 restoreMaterialChecklist();
+filterMedicationCards();
 markActiveLanguage(currentLanguage());
 renderCompatibilityResult();
 syncPrescriptionOptions();
