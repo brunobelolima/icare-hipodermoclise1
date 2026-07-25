@@ -87,7 +87,6 @@ const closeChecklistButton = document.querySelector("#closeChecklist");
 const languageButtons = Array.from(document.querySelectorAll("[data-language]"));
 const supportedLanguages = new Set(["pt", "en", "es", "zh-CN"]);
 const contactEmail = "icarehipodermoclise@gmail.com";
-const accessStorageKey = "icare-health-professional-access";
 const languageStorageKey = "icare-selected-language";
 const storageKey = "icare-model-checklist";
 const materialStorageKey = "icare-material-checklist";
@@ -224,29 +223,12 @@ window.googleTranslateElementInit = function googleTranslateElementInit() {
   markActiveLanguage(currentLanguage());
 };
 
-function rememberProfessionalAccess() {
-  try {
-    sessionStorage.setItem(accessStorageKey, "yes");
-  } catch {
-    // Session storage can be unavailable in restrictive browser modes.
-  }
-}
-
-function hasProfessionalAccess() {
-  try {
-    return sessionStorage.getItem(accessStorageKey) === "yes";
-  } catch {
-    return false;
-  }
-}
-
 function setContactProfileOption(label) {
   if (!contactProfileSelect) return;
   contactProfileSelect.replaceChildren(new Option(label, label));
 }
 
 function allowProfessionalAccess() {
-  rememberProfessionalAccess();
   document.body.classList.remove("access-pending", "access-denied", "access-limited");
   setContactProfileOption("Profissional de saúde");
   if (accessGate) accessGate.hidden = true;
@@ -268,11 +250,6 @@ function denyProfessionalAccess() {
 
 function initializeAccessGate() {
   if (!accessGate || !appShell) return;
-
-  if (hasProfessionalAccess()) {
-    allowProfessionalAccess();
-    return;
-  }
 
   confirmHealthProfessionalButton.addEventListener("click", allowProfessionalAccess);
   denyHealthProfessionalButton.addEventListener("click", denyProfessionalAccess);
