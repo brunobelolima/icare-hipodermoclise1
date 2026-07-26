@@ -120,7 +120,7 @@ const dropDetectionCanvas = document.createElement("canvas");
 const dropDetectionContext = dropDetectionCanvas.getContext("2d", { willReadFrequently: true });
 const dropDetectionWidth = 72;
 const dropDetectionHeight = 144;
-const dropCalibrationFrameTarget = 36;
+const dropCalibrationFrameTarget = 18;
 
 function setCookie(name, value, maxAge = 31536000) {
   document.cookie = `${name}=${value};path=/;max-age=${maxAge};SameSite=Lax`;
@@ -592,8 +592,8 @@ function readDropDetectionSignal() {
   const videoHeight = dropCameraPreview.videoHeight;
   if (!videoWidth || !videoHeight) return null;
 
-  const sampleWidth = Math.max(34, Math.round(videoWidth * 0.16));
-  const sampleHeight = Math.max(72, Math.round(videoHeight * 0.62));
+  const sampleWidth = Math.max(42, Math.round(videoWidth * 0.22));
+  const sampleHeight = Math.max(82, Math.round(videoHeight * 0.7));
   const sampleX = Math.round((videoWidth - sampleWidth) / 2);
   const sampleY = Math.round((videoHeight - sampleHeight) / 2);
 
@@ -690,7 +690,7 @@ function analyzeDropCandidate(pixels) {
   }
 
   const averageChange = totalChange / pixels.length;
-  const changeThreshold = Math.max(18, Math.min(34, averageChange * 2.8 + 14));
+  const changeThreshold = Math.max(9, Math.min(24, averageChange * 2.2 + 8));
 
   for (let index = 0; index < pixels.length; index += 1) {
     const change = Math.abs(pixels[index] - dropBaselinePixels[index]);
@@ -712,19 +712,21 @@ function analyzeDropCandidate(pixels) {
   const rowSpan = maxRow >= minRow ? maxRow - minRow + 1 : 0;
   const columnSpan = maxColumn >= minColumn ? maxColumn - minColumn + 1 : 0;
   const localizedChange =
-    changedPixels >= 10 &&
-    changedRatio >= 0.001 &&
-    changedRatio <= 0.07 &&
-    rowSpan >= 3 &&
-    rowSpan <= 58 &&
-    columnSpan >= 2 &&
-    columnSpan <= 42 &&
-    maxRowCount >= 2 &&
-    averageChange <= 24;
+    changedPixels >= 4 &&
+    changedRatio >= 0.00035 &&
+    changedRatio <= 0.12 &&
+    rowSpan >= 2 &&
+    rowSpan <= 76 &&
+    columnSpan >= 1 &&
+    columnSpan <= 54 &&
+    maxRowCount >= 1 &&
+    averageChange <= 36;
 
   return {
     averageChange,
     changedRatio,
+    changedPixels,
+    changeThreshold,
     isCandidate: localizedChange,
   };
 }
@@ -754,13 +756,13 @@ function detectDropFrame() {
     } else {
       const candidate = analyzeDropCandidate(signal.pixels);
 
-      if (candidate && (candidate.changedRatio > 0.16 || candidate.averageChange > 30)) {
+      if (candidate && (candidate.changedRatio > 0.22 || candidate.averageChange > 45)) {
         dropUnstableFrames += 1;
       } else {
         dropUnstableFrames = Math.max(0, dropUnstableFrames - 1);
       }
 
-      if (dropUnstableFrames > 12) {
+      if (dropUnstableFrames > 18) {
         resetAutoDropDetection();
         setDropCameraStatus(
           "Imagem instável. Recalibrando: deixe a câmera parada e centralize a câmara de gotejamento.",
@@ -772,17 +774,18 @@ function detectDropFrame() {
       } else {
         dropMissingFrames += 1;
         dropPresentFrames = 0;
-        if (dropMissingFrames >= 3) {
+        if (dropMissingFrames >= 2) {
           dropCandidateActive = false;
         }
-        if (candidate && candidate.averageChange < 10) {
+        if (candidate && candidate.averageChange < 14) {
           updateDropBaseline(signal.pixels);
         }
       }
 
-      if (dropPresentFrames >= 2 && !dropCandidateActive && now - lastAutoDropAt > 850) {
+      if (dropPresentFrames >= 1 && !dropCandidateActive && now - lastAutoDropAt > 700) {
         lastAutoDropAt = now;
         dropCandidateActive = true;
+        setDropCameraStatus("Gota detectada. Continue mantendo a câmera parada.", "success");
         recordDrop();
       }
     }
