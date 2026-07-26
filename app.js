@@ -118,9 +118,9 @@ const publicOnlyTabs = new Set(["nao-profissionais", "idealizadores"]);
 const limitedAccessTabs = new Set(["nao-profissionais", "idealizadores", "contador-gotas", "contato", "privacidade"]);
 const dropDetectionCanvas = document.createElement("canvas");
 const dropDetectionContext = dropDetectionCanvas.getContext("2d", { willReadFrequently: true });
-const dropDetectionWidth = 72;
-const dropDetectionHeight = 144;
-const dropCalibrationFrameTarget = 8;
+const dropDetectionWidth = 96;
+const dropDetectionHeight = 180;
+const dropCalibrationFrameTarget = 5;
 
 function setCookie(name, value, maxAge = 31536000) {
   document.cookie = `${name}=${value};path=/;max-age=${maxAge};SameSite=Lax`;
@@ -592,8 +592,8 @@ function readDropDetectionSignal() {
   const videoHeight = dropCameraPreview.videoHeight;
   if (!videoWidth || !videoHeight) return null;
 
-  const sampleWidth = Math.max(42, Math.round(videoWidth * 0.22));
-  const sampleHeight = Math.max(82, Math.round(videoHeight * 0.7));
+  const sampleWidth = Math.max(52, Math.round(videoWidth * 0.28));
+  const sampleHeight = Math.max(96, Math.round(videoHeight * 0.76));
   const sampleX = Math.round((videoWidth - sampleWidth) / 2);
   const sampleY = Math.round((videoHeight - sampleHeight) / 2);
 
@@ -717,11 +717,11 @@ function analyzeDropCandidate(pixels, meanBrightness = 128) {
   const averageContrastChange = totalContrastChange / pixels.length;
   const clearBackground = meanBrightness >= 165;
   const changeThreshold = clearBackground
-    ? Math.max(2.6, Math.min(12, averageChange * 1.15 + 2.6))
-    : Math.max(4, Math.min(16, averageChange * 1.25 + 4));
+    ? Math.max(1.4, Math.min(8, averageChange * 0.9 + 1.4))
+    : Math.max(2.2, Math.min(10, averageChange * 1 + 2.2));
   const contrastThreshold = clearBackground
-    ? Math.max(3.5, Math.min(14, averageContrastChange * 1.4 + 3.5))
-    : Math.max(5, Math.min(18, averageContrastChange * 1.5 + 5));
+    ? Math.max(1.8, Math.min(9, averageContrastChange * 1 + 1.8))
+    : Math.max(2.8, Math.min(11, averageContrastChange * 1.15 + 2.8));
 
   for (let index = 0; index < pixels.length; index += 1) {
     const brightnessChange = pixels[index] - dropBaselinePixels[index];
@@ -748,18 +748,18 @@ function analyzeDropCandidate(pixels, meanBrightness = 128) {
   const changedRatio = changedPixels / pixels.length;
   const rowSpan = maxRow >= minRow ? maxRow - minRow + 1 : 0;
   const columnSpan = maxColumn >= minColumn ? maxColumn - minColumn + 1 : 0;
-  const hasLightRefractionSignal = clearBackground && (brightChangePixels > 0 || averageContrastChange >= 1.2);
+  const hasLightRefractionSignal = clearBackground && (brightChangePixels > 0 || averageContrastChange >= 0.65);
   const hasDarkOrMixedSignal = darkChangePixels > 0 || brightChangePixels > 0;
   const localizedChange =
-    changedPixels >= 2 &&
-    changedRatio >= 0.00012 &&
-    changedRatio <= 0.24 &&
+    changedPixels >= 1 &&
+    changedRatio >= 0.00005 &&
+    changedRatio <= 0.32 &&
     rowSpan >= 1 &&
-    rowSpan <= 90 &&
+    rowSpan <= 130 &&
     columnSpan >= 1 &&
-    columnSpan <= 68 &&
+    columnSpan <= 90 &&
     maxRowCount >= 1 &&
-    averageChange <= 70 &&
+    averageChange <= 90 &&
     (hasLightRefractionSignal || hasDarkOrMixedSignal);
 
   return {
@@ -800,7 +800,7 @@ function detectDropFrame() {
     } else {
       const candidate = analyzeDropCandidate(signal.pixels, signal.meanBrightness);
 
-      if (candidate && (candidate.changedRatio > 0.35 || candidate.averageChange > 75)) {
+      if (candidate && (candidate.changedRatio > 0.5 || candidate.averageChange > 105)) {
         dropUnstableFrames += 1;
       } else {
         dropUnstableFrames = Math.max(0, dropUnstableFrames - 1);
@@ -818,15 +818,15 @@ function detectDropFrame() {
       } else {
         dropMissingFrames += 1;
         dropPresentFrames = 0;
-        if (dropMissingFrames >= 2) {
+        if (dropMissingFrames >= 1) {
           dropCandidateActive = false;
         }
-        if (candidate && candidate.averageChange < 6) {
+        if (candidate && candidate.averageChange < 10) {
           updateDropBaseline(signal.pixels);
         }
       }
 
-      if (dropPresentFrames >= 1 && !dropCandidateActive && now - lastAutoDropAt > 450) {
+      if (dropPresentFrames >= 1 && !dropCandidateActive && now - lastAutoDropAt > 280) {
         lastAutoDropAt = now;
         dropCandidateActive = true;
         setDropCameraStatus("Gota detectada. Continue mantendo a câmera parada.", "success");
