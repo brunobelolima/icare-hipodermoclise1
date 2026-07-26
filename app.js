@@ -108,6 +108,10 @@ let autoDropFrame = null;
 let dropBaselinePixels = null;
 let dropCalibrationSums = null;
 let dropCalibrationFrames = 0;
+let dropPreviousPixels = null;
+let dropMotionBaseline = 0;
+let dropMotionDeviation = 0;
+let dropMotionCalibrationFrames = 0;
 let dropPresentFrames = 0;
 let dropMissingFrames = 0;
 let dropCandidateActive = false;
@@ -120,7 +124,7 @@ const dropDetectionCanvas = document.createElement("canvas");
 const dropDetectionContext = dropDetectionCanvas.getContext("2d", { willReadFrequently: true });
 const dropDetectionWidth = 72;
 const dropDetectionHeight = 144;
-const dropCalibrationFrameTarget = 36;
+const dropCalibrationFrameTarget = 12;
 
 function setCookie(name, value, maxAge = 31536000) {
   document.cookie = `${name}=${value};path=/;max-age=${maxAge};SameSite=Lax`;
@@ -592,10 +596,10 @@ function readDropDetectionSignal() {
   const videoHeight = dropCameraPreview.videoHeight;
   if (!videoWidth || !videoHeight) return null;
 
-  const sampleWidth = Math.max(34, Math.round(videoWidth * 0.16));
-  const sampleHeight = Math.max(72, Math.round(videoHeight * 0.62));
+  const sampleWidth = Math.max(46, Math.round(videoWidth * 0.2));
+  const sampleHeight = Math.max(90, Math.round(videoHeight * 0.68));
   const sampleX = Math.round((videoWidth - sampleWidth) / 2);
-  const sampleY = Math.round((videoHeight - sampleHeight) / 2);
+  const sampleY = Math.max(0, Math.round(videoHeight * 0.22));
 
   dropDetectionCanvas.width = dropDetectionWidth;
   dropDetectionCanvas.height = dropDetectionHeight;
@@ -637,6 +641,10 @@ function resetAutoDropDetection() {
   dropBaselinePixels = null;
   dropCalibrationSums = null;
   dropCalibrationFrames = 0;
+  dropPreviousPixels = null;
+  dropMotionBaseline = 0;
+  dropMotionDeviation = 0;
+  dropMotionCalibrationFrames = 0;
   dropPresentFrames = 0;
   dropMissingFrames = 0;
   dropCandidateActive = false;
@@ -644,96 +652,92 @@ function resetAutoDropDetection() {
   lastAutoDropAt = 0;
 }
 
-function calibrateDropBackground(pixels) {
-  if (!dropCalibrationSums) {
-    dropCalibrationSums = new Float32Array(pixels.length);
-  }
+function updateDropMotionBaseline(score, learningRate = 0.04) {
+  const delta = Math.abs(score - dropMotionBaseline);
+  dropMotionBaseline = dropMotionBaseline * (1 - learningRate) + score * learningRate;
+  dropMotionDeviation = dropMotionDeviation * (1 - learningRate) + delta * learningRate;
+}
 
-  for (let index = 0; index < pixels.length; index += 1) {
-    dropCalibrationSums[index] += pixels[index];
-  }
+function calibrateDropMotion(score) {
+  dropMotionCalibrationFrames += 1;
+  const learningRate = 1 / dropMotionCalibrationFrames;
+  const delta = Math.abs(score - dropMotionBaseline);
+  dropMotionBaseline = dropMotionBaseline * (1 - learningRate) + score * learningRate;
+  dropMotionDeviation = dropMotionDeviation * (1 - learningRate) + delta * learningRate;
 
-  dropCalibrationFrames += 1;
+  if (dropMotionCalibrationFrames < dropCalibrationFrameTarget) return false;
 
-  if (dropCalibrationFrames < dropCalibrationFrameTarget) {
-    return false;
-  }
-
-  dropBaselinePixels = new Float32Array(pixels.length);
-  for (let index = 0; index < pixels.length; index += 1) {
-    dropBaselinePixels[index] = dropCalibrationSums[index] / dropCalibrationFrames;
-  }
-  dropCalibrationSums = null;
   setDropCameraStatus(
-    "Detector pronto. Mantenha apenas a câmara de gotejamento dentro do retângulo central.",
+    "Detector pronto. Mantenha a queda das gotas dentro do retângulo central.",
     "success",
   );
   return true;
 }
 
 function analyzeDropCandidate(pixels) {
-  if (!dropBaselinePixels) return null;
+  if (!dropPreviousPixels) {
+    dropPreviousPixels = pixels;
+    return null;
+  }
 
-  const rowCounts = new Uint16Array(dropDetectionHeight);
-  const columnCounts = new Uint16Array(dropDetectionWidth);
+  const histogram = new Uint16Array(256);
+  let totalMotion = 0;
   let changedPixels = 0;
-  let totalChange = 0;
-  let minRow = dropDetectionHeight;
-  let maxRow = -1;
-  let minColumn = dropDetectionWidth;
-  let maxColumn = -1;
-  let maxRowCount = 0;
+  let strongPixels = 0;
+  let veryStrongPixels = 0;
+  let maxMotion = 0;
 
   for (let index = 0; index < pixels.length; index += 1) {
-    const change = Math.abs(pixels[index] - dropBaselinePixels[index]);
-    totalChange += change;
+    const motion = Math.abs(pixels[index] - dropPreviousPixels[index]);
+    const bucket = Math.max(0, Math.min(255, Math.round(motion)));
+    histogram[bucket] += 1;
+    totalMotion += motion;
+    if (motion >= 4) changedPixels += 1;
+    if (motion >= 8) strongPixels += 1;
+    if (motion >= 15) veryStrongPixels += 1;
+    if (motion > maxMotion) maxMotion = motion;
   }
 
-  const averageChange = totalChange / pixels.length;
-  const changeThreshold = Math.max(18, Math.min(34, averageChange * 2.8 + 14));
+  dropPreviousPixels = pixels;
 
-  for (let index = 0; index < pixels.length; index += 1) {
-    const change = Math.abs(pixels[index] - dropBaselinePixels[index]);
-    if (change < changeThreshold) continue;
-
-    const row = Math.floor(index / dropDetectionWidth);
-    const column = index % dropDetectionWidth;
-    changedPixels += 1;
-    rowCounts[row] += 1;
-    columnCounts[column] += 1;
-    if (row < minRow) minRow = row;
-    if (row > maxRow) maxRow = row;
-    if (column < minColumn) minColumn = column;
-    if (column > maxColumn) maxColumn = column;
-    if (rowCounts[row] > maxRowCount) maxRowCount = rowCounts[row];
+  const targetCount = Math.ceil(pixels.length * 0.95);
+  let accumulatedPixels = 0;
+  let percentile95 = 0;
+  for (let value = 0; value < histogram.length; value += 1) {
+    accumulatedPixels += histogram[value];
+    if (accumulatedPixels >= targetCount) {
+      percentile95 = value;
+      break;
+    }
   }
 
+  const averageMotion = totalMotion / pixels.length;
   const changedRatio = changedPixels / pixels.length;
-  const rowSpan = maxRow >= minRow ? maxRow - minRow + 1 : 0;
-  const columnSpan = maxColumn >= minColumn ? maxColumn - minColumn + 1 : 0;
-  const localizedChange =
-    changedPixels >= 10 &&
-    changedRatio >= 0.001 &&
-    changedRatio <= 0.07 &&
-    rowSpan >= 3 &&
-    rowSpan <= 58 &&
-    columnSpan >= 2 &&
-    columnSpan <= 42 &&
-    maxRowCount >= 2 &&
-    averageChange <= 24;
+  const strongRatio = strongPixels / pixels.length;
+  const veryStrongRatio = veryStrongPixels / pixels.length;
+  const motionScore = percentile95 + strongRatio * 10 + veryStrongRatio * 18;
+  const motionThreshold = Math.max(
+    3.2,
+    dropMotionBaseline + Math.max(2, dropMotionDeviation * 3.2),
+  );
+  const cameraMovement = changedRatio > 0.38 || averageMotion > 18;
+  const isCandidate =
+    dropMotionCalibrationFrames >= dropCalibrationFrameTarget &&
+    !cameraMovement &&
+    motionScore >= motionThreshold &&
+    (strongRatio >= 0.0008 || percentile95 >= 4);
 
   return {
-    averageChange,
+    averageMotion,
     changedRatio,
-    isCandidate: localizedChange,
+    maxMotion,
+    motionScore,
+    motionThreshold,
+    percentile95,
+    strongRatio,
+    isCameraMove: cameraMovement,
+    isCandidate,
   };
-}
-
-function updateDropBaseline(pixels, learningRate = 0.015) {
-  if (!dropBaselinePixels) return;
-  for (let index = 0; index < pixels.length; index += 1) {
-    dropBaselinePixels[index] = dropBaselinePixels[index] * (1 - learningRate) + pixels[index] * learningRate;
-  }
 }
 
 function detectDropFrame() {
@@ -743,24 +747,24 @@ function detectDropFrame() {
   const now = Date.now();
 
   if (signal) {
-    if (!dropBaselinePixels) {
-      const calibrated = calibrateDropBackground(signal.pixels);
-      if (!calibrated) {
-        setDropCameraStatus(
-          "Calibrando a imagem. Mantenha a câmara de gotejamento parada dentro do retângulo central.",
-          "success",
-        );
-      }
-    } else {
-      const candidate = analyzeDropCandidate(signal.pixels);
+    const candidate = analyzeDropCandidate(signal.pixels);
 
-      if (candidate && (candidate.changedRatio > 0.16 || candidate.averageChange > 30)) {
+    if (candidate) {
+      if (dropMotionCalibrationFrames < dropCalibrationFrameTarget) {
+        const calibrated = calibrateDropMotion(candidate.motionScore);
+        if (!calibrated) {
+          setDropCameraStatus(
+            "Calibrando pelo movimento. Mantenha a queda das gotas dentro do retângulo central.",
+            "success",
+          );
+        }
+      } else if (candidate.isCameraMove) {
         dropUnstableFrames += 1;
       } else {
         dropUnstableFrames = Math.max(0, dropUnstableFrames - 1);
       }
 
-      if (dropUnstableFrames > 12) {
+      if (dropUnstableFrames > 18) {
         resetAutoDropDetection();
         setDropCameraStatus(
           "Imagem instável. Recalibrando: deixe a câmera parada e centralize a câmara de gotejamento.",
@@ -775,12 +779,16 @@ function detectDropFrame() {
         if (dropMissingFrames >= 3) {
           dropCandidateActive = false;
         }
-        if (candidate && candidate.averageChange < 10) {
-          updateDropBaseline(signal.pixels);
+        if (
+          dropMotionCalibrationFrames >= dropCalibrationFrameTarget &&
+          !candidate.isCameraMove &&
+          candidate.motionScore < candidate.motionThreshold * 0.8
+        ) {
+          updateDropMotionBaseline(candidate.motionScore);
         }
       }
 
-      if (dropPresentFrames >= 2 && !dropCandidateActive && now - lastAutoDropAt > 850) {
+      if (dropPresentFrames >= 1 && !dropCandidateActive && now - lastAutoDropAt > 750) {
         lastAutoDropAt = now;
         dropCandidateActive = true;
         recordDrop();
@@ -802,7 +810,7 @@ async function startAutoDropCounter() {
   if (startAutoDropCounterButton) startAutoDropCounterButton.disabled = true;
   if (stopAutoDropCounterButton) stopAutoDropCounterButton.disabled = false;
   setDropCameraStatus(
-    "Calibrando a imagem. Mantenha a câmara de gotejamento centralizada e com boa iluminação.",
+    "Calibrando pelo movimento. Mantenha a queda das gotas dentro do retângulo central.",
     "success",
   );
   detectDropFrame();
