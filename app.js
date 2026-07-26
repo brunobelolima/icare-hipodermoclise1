@@ -55,6 +55,7 @@ const punctureHighlight = document.querySelector("#punctureHighlight");
 const punctureGroups = document.querySelector("#punctureGroups");
 const dropCameraPreview = document.querySelector("#dropCameraPreview");
 const dropCameraPlaceholder = document.querySelector("#dropCameraPlaceholder");
+const dropDetectionIndicator = document.querySelector("#dropDetectionIndicator");
 const startDropCameraButton = document.querySelector("#startDropCamera");
 const stopDropCameraButton = document.querySelector("#stopDropCamera");
 const startAutoDropCounterButton = document.querySelector("#startAutoDropCounter");
@@ -67,8 +68,6 @@ const dropCount = Array.from(document.querySelectorAll("[data-drop-count]"));
 const dropElapsed = Array.from(document.querySelectorAll("[data-drop-elapsed]"));
 const dropPerMinute = Array.from(document.querySelectorAll("[data-drop-per-minute]"));
 const dropMlHour = Array.from(document.querySelectorAll("[data-drop-ml-hour]"));
-const manualDropsMinute = document.querySelector("#manualDropsMinute");
-const manualMlHour = document.querySelector("#manualMlHour");
 const targetVolumeMl = document.querySelector("#targetVolumeMl");
 const targetTimeHours = document.querySelector("#targetTimeHours");
 const targetMlHour = document.querySelector("[data-target-ml-hour]");
@@ -107,7 +106,7 @@ let compatibilityItemControls = Array.from(document.querySelectorAll(".compatibi
 let dropCameraStream = null;
 let dropTimestamps = [];
 let dropTimer = null;
-let manualConversionLock = false;
+let dropIndicatorTimer = null;
 let autoDropActive = false;
 let autoDropFrame = null;
 let dropBaselinePixels = null;
@@ -428,11 +427,6 @@ function formatDecimal(value, maximumFractionDigits = 1) {
   });
 }
 
-function formatInputDecimal(value) {
-  if (!Number.isFinite(value)) return "";
-  return Number(value.toFixed(1)).toString();
-}
-
 function formatElapsed(milliseconds) {
   if (!milliseconds || milliseconds < 1000) return "0s";
   const totalSeconds = Math.round(milliseconds / 1000);
@@ -481,10 +475,21 @@ function stopDropTimer() {
   dropTimer = null;
 }
 
+function flashDropDetectionIndicator() {
+  if (!dropDetectionIndicator) return;
+  dropDetectionIndicator.classList.add("active");
+  if (dropIndicatorTimer) window.clearTimeout(dropIndicatorTimer);
+  dropIndicatorTimer = window.setTimeout(() => {
+    dropDetectionIndicator.classList.remove("active");
+    dropIndicatorTimer = null;
+  }, 420);
+}
+
 function recordDrop() {
   dropTimestamps.push(Date.now());
   startDropTimer();
   updateDropCounterResults();
+  flashDropDetectionIndicator();
 }
 
 function resetDropCounter() {
@@ -836,26 +841,6 @@ function stopAutoDropCounter() {
   }
 }
 
-function syncManualFromDropsMinute() {
-  if (!manualDropsMinute || !manualMlHour || manualConversionLock) return;
-  manualConversionLock = true;
-  const dropsMinute = Number(manualDropsMinute.value.replace(",", "."));
-  manualMlHour.value = Number.isFinite(dropsMinute) && manualDropsMinute.value
-    ? formatInputDecimal((dropsMinute * 60) / dropFactorValue())
-    : "";
-  manualConversionLock = false;
-}
-
-function syncManualFromMlHour() {
-  if (!manualDropsMinute || !manualMlHour || manualConversionLock) return;
-  manualConversionLock = true;
-  const mlHour = Number(manualMlHour.value.replace(",", "."));
-  manualDropsMinute.value = Number.isFinite(mlHour) && manualMlHour.value
-    ? formatInputDecimal((mlHour * dropFactorValue()) / 60)
-    : "";
-  manualConversionLock = false;
-}
-
 function calculateTargetSpeed() {
   if (!targetVolumeMl || !targetTimeHours || !targetMlHour || !targetMacroDropsMinute) return;
 
@@ -877,11 +862,6 @@ function calculateTargetSpeed() {
 
 function refreshDropFactorCalculations() {
   updateDropCounterResults();
-  if (manualDropsMinute?.value) {
-    syncManualFromDropsMinute();
-  } else if (manualMlHour?.value) {
-    syncManualFromMlHour();
-  }
   calculateTargetSpeed();
 }
 
@@ -2607,14 +2587,6 @@ if (resetAutoDropCounterButton) {
       );
     }
   });
-}
-
-if (manualDropsMinute) {
-  manualDropsMinute.addEventListener("input", syncManualFromDropsMinute);
-}
-
-if (manualMlHour) {
-  manualMlHour.addEventListener("input", syncManualFromMlHour);
 }
 
 if (targetVolumeMl) {
