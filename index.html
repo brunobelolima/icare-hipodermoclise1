@@ -178,6 +178,9 @@
           <button class="tab-trigger" role="tab" aria-selected="false" data-tab="para-gestores">
             Para gestores
           </button>
+          <button class="tab-trigger" role="tab" aria-selected="false" data-tab="cursos">
+            Cursos
+          </button>
           <button class="tab-trigger" role="tab" aria-selected="false" data-tab="contato">
             Entre em contato
           </button>
@@ -721,6 +724,13 @@
                   <div><dt>OE</dt><dd>- opinião de especialista.</dd></div>
                 </dl>
               </section>
+              <section class="medication-search" aria-label="Pesquisar medicamentos e soluções">
+                <label for="medicationSearch">
+                  <span>Pesquisar</span>
+                  <input id="medicationSearch" type="search" autocomplete="off" placeholder="Digite medicamento, solução, dose ou referência">
+                </label>
+                <p id="medicationSearchCount" class="medication-search-status" aria-live="polite"></p>
+              </section>
               <div class="drug-grid">
                 <section class="card">
                   <div class="card-content medicine-card">
@@ -909,6 +919,47 @@
                 <section class="card">
                   <div class="card-content medicine-card">
                     <header>
+                      <h3>Fenobarbital</h3>
+                    </header>
+                    <div class="field-grid">
+                      <div class="field"><strong>Dose<sup>30,33,34</sup></strong><span>Controle de crises: infusão subcutânea contínua (CSCI) de 150-960mg/dia, com dose de ataque subcutânea (SC) de 65-130mg antes da infusão. Sedação paliativa: auditoria descreveu dose de ataque mais comum de 200mg SC e CSCI inicial mais comum de 800mg/24h, com máximo de 1800mg/24h; revisão retrospectiva descreveu uso típico de 800-1200mg/24h.</span></div>
+                      <div class="field"><strong>Diluição<sup>OE</sup></strong><span>Não foi localizado esquema padronizado de diluição por hipodermóclise nas fontes diretas consultadas; definir conforme protocolo institucional, orientação farmacêutica e dispositivo disponível.<sup class="ref-mark">OE</sup></span></div>
+                      <div class="field"><strong>Tempo de infusão<sup>30,33,34</sup></strong><span>Bolus SC seguido de CSCI ou CSCI em 24h, conforme objetivo clínico, dose prescrita e protocolo institucional.</span></div>
+                    </div>
+                    <div class="clinical-note">
+                      O uso por hipodermóclise foi descrito principalmente em cuidados paliativos para sedação de sintomas refratários, agitação e controle de crises quando a via oral não era possível.<sup class="ref-mark">30,33</sup>
+                    </div>
+                    <div class="clinical-note">
+                      Em pacientes de hospice, houve 2 reações locais leves em 774 aplicações; em auditoria de 23 pacientes em CSCI, não foram documentadas reações sistêmicas nem no sítio de infusão.<sup class="ref-mark">31,33</sup>
+                    </div>
+                    <div class="clinical-note">
+                      Induração no local de aplicação pode reduzir a biodisponibilidade do fenobarbital parenteral, exigindo avaliação frequente do sítio.<sup class="ref-mark">32</sup>
+                    </div>
+                    <div class="clinical-note">
+                      O fenobarbital é alcalino e tem maior possibilidade de incompatibilidade em mistura; por isso, deve ser administrado separadamente.<sup class="ref-mark">27</sup>
+                    </div>
+                  </div>
+                </section>
+
+                <section class="card phenytoin-card">
+                  <div class="card-content medicine-card">
+                    <header>
+                      <h3>Fenitoína</h3>
+                    </header>
+                    <div class="field-grid">
+                      <div class="field"><strong>Dose<sup>28,29</sup></strong><span>Não há dose recomendada para administração por hipodermóclise nas fontes diretas consultadas.</span></div>
+                      <div class="field"><strong>Diluição<sup>28,29</sup></strong><span>Não recomendada para diluição ou infusão por via subcutânea.</span></div>
+                      <div class="field"><strong>Tempo de infusão<sup>28,29</sup></strong><span>Não se aplica para hipodermóclise.</span></div>
+                    </div>
+                    <div class="clinical-note">
+                      A fenitoína injetável é descrita para uso intravenoso, com risco de lesão local em caso de extravasamento; por isso, não deve ser usada de rotina por hipodermóclise. Quando houver necessidade de anticonvulsivante parenteral, avaliar alternativa, via de administração apropriada e protocolo institucional.<sup class="ref-mark">28,29</sup>
+                    </div>
+                  </div>
+                </section>
+
+                <section class="card">
+                  <div class="card-content medicine-card">
+                    <header>
                       <h3>Soro fisiológico 0,9% (SF)</h3>
                     </header>
                     <div class="field-grid">
@@ -1030,6 +1081,27 @@
                   <li>
                     <a href="https://www.pharmaceuticalpress.com/product/palliative-care-formulary/" target="_blank" rel="noopener">Wilcock A, Howard P, Charlesworth S. PCF8 - Palliative Care Formulary. 8th ed. London: Pharmaceutical Press; 2022.</a>
                   </li>
+                  <li>
+                    <a href="https://dailymed.nlm.nih.gov/dailymed/search.cfm?query=phenytoin%20sodium%20injection" target="_blank" rel="noopener">DailyMed. Phenytoin sodium injection: prescribing information. U.S. National Library of Medicine.</a>
+                  </li>
+                  <li>
+                    <a href="https://www.accessdata.fda.gov/scripts/cder/daf/index.cfm?event=BasicSearch.process" target="_blank" rel="noopener">U.S. Food and Drug Administration. Drugs@FDA: phenytoin sodium injection labeling and approval information.</a>
+                  </li>
+                  <li>
+                    <a href="https://doi.org/10.1016/s0885-3924(05)80007-7" target="_blank" rel="noopener">Storey P, Hill H. H., Louis R. H. S., Tarver E. Subcutaneous infusions for control of cancer symptoms. Journal of Pain and Symptom Management. 1990.</a>
+                  </li>
+                  <li>
+                    <a href="https://doi.org/10.1177/1049909114555157" target="_blank" rel="noopener">Hosgood J. R., Kimbrel J., Protus B., Grauer P. Evaluation of subcutaneous phenobarbital administration in hospice patients. American Journal of Hospice and Palliative Medicine. 2016.</a>
+                  </li>
+                  <li>
+                    <a href="https://doi.org/10.1097/ftd.0000000000000391" target="_blank" rel="noopener">Nakayama H. et al. Induration at injection or infusion site may reduce bioavailability of parenteral phenobarbital administration. Therapeutic Drug Monitoring. 2017.</a>
+                  </li>
+                  <li>
+                    <a href="https://doi.org/10.1136/spcare-2024-005361" target="_blank" rel="noopener">Tan B., Freeman-Spratt G., Kasiri H. Phenobarbital for inpatient palliative sedation: a clinical audit. BMJ Supportive & Palliative Care. 2025.</a>
+                  </li>
+                  <li>
+                    <a href="https://doi.org/10.1136/bmjspcare-2021-003263" target="_blank" rel="noopener">Thomas B. Phenobarbital sedation via subcutaneous infusion in a palliative medicine unit: retrospective review. BMJ Supportive & Palliative Care. 2021.</a>
+                  </li>
                 </ol>
               </details>
             </div>
@@ -1058,6 +1130,7 @@
                         <option value="metoclopramida">Metoclopramida</option>
                         <option value="ondansetrona">Ondansetrona</option>
                         <option value="furosemida">Furosemida</option>
+                        <option value="fenobarbital">Fenobarbital</option>
                         <option value="sf">Soro fisiológico 0,9% (SF)</option>
                         <option value="sg5">Soro glicosado 5% (SG 5%)</option>
                       </select>
@@ -1076,6 +1149,7 @@
                         <option value="metoclopramida">Metoclopramida</option>
                         <option value="ondansetrona">Ondansetrona</option>
                         <option value="furosemida">Furosemida</option>
+                        <option value="fenobarbital">Fenobarbital</option>
                         <option value="sf">Soro fisiológico 0,9% (SF)</option>
                         <option value="sg5">Soro glicosado 5% (SG 5%)</option>
                       </select>
@@ -1092,7 +1166,7 @@
                 <table class="compat-table compatibility-matrix">
                   <caption>
                     Compatibilidade entre Morfina, Escopolamina, Clorpromazina, Ceftriaxona, Dipirona,
-                    Dexametasona, Haloperidol, Midazolam, Metoclopramida, Ondansetrona, Furosemida, SF 0,9% e SG 5%
+                    Dexametasona, Haloperidol, Midazolam, Metoclopramida, Ondansetrona, Furosemida, Fenobarbital, SF 0,9% e SG 5%
                   </caption>
                   <thead>
                     <tr>
@@ -1203,6 +1277,11 @@
                       <td>Há registro de uso de ondansetrona por hipodermóclise, mas a fonte observacional não descreve compatibilidade físico-química da mistura com os demais medicamentos desta matriz; há apenas relato de caso específico envolvendo hidromorfona, metoclopramida e ondansetrona.<sup class="ref-mark">13,15</sup></td>
                     </tr>
                     <tr>
+                      <td>Fenobarbital + outros medicamentos</td>
+                      <td><span class="status-pill warn">Dados insuficientes</span></td>
+                      <td>Fenobarbital é alcalino e tem maior possibilidade de incompatibilidade em mistura; administrar separadamente e confirmar com farmácia clínica/protocolo institucional antes de qualquer associação.<sup class="ref-mark">17</sup></td>
+                    </tr>
+                    <tr>
                       <td>Hidromorfona + Metoclopramida + Ondansetrona</td>
                       <td><span class="status-pill warn">Compatibilidade em relato de caso</span></td>
                       <td>Relato de caso descreveu infusão subcutânea contínua em um único cassete, com compatibilidade química confirmada e controle de dor/náusea por 9 meses; a evidência é limitada a um caso e não valida misturas com os demais itens da matriz.<sup class="ref-mark">15</sup></td>
@@ -1235,7 +1314,7 @@
                     <tr>
                       <td>Todos juntos na mesma seringa</td>
                       <td><span class="status-pill warn">Dados insuficientes</span></td>
-                      <td>Não há estudo avaliando uma única mistura contendo ceftriaxona, morfina, escopolamina, clorpromazina, dipirona, dexametasona, haloperidol, midazolam, metoclopramida, ondansetrona, furosemida, SF 0,9% e SG 5%.<sup class="ref-mark">2,5-16</sup></td>
+                      <td>Não há estudo avaliando uma única mistura contendo ceftriaxona, morfina, escopolamina, clorpromazina, dipirona, dexametasona, haloperidol, midazolam, metoclopramida, ondansetrona, furosemida, fenobarbital, SF 0,9% e SG 5%.<sup class="ref-mark">2,5-17</sup></td>
                     </tr>
                   </tbody>
                 </table>
@@ -1259,6 +1338,7 @@
                   <li><a href="https://drive.google.com/file/d/1PtxNlxYwLHTiw74_ZzsYXo2U-NJFa3si/view?usp=sharing" target="_blank" rel="noopener">Manual Hipodermóclise da Sociedade Brasileira de Geriatria e Gerontologia (SBGG) 2025. O uso da via subcutânea na geriatria e em cuidados paliativos. 3ª edição.</a></li>
                   <li><a href="https://doi.org/10.17140/pmhcoj-3-118" target="_blank" rel="noopener">Aoun L, Zakaria J. A Case Report of Continuous Subcutaneous Infusion of Hydromorphone, Metoclopramide and Ondansetron Used To Treat Refractory Pain and Nausea in an Ambulatory Palliative Clinic. Palliative Medicine and Hospice Care Open Journal. 2017.</a></li>
                   <li><a href="https://doi.org/10.1136/bmjspcare-2019-002158" target="_blank" rel="noopener">Brown A, Westley K, Robson J, Armstrong L, Matthews I, Runnett C, Ripley D, Thomas H. Furosemide in end-stage heart failure: community subcutaneous infusions. BMJ Supportive &amp; Palliative Care. 2020.</a></li>
+                  <li><a href="https://www.pharmaceuticalpress.com/product/palliative-care-formulary/" target="_blank" rel="noopener">Wilcock A, Howard P, Charlesworth S. PCF8 - Palliative Care Formulary. 8th ed. London: Pharmaceutical Press; 2022.</a></li>
                 </ol>
               </details>
             </div>
@@ -2032,6 +2112,7 @@
                       <option value="metoclopramida">Metoclopramida</option>
                       <option value="ondansetrona">Ondansetrona</option>
                       <option value="furosemida">Furosemida</option>
+                      <option value="fenobarbital">Fenobarbital</option>
                       <option value="sf">Soro fisiológico 0,9% (SF)</option>
                       <option value="sg5">Soro glicosado 5% (SG 5%)</option>
                     </select>
@@ -2051,6 +2132,7 @@
                       <option value="metoclopramida">Metoclopramida</option>
                       <option value="ondansetrona">Ondansetrona</option>
                       <option value="furosemida">Furosemida</option>
+                      <option value="fenobarbital">Fenobarbital</option>
                       <option value="sf">Soro fisiológico 0,9% (SF)</option>
                       <option value="sg5">Soro glicosado 5% (SG 5%)</option>
                     </select>
@@ -2128,8 +2210,8 @@
                       </div>
                       <div class="automatic-drop-controls">
                         <p class="drop-camera-hint">
-                          No celular, permita o acesso à câmera quando o navegador solicitar. Em sites publicados,
-                          o acesso à câmera exige conexão segura.
+                          Enquadre apenas a câmara de gotejamento no retângulo central, com fundo liso e boa luz.
+                          Evite movimentar o celular durante a contagem.
                         </p>
                         <div class="copy-actions">
                           <button class="primary-button" id="startDropCamera" type="button">Iniciar câmera</button>
@@ -2151,6 +2233,30 @@
                         </p>
                       </div>
                     </div>
+                    <div class="drop-result-panel">
+                      <h3>Resultado</h3>
+                      <div class="drop-result-grid" aria-live="polite">
+                        <div class="drop-result-card">
+                          <span>Gotas registradas</span>
+                          <strong data-drop-count>0</strong>
+                        </div>
+                        <div class="drop-result-card">
+                          <span>Tempo observado</span>
+                          <strong data-drop-elapsed>0s</strong>
+                        </div>
+                        <div class="drop-result-card">
+                          <span>Gotas/min em macrogotas</span>
+                          <strong data-drop-per-minute>--</strong>
+                        </div>
+                        <div class="drop-result-card">
+                          <span>mL/h</span>
+                          <strong data-drop-ml-hour>--</strong>
+                        </div>
+                      </div>
+                      <div class="drop-counter-status">
+                        Conversão configurada para equipo de macrogotas: 20 gotas por mililitro (gotas/mL).
+                      </div>
+                    </div>
                   </div>
                 </div>
               </div>
@@ -2167,58 +2273,46 @@
               <div class="card">
                 <div class="card-content stack">
                   <h2>Contagem manual</h2>
-                  <div class="drop-counter-status">
-                    Conversão configurada para equipo de macrogotas: 20 gotas por mililitro (gotas/mL).
-                  </div>
                   <div class="copy-actions">
                     <button class="primary-button drop-tap-button" id="recordDrop" type="button">
                       Registrar gota
                     </button>
                     <button class="secondary-button" id="resetDropCounter" type="button">Zerar contador</button>
                   </div>
+                  <div class="drop-result-panel">
+                    <h3>Resultado</h3>
+                    <div class="drop-result-grid" aria-live="polite">
+                      <div class="drop-result-card">
+                        <span>Gotas registradas</span>
+                        <strong data-drop-count>0</strong>
+                      </div>
+                      <div class="drop-result-card">
+                        <span>Tempo observado</span>
+                        <strong data-drop-elapsed>0s</strong>
+                      </div>
+                      <div class="drop-result-card">
+                        <span>Gotas/min em macrogotas</span>
+                        <strong data-drop-per-minute>--</strong>
+                      </div>
+                      <div class="drop-result-card">
+                        <span>mL/h</span>
+                        <strong data-drop-ml-hour>--</strong>
+                      </div>
+                    </div>
+                  </div>
                   <div class="form-grid">
                     <label class="form-row">
                       <span>Gotas/min em macrogotas</span>
-                      <input id="manualDropsMinute" type="number" min="0" step="0.1" inputmode="decimal" placeholder="Ex.: 21" />
+                      <input id="manualDropsMinute" type="number" min="0" step="0.1" inputmode="decimal" />
                     </label>
                     <label class="form-row">
                       <span>mL/h</span>
-                      <input id="manualMlHour" type="number" min="0" step="0.1" inputmode="decimal" placeholder="Ex.: 62,5" />
+                      <input id="manualMlHour" type="number" min="0" step="0.1" inputmode="decimal" />
                     </label>
                   </div>
-                  <p class="drop-counter-status">
-                    Fórmula em equipo de macrogotas: mililitros por hora (mL/h) = gotas por minuto (gotas/min) x 60 / 20.
-                  </p>
                 </div>
               </div>
             </section>
-
-            <div class="card">
-              <div class="card-content stack">
-                <h2>Resultado</h2>
-                <div class="drop-result-grid" aria-live="polite">
-                  <div class="drop-result-card">
-                    <span>Gotas registradas</span>
-                    <strong id="dropCount">0</strong>
-                  </div>
-                  <div class="drop-result-card">
-                    <span>Tempo observado</span>
-                    <strong id="dropElapsed">0s</strong>
-                  </div>
-                  <div class="drop-result-card">
-                    <span>Gotas/min em macrogotas</span>
-                    <strong id="dropPerMinute">--</strong>
-                  </div>
-                  <div class="drop-result-card">
-                    <span>mL/h</span>
-                    <strong id="dropMlHour">--</strong>
-                  </div>
-                </div>
-                <div class="drop-counter-status">
-                  Conversão configurada para equipo de macrogotas: 20 gotas por mililitro (gotas/mL).
-                </div>
-              </div>
-            </div>
           </div>
         </article>
 
@@ -3459,6 +3553,59 @@
                     </a>
                   </section>
                 </div>
+              </section>
+            </div>
+          </div>
+        </article>
+
+        <article id="cursos" class="tab-panel" role="tabpanel">
+          <div class="card">
+            <div class="card-content stack">
+              <h2>Cursos</h2>
+              <section class="status-panel success">
+                <h2>Capacitação em hipodermóclise</h2>
+                <p>
+                  Espaço destinado à divulgação de cursos, treinamentos e atividades educativas
+                  sobre hipodermóclise, via subcutânea, cuidados paliativos, geriatria, pediatria
+                  e atenção domiciliar.
+                </p>
+                <p>
+                  Os cursos divulgados devem preservar a independência técnica do iCare e ser
+                  identificados claramente quando houver apoio, patrocínio ou parceria institucional.
+                </p>
+              </section>
+
+              <div class="dashboard-grid">
+                <section class="status-panel">
+                  <h2>Formatos possíveis</h2>
+                  <ul class="quick-list">
+                    <li>Curso introdutório para profissionais de saúde.</li>
+                    <li>Treinamento prático de técnica de punção.</li>
+                    <li>Atualização em medicamentos e soluções por via subcutânea.</li>
+                    <li>Capacitação para equipes de atenção domiciliar.</li>
+                    <li>Aulas para cuidadores, com linguagem não técnica.</li>
+                  </ul>
+                </section>
+
+                <section class="status-panel">
+                  <h2>Próximas turmas</h2>
+                  <p>
+                    Nenhuma turma cadastrada no momento. Este espaço pode receber cursos próprios,
+                    parcerias institucionais ou treinamentos apoiados por empresas, sempre com
+                    identificação transparente.
+                  </p>
+                  <a class="secondary-button" href="#contato">Sugerir curso ou parceria</a>
+                </section>
+              </div>
+
+              <section class="status-panel warning">
+                <h2>Critérios para divulgação</h2>
+                <ul class="quick-list">
+                  <li>Conteúdo educativo com público-alvo definido.</li>
+                  <li>Identificação do responsável técnico ou instituição promotora.</li>
+                  <li>Informação clara sobre carga horária, modalidade e certificado.</li>
+                  <li>Separação explícita entre conteúdo científico, publicidade e patrocínio.</li>
+                </ul>
               </section>
             </div>
           </div>

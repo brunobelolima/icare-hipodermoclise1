@@ -63,10 +63,10 @@ const resetAutoDropCounterButton = document.querySelector("#resetAutoDropCounter
 const dropCameraStatus = document.querySelector("#dropCameraStatus");
 const recordDropButton = document.querySelector("#recordDrop");
 const resetDropCounterButton = document.querySelector("#resetDropCounter");
-const dropCount = document.querySelector("#dropCount");
-const dropElapsed = document.querySelector("#dropElapsed");
-const dropPerMinute = document.querySelector("#dropPerMinute");
-const dropMlHour = document.querySelector("#dropMlHour");
+const dropCount = Array.from(document.querySelectorAll("[data-drop-count]"));
+const dropElapsed = Array.from(document.querySelectorAll("[data-drop-elapsed]"));
+const dropPerMinute = Array.from(document.querySelectorAll("[data-drop-per-minute]"));
+const dropMlHour = Array.from(document.querySelectorAll("[data-drop-ml-hour]"));
 const manualDropsMinute = document.querySelector("#manualDropsMinute");
 const manualMlHour = document.querySelector("#manualMlHour");
 const contactForm = document.querySelector("#contactForm");
@@ -440,17 +440,25 @@ function calculatedDropsPerMinute() {
 }
 
 function updateDropCounterResults() {
-  if (!dropCount || !dropElapsed || !dropPerMinute || !dropMlHour) return;
+  if (!dropCount.length || !dropElapsed.length || !dropPerMinute.length || !dropMlHour.length) return;
 
   const now = Date.now();
   const elapsed = dropTimestamps.length ? now - dropTimestamps[0] : 0;
   const dropsMinute = calculatedDropsPerMinute();
   const mlHour = dropsMinute === null ? null : (dropsMinute * 60) / dropFactorValue();
 
-  dropCount.textContent = String(dropTimestamps.length);
-  dropElapsed.textContent = formatElapsed(elapsed);
-  dropPerMinute.textContent = dropsMinute === null ? "--" : formatDecimal(dropsMinute, 1);
-  dropMlHour.textContent = mlHour === null ? "--" : formatDecimal(mlHour, 1);
+  dropCount.forEach((element) => {
+    element.textContent = String(dropTimestamps.length);
+  });
+  dropElapsed.forEach((element) => {
+    element.textContent = formatElapsed(elapsed);
+  });
+  dropPerMinute.forEach((element) => {
+    element.textContent = dropsMinute === null ? "--" : formatDecimal(dropsMinute, 1);
+  });
+  dropMlHour.forEach((element) => {
+    element.textContent = mlHour === null ? "--" : formatDecimal(mlHour, 1);
+  });
 }
 
 function startDropTimer() {

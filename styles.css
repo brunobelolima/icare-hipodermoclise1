@@ -971,6 +971,17 @@ li {
   gap: 10px;
 }
 
+.drop-result-panel {
+  display: grid;
+  gap: 10px;
+}
+
+.drop-result-panel h3 {
+  margin: 0;
+  color: var(--accent-2);
+  font-size: 1.02rem;
+}
+
 .drop-result-card {
   display: grid;
   gap: 8px;
