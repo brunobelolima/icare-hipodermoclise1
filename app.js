@@ -118,9 +118,9 @@ const publicOnlyTabs = new Set(["nao-profissionais", "idealizadores"]);
 const limitedAccessTabs = new Set(["nao-profissionais", "idealizadores", "contador-gotas", "contato", "privacidade"]);
 const dropDetectionCanvas = document.createElement("canvas");
 const dropDetectionContext = dropDetectionCanvas.getContext("2d", { willReadFrequently: true });
-const dropDetectionWidth = 96;
-const dropDetectionHeight = 180;
-const dropCalibrationFrameTarget = 5;
+const dropDetectionWidth = 72;
+const dropDetectionHeight = 144;
+const dropCalibrationFrameTarget = 36;
 
 function setCookie(name, value, maxAge = 31536000) {
   document.cookie = `${name}=${value};path=/;max-age=${maxAge};SameSite=Lax`;
@@ -592,8 +592,8 @@ function readDropDetectionSignal() {
   const videoHeight = dropCameraPreview.videoHeight;
   if (!videoWidth || !videoHeight) return null;
 
-  const sampleWidth = Math.max(52, Math.round(videoWidth * 0.28));
-  const sampleHeight = Math.max(96, Math.round(videoHeight * 0.76));
+  const sampleWidth = Math.max(34, Math.round(videoWidth * 0.16));
+  const sampleHeight = Math.max(72, Math.round(videoHeight * 0.62));
   const sampleX = Math.round((videoWidth - sampleWidth) / 2);
   const sampleY = Math.round((videoHeight - sampleHeight) / 2);
 
@@ -665,38 +665,19 @@ function calibrateDropBackground(pixels) {
   }
   dropCalibrationSums = null;
   setDropCameraStatus(
-    "Detector pronto em alta sensibilidade. Faça a gota passar pelo retângulo central.",
+    "Detector pronto. Mantenha apenas a câmara de gotejamento dentro do retângulo central.",
     "success",
   );
   return true;
 }
 
-function localContrastAt(pixels, index) {
-  const row = Math.floor(index / dropDetectionWidth);
-  const column = index % dropDetectionWidth;
-  const center = pixels[index];
-  let contrast = 0;
-
-  if (column > 0) contrast = Math.max(contrast, Math.abs(center - pixels[index - 1]));
-  if (column < dropDetectionWidth - 1) contrast = Math.max(contrast, Math.abs(center - pixels[index + 1]));
-  if (row > 0) contrast = Math.max(contrast, Math.abs(center - pixels[index - dropDetectionWidth]));
-  if (row < dropDetectionHeight - 1) {
-    contrast = Math.max(contrast, Math.abs(center - pixels[index + dropDetectionWidth]));
-  }
-
-  return contrast;
-}
-
-function analyzeDropCandidate(pixels, meanBrightness = 128) {
+function analyzeDropCandidate(pixels) {
   if (!dropBaselinePixels) return null;
 
   const rowCounts = new Uint16Array(dropDetectionHeight);
   const columnCounts = new Uint16Array(dropDetectionWidth);
   let changedPixels = 0;
   let totalChange = 0;
-  let totalContrastChange = 0;
-  let brightChangePixels = 0;
-  let darkChangePixels = 0;
   let minRow = dropDetectionHeight;
   let maxRow = -1;
   let minColumn = dropDetectionWidth;
@@ -704,38 +685,20 @@ function analyzeDropCandidate(pixels, meanBrightness = 128) {
   let maxRowCount = 0;
 
   for (let index = 0; index < pixels.length; index += 1) {
-    const brightnessChange = pixels[index] - dropBaselinePixels[index];
-    const change = Math.abs(brightnessChange);
-    const contrastChange = Math.abs(
-      localContrastAt(pixels, index) - localContrastAt(dropBaselinePixels, index),
-    );
+    const change = Math.abs(pixels[index] - dropBaselinePixels[index]);
     totalChange += change;
-    totalContrastChange += contrastChange;
   }
 
   const averageChange = totalChange / pixels.length;
-  const averageContrastChange = totalContrastChange / pixels.length;
-  const clearBackground = meanBrightness >= 165;
-  const changeThreshold = clearBackground
-    ? Math.max(1.4, Math.min(8, averageChange * 0.9 + 1.4))
-    : Math.max(2.2, Math.min(10, averageChange * 1 + 2.2));
-  const contrastThreshold = clearBackground
-    ? Math.max(1.8, Math.min(9, averageContrastChange * 1 + 1.8))
-    : Math.max(2.8, Math.min(11, averageContrastChange * 1.15 + 2.8));
+  const changeThreshold = Math.max(18, Math.min(34, averageChange * 2.8 + 14));
 
   for (let index = 0; index < pixels.length; index += 1) {
-    const brightnessChange = pixels[index] - dropBaselinePixels[index];
-    const change = Math.abs(brightnessChange);
-    const contrastChange = Math.abs(
-      localContrastAt(pixels, index) - localContrastAt(dropBaselinePixels, index),
-    );
-    if (change < changeThreshold && contrastChange < contrastThreshold) continue;
+    const change = Math.abs(pixels[index] - dropBaselinePixels[index]);
+    if (change < changeThreshold) continue;
 
     const row = Math.floor(index / dropDetectionWidth);
     const column = index % dropDetectionWidth;
     changedPixels += 1;
-    if (brightnessChange > 0) brightChangePixels += 1;
-    if (brightnessChange < 0) darkChangePixels += 1;
     rowCounts[row] += 1;
     columnCounts[column] += 1;
     if (row < minRow) minRow = row;
@@ -748,29 +711,20 @@ function analyzeDropCandidate(pixels, meanBrightness = 128) {
   const changedRatio = changedPixels / pixels.length;
   const rowSpan = maxRow >= minRow ? maxRow - minRow + 1 : 0;
   const columnSpan = maxColumn >= minColumn ? maxColumn - minColumn + 1 : 0;
-  const hasLightRefractionSignal = clearBackground && (brightChangePixels > 0 || averageContrastChange >= 0.65);
-  const hasDarkOrMixedSignal = darkChangePixels > 0 || brightChangePixels > 0;
   const localizedChange =
-    changedPixels >= 1 &&
-    changedRatio >= 0.00005 &&
-    changedRatio <= 0.32 &&
-    rowSpan >= 1 &&
-    rowSpan <= 130 &&
-    columnSpan >= 1 &&
-    columnSpan <= 90 &&
-    maxRowCount >= 1 &&
-    averageChange <= 90 &&
-    (hasLightRefractionSignal || hasDarkOrMixedSignal);
+    changedPixels >= 10 &&
+    changedRatio >= 0.001 &&
+    changedRatio <= 0.07 &&
+    rowSpan >= 3 &&
+    rowSpan <= 58 &&
+    columnSpan >= 2 &&
+    columnSpan <= 42 &&
+    maxRowCount >= 2 &&
+    averageChange <= 24;
 
   return {
     averageChange,
-    averageContrastChange,
     changedRatio,
-    changedPixels,
-    brightChangePixels,
-    darkChangePixels,
-    changeThreshold,
-    contrastThreshold,
     isCandidate: localizedChange,
   };
 }
@@ -793,20 +747,20 @@ function detectDropFrame() {
       const calibrated = calibrateDropBackground(signal.pixels);
       if (!calibrated) {
         setDropCameraStatus(
-          "Calibrando a imagem. Mantenha a câmera parada e a queda da gota dentro do retângulo central.",
+          "Calibrando a imagem. Mantenha a câmara de gotejamento parada dentro do retângulo central.",
           "success",
         );
       }
     } else {
-      const candidate = analyzeDropCandidate(signal.pixels, signal.meanBrightness);
+      const candidate = analyzeDropCandidate(signal.pixels);
 
-      if (candidate && (candidate.changedRatio > 0.5 || candidate.averageChange > 105)) {
+      if (candidate && (candidate.changedRatio > 0.16 || candidate.averageChange > 30)) {
         dropUnstableFrames += 1;
       } else {
         dropUnstableFrames = Math.max(0, dropUnstableFrames - 1);
       }
 
-      if (dropUnstableFrames > 18) {
+      if (dropUnstableFrames > 12) {
         resetAutoDropDetection();
         setDropCameraStatus(
           "Imagem instável. Recalibrando: deixe a câmera parada e centralize a câmara de gotejamento.",
@@ -818,7 +772,7 @@ function detectDropFrame() {
       } else {
         dropMissingFrames += 1;
         dropPresentFrames = 0;
-        if (dropMissingFrames >= 1) {
+        if (dropMissingFrames >= 3) {
           dropCandidateActive = false;
         }
         if (candidate && candidate.averageChange < 10) {
@@ -826,10 +780,9 @@ function detectDropFrame() {
         }
       }
 
-      if (dropPresentFrames >= 1 && !dropCandidateActive && now - lastAutoDropAt > 280) {
+      if (dropPresentFrames >= 2 && !dropCandidateActive && now - lastAutoDropAt > 850) {
         lastAutoDropAt = now;
         dropCandidateActive = true;
-        setDropCameraStatus("Gota detectada. Continue mantendo a câmera parada.", "success");
         recordDrop();
       }
     }
@@ -849,7 +802,7 @@ async function startAutoDropCounter() {
   if (startAutoDropCounterButton) startAutoDropCounterButton.disabled = true;
   if (stopAutoDropCounterButton) stopAutoDropCounterButton.disabled = false;
   setDropCameraStatus(
-    "Calibrando em alta sensibilidade. Aponte para a queda da gota e mantenha boa iluminação.",
+    "Calibrando a imagem. Mantenha a câmara de gotejamento centralizada e com boa iluminação.",
     "success",
   );
   detectDropFrame();
