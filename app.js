@@ -120,7 +120,7 @@ const dropDetectionCanvas = document.createElement("canvas");
 const dropDetectionContext = dropDetectionCanvas.getContext("2d", { willReadFrequently: true });
 const dropDetectionWidth = 72;
 const dropDetectionHeight = 144;
-const dropCalibrationFrameTarget = 18;
+const dropCalibrationFrameTarget = 8;
 
 function setCookie(name, value, maxAge = 31536000) {
   document.cookie = `${name}=${value};path=/;max-age=${maxAge};SameSite=Lax`;
@@ -665,7 +665,7 @@ function calibrateDropBackground(pixels) {
   }
   dropCalibrationSums = null;
   setDropCameraStatus(
-    "Detector pronto. Mantenha apenas a câmara de gotejamento dentro do retângulo central.",
+    "Detector pronto em alta sensibilidade. Faça a gota passar pelo retângulo central.",
     "success",
   );
   return true;
@@ -690,7 +690,7 @@ function analyzeDropCandidate(pixels) {
   }
 
   const averageChange = totalChange / pixels.length;
-  const changeThreshold = Math.max(9, Math.min(24, averageChange * 2.2 + 8));
+  const changeThreshold = Math.max(5, Math.min(18, averageChange * 1.4 + 5));
 
   for (let index = 0; index < pixels.length; index += 1) {
     const change = Math.abs(pixels[index] - dropBaselinePixels[index]);
@@ -712,15 +712,15 @@ function analyzeDropCandidate(pixels) {
   const rowSpan = maxRow >= minRow ? maxRow - minRow + 1 : 0;
   const columnSpan = maxColumn >= minColumn ? maxColumn - minColumn + 1 : 0;
   const localizedChange =
-    changedPixels >= 4 &&
-    changedRatio >= 0.00035 &&
-    changedRatio <= 0.12 &&
-    rowSpan >= 2 &&
-    rowSpan <= 76 &&
+    changedPixels >= 2 &&
+    changedRatio >= 0.00015 &&
+    changedRatio <= 0.18 &&
+    rowSpan >= 1 &&
+    rowSpan <= 90 &&
     columnSpan >= 1 &&
-    columnSpan <= 54 &&
+    columnSpan <= 64 &&
     maxRowCount >= 1 &&
-    averageChange <= 36;
+    averageChange <= 60;
 
   return {
     averageChange,
@@ -749,14 +749,14 @@ function detectDropFrame() {
       const calibrated = calibrateDropBackground(signal.pixels);
       if (!calibrated) {
         setDropCameraStatus(
-          "Calibrando a imagem. Mantenha a câmara de gotejamento parada dentro do retângulo central.",
+          "Calibrando a imagem. Mantenha a câmera parada e a queda da gota dentro do retângulo central.",
           "success",
         );
       }
     } else {
       const candidate = analyzeDropCandidate(signal.pixels);
 
-      if (candidate && (candidate.changedRatio > 0.22 || candidate.averageChange > 45)) {
+      if (candidate && (candidate.changedRatio > 0.35 || candidate.averageChange > 75)) {
         dropUnstableFrames += 1;
       } else {
         dropUnstableFrames = Math.max(0, dropUnstableFrames - 1);
@@ -777,12 +777,12 @@ function detectDropFrame() {
         if (dropMissingFrames >= 2) {
           dropCandidateActive = false;
         }
-        if (candidate && candidate.averageChange < 14) {
+        if (candidate && candidate.averageChange < 6) {
           updateDropBaseline(signal.pixels);
         }
       }
 
-      if (dropPresentFrames >= 1 && !dropCandidateActive && now - lastAutoDropAt > 700) {
+      if (dropPresentFrames >= 1 && !dropCandidateActive && now - lastAutoDropAt > 450) {
         lastAutoDropAt = now;
         dropCandidateActive = true;
         setDropCameraStatus("Gota detectada. Continue mantendo a câmera parada.", "success");
@@ -805,7 +805,7 @@ async function startAutoDropCounter() {
   if (startAutoDropCounterButton) startAutoDropCounterButton.disabled = true;
   if (stopAutoDropCounterButton) stopAutoDropCounterButton.disabled = false;
   setDropCameraStatus(
-    "Calibrando a imagem. Mantenha a câmara de gotejamento centralizada e com boa iluminação.",
+    "Calibrando em alta sensibilidade. Aponte para a queda da gota e mantenha boa iluminação.",
     "success",
   );
   detectDropFrame();
