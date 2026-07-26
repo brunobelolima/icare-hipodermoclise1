@@ -129,6 +129,8 @@ const dropDetectionContext = dropDetectionCanvas.getContext("2d", { willReadFreq
 const dropDetectionWidth = 72;
 const dropDetectionHeight = 144;
 const dropCalibrationFrameTarget = 12;
+const macrodripDropFactor = 20;
+const macrodripDefaultMaxDropsMinute = 40;
 
 function setCookie(name, value, maxAge = 31536000) {
   document.cookie = `${name}=${value};path=/;max-age=${maxAge};SameSite=Lax`;
@@ -416,7 +418,7 @@ function loadTechniqueVideo() {
 }
 
 function dropFactorValue() {
-  return 20;
+  return macrodripDropFactor;
 }
 
 function formatDecimal(value, maximumFractionDigits = 1) {
@@ -440,6 +442,22 @@ function calculatedDropsPerMinute() {
   const elapsedMinutes = (dropTimestamps[dropTimestamps.length - 1] - dropTimestamps[0]) / 60000;
   if (elapsedMinutes <= 0) return null;
   return (dropTimestamps.length - 1) / elapsedMinutes;
+}
+
+function targetMacroDropsMinuteValue() {
+  if (!targetVolumeMl || !targetTimeHours) return null;
+  const volume = Number(targetVolumeMl.value.replace(",", "."));
+  const hours = Number(targetTimeHours.value.replace(",", "."));
+  if (!Number.isFinite(volume) || !Number.isFinite(hours) || volume <= 0 || hours <= 0) return null;
+  return ((volume / hours) * dropFactorValue()) / 60;
+}
+
+function automaticDropMinimumIntervalMs() {
+  const targetDropsMinute = targetMacroDropsMinuteValue();
+  const referenceDropsMinute = targetDropsMinute ?? macrodripDefaultMaxDropsMinute;
+  const expectedIntervalMs = 60000 / Math.max(1, referenceDropsMinute);
+  const toleranceFactor = targetDropsMinute ? 0.55 : 0.8;
+  return Math.max(750, Math.min(4500, expectedIntervalMs * toleranceFactor));
 }
 
 function updateDropCounterResults() {
@@ -798,7 +816,11 @@ function detectDropFrame() {
         }
       }
 
-      if (dropPresentFrames >= 1 && !dropCandidateActive && now - lastAutoDropAt > 750) {
+      if (
+        dropPresentFrames >= 1 &&
+        !dropCandidateActive &&
+        now - lastAutoDropAt > automaticDropMinimumIntervalMs()
+      ) {
         lastAutoDropAt = now;
         dropCandidateActive = true;
         recordDrop();
@@ -820,7 +842,7 @@ async function startAutoDropCounter() {
   if (startAutoDropCounterButton) startAutoDropCounterButton.disabled = true;
   if (stopAutoDropCounterButton) stopAutoDropCounterButton.disabled = false;
   setDropCameraStatus(
-    "Calibrando pelo movimento. Mantenha a queda das gotas dentro do retângulo central.",
+    "Calibrando para equipo de macrogotas. Mantenha a queda das gotas dentro do retângulo central.",
     "success",
   );
   detectDropFrame();
