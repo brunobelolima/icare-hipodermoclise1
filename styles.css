@@ -853,7 +853,13 @@ li {
   align-items: start;
 }
 
+.automatic-drop-result {
+  grid-column: 1;
+}
+
 .automatic-drop-controls {
+  grid-column: 2;
+  grid-row: 1 / span 2;
   display: grid;
   gap: 12px;
   align-content: start;
@@ -2136,6 +2142,12 @@ details.references summary {
 
   .automatic-drop-layout {
     grid-template-columns: 1fr;
+  }
+
+  .automatic-drop-controls,
+  .automatic-drop-result {
+    grid-column: auto;
+    grid-row: auto;
   }
 
   .camera-frame {
