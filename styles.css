@@ -1914,6 +1914,10 @@ details.references summary {
   align-items: stretch;
 }
 
+.drop-subtabs {
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+}
+
 .material-subtab,
 .material-list-subtab,
 .drop-subtab,
@@ -1967,6 +1971,11 @@ details.references summary {
 .catheter-subtab-panels {
   display: grid;
   gap: 16px;
+}
+
+.target-speed-grid {
+  grid-template-columns: minmax(0, 0.9fr) minmax(280px, 1.1fr);
+  align-items: start;
 }
 
 .material-checklist-panels {

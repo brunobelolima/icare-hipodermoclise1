@@ -69,6 +69,11 @@ const dropPerMinute = Array.from(document.querySelectorAll("[data-drop-per-minut
 const dropMlHour = Array.from(document.querySelectorAll("[data-drop-ml-hour]"));
 const manualDropsMinute = document.querySelector("#manualDropsMinute");
 const manualMlHour = document.querySelector("#manualMlHour");
+const targetVolumeMl = document.querySelector("#targetVolumeMl");
+const targetTimeHours = document.querySelector("#targetTimeHours");
+const targetMlHour = document.querySelector("[data-target-ml-hour]");
+const targetMacroDropsMinute = document.querySelector("[data-target-macro-drops-minute]");
+const clearTargetSpeedButton = document.querySelector("#clearTargetSpeed");
 const contactForm = document.querySelector("#contactForm");
 const contactResult = document.querySelector("#contactResult");
 const contactProfileSelect = document.querySelector("#contactForm select[name='profile']");
@@ -851,6 +856,25 @@ function syncManualFromMlHour() {
   manualConversionLock = false;
 }
 
+function calculateTargetSpeed() {
+  if (!targetVolumeMl || !targetTimeHours || !targetMlHour || !targetMacroDropsMinute) return;
+
+  const volume = Number(targetVolumeMl.value.replace(",", "."));
+  const hours = Number(targetTimeHours.value.replace(",", "."));
+  const hasValidInputs = Number.isFinite(volume) && Number.isFinite(hours) && volume > 0 && hours > 0;
+
+  if (!hasValidInputs) {
+    targetMlHour.textContent = "--";
+    targetMacroDropsMinute.textContent = "--";
+    return;
+  }
+
+  const mlHour = volume / hours;
+  const macroDropsMinute = (mlHour * dropFactorValue()) / 60;
+  targetMlHour.textContent = formatDecimal(mlHour, 1);
+  targetMacroDropsMinute.textContent = formatDecimal(macroDropsMinute, 1);
+}
+
 function refreshDropFactorCalculations() {
   updateDropCounterResults();
   if (manualDropsMinute?.value) {
@@ -858,6 +882,7 @@ function refreshDropFactorCalculations() {
   } else if (manualMlHour?.value) {
     syncManualFromMlHour();
   }
+  calculateTargetSpeed();
 }
 
 function activateMaterialSubtab(trigger) {
@@ -941,7 +966,7 @@ function activateDropSubtab(trigger) {
     panel.classList.toggle("active", isActive);
   });
 
-  if (target === "manual") {
+  if (target !== "automatic") {
     stopDropCamera();
   }
 }
@@ -2590,6 +2615,22 @@ if (manualDropsMinute) {
 
 if (manualMlHour) {
   manualMlHour.addEventListener("input", syncManualFromMlHour);
+}
+
+if (targetVolumeMl) {
+  targetVolumeMl.addEventListener("input", calculateTargetSpeed);
+}
+
+if (targetTimeHours) {
+  targetTimeHours.addEventListener("input", calculateTargetSpeed);
+}
+
+if (clearTargetSpeedButton) {
+  clearTargetSpeedButton.addEventListener("click", () => {
+    if (targetVolumeMl) targetVolumeMl.value = "";
+    if (targetTimeHours) targetTimeHours.value = "";
+    calculateTargetSpeed();
+  });
 }
 
 checklistItems.forEach((item) => {
