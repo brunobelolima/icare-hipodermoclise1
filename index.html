@@ -2165,12 +2165,24 @@
                 <div class="drop-subtabs" role="tablist" aria-label="Modo de contagem de gotas">
                   <button
                     class="drop-subtab"
-                    id="dropAutomaticTab"
+                    id="dropTargetSpeedTab"
                     type="button"
                     role="tab"
                     aria-selected="true"
+                    aria-controls="dropTargetSpeedPanel"
+                    data-drop-subtab="target-speed"
+                  >
+                    Velocidade-alvo
+                  </button>
+                  <button
+                    class="drop-subtab"
+                    id="dropAutomaticTab"
+                    type="button"
+                    role="tab"
+                    aria-selected="false"
                     aria-controls="dropAutomaticPanel"
                     data-drop-subtab="automatic"
+                    tabindex="-1"
                   >
                     Contagem automática
                   </button>
@@ -2186,28 +2198,64 @@
                   >
                     Contagem manual
                   </button>
-                  <button
-                    class="drop-subtab"
-                    id="dropTargetSpeedTab"
-                    type="button"
-                    role="tab"
-                    aria-selected="false"
-                    aria-controls="dropTargetSpeedPanel"
-                    data-drop-subtab="target-speed"
-                    tabindex="-1"
-                  >
-                    Velocidade-alvo
-                  </button>
                 </div>
               </div>
             </div>
 
             <section
               class="drop-subtab-panel active"
+              id="dropTargetSpeedPanel"
+              role="tabpanel"
+              aria-labelledby="dropTargetSpeedTab"
+              data-drop-panel="target-speed"
+            >
+              <div class="card">
+                <div class="card-content stack">
+                  <h2>Velocidade-alvo</h2>
+                  <div class="module-grid target-speed-grid">
+                    <div class="stack">
+                      <div class="form-grid">
+                        <label class="form-row">
+                          <span>Volume total (mL)</span>
+                          <input id="targetVolumeMl" type="number" min="0" step="0.1" inputmode="decimal" />
+                        </label>
+                        <label class="form-row">
+                          <span>Tempo total (horas)</span>
+                          <input id="targetTimeHours" type="number" min="0" step="0.1" inputmode="decimal" />
+                        </label>
+                      </div>
+                      <div class="copy-actions">
+                        <button class="secondary-button" id="clearTargetSpeed" type="button">Limpar</button>
+                      </div>
+                    </div>
+                    <div class="drop-result-panel target-speed-result">
+                      <h3>Resultado</h3>
+                      <div class="drop-result-grid" aria-live="polite">
+                        <div class="drop-result-card">
+                          <span>mL/h</span>
+                          <strong data-target-ml-hour>--</strong>
+                        </div>
+                        <div class="drop-result-card">
+                          <span>Macrogotas/min</span>
+                          <strong data-target-macro-drops-minute>--</strong>
+                        </div>
+                      </div>
+                      <div class="drop-counter-status">
+                        Cálculo com equipo de macrogotas: 20 gotas por mililitro.
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </section>
+
+            <section
+              class="drop-subtab-panel"
               id="dropAutomaticPanel"
               role="tabpanel"
               aria-labelledby="dropAutomaticTab"
               data-drop-panel="automatic"
+              hidden
             >
               <div class="module-grid drop-counter-grid">
                 <div class="card">
@@ -2321,54 +2369,6 @@
                       <span>mL/h</span>
                       <input id="manualMlHour" type="number" min="0" step="0.1" inputmode="decimal" />
                     </label>
-                  </div>
-                </div>
-              </div>
-            </section>
-
-            <section
-              class="drop-subtab-panel"
-              id="dropTargetSpeedPanel"
-              role="tabpanel"
-              aria-labelledby="dropTargetSpeedTab"
-              data-drop-panel="target-speed"
-              hidden
-            >
-              <div class="card">
-                <div class="card-content stack">
-                  <h2>Velocidade-alvo</h2>
-                  <div class="module-grid target-speed-grid">
-                    <div class="stack">
-                      <div class="form-grid">
-                        <label class="form-row">
-                          <span>Volume total (mL)</span>
-                          <input id="targetVolumeMl" type="number" min="0" step="0.1" inputmode="decimal" />
-                        </label>
-                        <label class="form-row">
-                          <span>Tempo total (horas)</span>
-                          <input id="targetTimeHours" type="number" min="0" step="0.1" inputmode="decimal" />
-                        </label>
-                      </div>
-                      <div class="copy-actions">
-                        <button class="secondary-button" id="clearTargetSpeed" type="button">Limpar</button>
-                      </div>
-                    </div>
-                    <div class="drop-result-panel target-speed-result">
-                      <h3>Resultado</h3>
-                      <div class="drop-result-grid" aria-live="polite">
-                        <div class="drop-result-card">
-                          <span>mL/h</span>
-                          <strong data-target-ml-hour>--</strong>
-                        </div>
-                        <div class="drop-result-card">
-                          <span>Macrogotas/min</span>
-                          <strong data-target-macro-drops-minute>--</strong>
-                        </div>
-                      </div>
-                      <div class="drop-counter-status">
-                        Cálculo com equipo de macrogotas: 20 gotas por mililitro.
-                      </div>
-                    </div>
                   </div>
                 </div>
               </div>
