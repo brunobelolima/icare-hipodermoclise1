@@ -671,13 +671,32 @@ function calibrateDropBackground(pixels) {
   return true;
 }
 
-function analyzeDropCandidate(pixels) {
+function localContrastAt(pixels, index) {
+  const row = Math.floor(index / dropDetectionWidth);
+  const column = index % dropDetectionWidth;
+  const center = pixels[index];
+  let contrast = 0;
+
+  if (column > 0) contrast = Math.max(contrast, Math.abs(center - pixels[index - 1]));
+  if (column < dropDetectionWidth - 1) contrast = Math.max(contrast, Math.abs(center - pixels[index + 1]));
+  if (row > 0) contrast = Math.max(contrast, Math.abs(center - pixels[index - dropDetectionWidth]));
+  if (row < dropDetectionHeight - 1) {
+    contrast = Math.max(contrast, Math.abs(center - pixels[index + dropDetectionWidth]));
+  }
+
+  return contrast;
+}
+
+function analyzeDropCandidate(pixels, meanBrightness = 128) {
   if (!dropBaselinePixels) return null;
 
   const rowCounts = new Uint16Array(dropDetectionHeight);
   const columnCounts = new Uint16Array(dropDetectionWidth);
   let changedPixels = 0;
   let totalChange = 0;
+  let totalContrastChange = 0;
+  let brightChangePixels = 0;
+  let darkChangePixels = 0;
   let minRow = dropDetectionHeight;
   let maxRow = -1;
   let minColumn = dropDetectionWidth;
@@ -685,20 +704,38 @@ function analyzeDropCandidate(pixels) {
   let maxRowCount = 0;
 
   for (let index = 0; index < pixels.length; index += 1) {
-    const change = Math.abs(pixels[index] - dropBaselinePixels[index]);
+    const brightnessChange = pixels[index] - dropBaselinePixels[index];
+    const change = Math.abs(brightnessChange);
+    const contrastChange = Math.abs(
+      localContrastAt(pixels, index) - localContrastAt(dropBaselinePixels, index),
+    );
     totalChange += change;
+    totalContrastChange += contrastChange;
   }
 
   const averageChange = totalChange / pixels.length;
-  const changeThreshold = Math.max(5, Math.min(18, averageChange * 1.4 + 5));
+  const averageContrastChange = totalContrastChange / pixels.length;
+  const clearBackground = meanBrightness >= 165;
+  const changeThreshold = clearBackground
+    ? Math.max(2.6, Math.min(12, averageChange * 1.15 + 2.6))
+    : Math.max(4, Math.min(16, averageChange * 1.25 + 4));
+  const contrastThreshold = clearBackground
+    ? Math.max(3.5, Math.min(14, averageContrastChange * 1.4 + 3.5))
+    : Math.max(5, Math.min(18, averageContrastChange * 1.5 + 5));
 
   for (let index = 0; index < pixels.length; index += 1) {
-    const change = Math.abs(pixels[index] - dropBaselinePixels[index]);
-    if (change < changeThreshold) continue;
+    const brightnessChange = pixels[index] - dropBaselinePixels[index];
+    const change = Math.abs(brightnessChange);
+    const contrastChange = Math.abs(
+      localContrastAt(pixels, index) - localContrastAt(dropBaselinePixels, index),
+    );
+    if (change < changeThreshold && contrastChange < contrastThreshold) continue;
 
     const row = Math.floor(index / dropDetectionWidth);
     const column = index % dropDetectionWidth;
     changedPixels += 1;
+    if (brightnessChange > 0) brightChangePixels += 1;
+    if (brightnessChange < 0) darkChangePixels += 1;
     rowCounts[row] += 1;
     columnCounts[column] += 1;
     if (row < minRow) minRow = row;
@@ -711,22 +748,29 @@ function analyzeDropCandidate(pixels) {
   const changedRatio = changedPixels / pixels.length;
   const rowSpan = maxRow >= minRow ? maxRow - minRow + 1 : 0;
   const columnSpan = maxColumn >= minColumn ? maxColumn - minColumn + 1 : 0;
+  const hasLightRefractionSignal = clearBackground && (brightChangePixels > 0 || averageContrastChange >= 1.2);
+  const hasDarkOrMixedSignal = darkChangePixels > 0 || brightChangePixels > 0;
   const localizedChange =
     changedPixels >= 2 &&
-    changedRatio >= 0.00015 &&
-    changedRatio <= 0.18 &&
+    changedRatio >= 0.00012 &&
+    changedRatio <= 0.24 &&
     rowSpan >= 1 &&
     rowSpan <= 90 &&
     columnSpan >= 1 &&
-    columnSpan <= 64 &&
+    columnSpan <= 68 &&
     maxRowCount >= 1 &&
-    averageChange <= 60;
+    averageChange <= 70 &&
+    (hasLightRefractionSignal || hasDarkOrMixedSignal);
 
   return {
     averageChange,
+    averageContrastChange,
     changedRatio,
     changedPixels,
+    brightChangePixels,
+    darkChangePixels,
     changeThreshold,
+    contrastThreshold,
     isCandidate: localizedChange,
   };
 }
@@ -754,7 +798,7 @@ function detectDropFrame() {
         );
       }
     } else {
-      const candidate = analyzeDropCandidate(signal.pixels);
+      const candidate = analyzeDropCandidate(signal.pixels, signal.meanBrightness);
 
       if (candidate && (candidate.changedRatio > 0.35 || candidate.averageChange > 75)) {
         dropUnstableFrames += 1;
