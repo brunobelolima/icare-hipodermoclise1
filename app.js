@@ -1467,7 +1467,7 @@ const prescriptionData = {
     dilution:
       'Preferir soro fisiológico 0,9%; diluir a dose prescrita em SF 0,9% conforme volume planejado. É possível fazer sem diluição.<sup class="ref-mark">OE</sup>',
     time:
-      "Bolus ou infusão contínua; velocidade usual entre 20-100mL/h, equivalente a aproximadamente 7-33 gotas/min em equipo de macrogotas",
+      "Bolus ou infusão contínua; velocidade usual entre 20-100mL/h, equivalente a aproximadamente 7-33 gotas/min",
     minVolume: "",
     comments:
       'Não existe dose máxima definida. Iniciar com doses menores em idosos, pacientes frágeis ou com doença renal, monitorando sedação, depressão respiratória, edema, irritação, hematoma ou infecção local. Preferir diluição da medicação que será infundida em 24h no lugar de solução 1:1 a fim de evitar desperdício de medicação.<sup class="ref-mark">OE</sup>',
@@ -1532,7 +1532,7 @@ const prescriptionData = {
     time: "Bolus ou infusão subcutânea contínua, geralmente em 24h",
     minVolume: "",
     comments:
-      "Pode causar irritação local. Velocidade de infusão de 0,5mL/h a 20mL/h, equivalente a aproximadamente 0,2-7 gotas/min em equipo de macrogotas.",
+      "Pode causar irritação local. Velocidade de infusão de 0,5mL/h a 20mL/h, equivalente a aproximadamente 0,2-7 gotas/min.",
     reference: "4, 11, 12, 14",
   },
   metoclopramida: {
@@ -1581,7 +1581,7 @@ const prescriptionData = {
     time: "Infusão contínua conforme prescrição e tolerância local",
     minVolume: "",
     comments:
-      'Atentar para tolerância volêmica de acordo com o tecido subcutâneo do paciente.<sup class="ref-mark">OE</sup> Volume de infusão máximo 62,5mL/h, equivalente a aproximadamente 21 gotas/min em equipo de macrogotas. Considerar o limite de volume conforme o sítio de punção escolhido.',
+      'Atentar para tolerância volêmica de acordo com o tecido subcutâneo do paciente.<sup class="ref-mark">OE</sup> Volume de infusão máximo 62,5mL/h, equivalente a aproximadamente 21 gotas/min. Considerar o limite de volume conforme o sítio de punção escolhido.',
     reference: "4, 5, 6, OE",
   },
   sg5: {
@@ -1590,7 +1590,7 @@ const prescriptionData = {
     time: "Infusão contínua conforme prescrição e tolerância local",
     minVolume: "",
     comments:
-      'Atentar para tolerância volêmica de acordo com o tecido subcutâneo do paciente.<sup class="ref-mark">OE</sup> Volume de infusão máximo 62,5mL/h, equivalente a aproximadamente 21 gotas/min em equipo de macrogotas. Considerar o limite de volume conforme o sítio de punção escolhido.',
+      'Atentar para tolerância volêmica de acordo com o tecido subcutâneo do paciente.<sup class="ref-mark">OE</sup> Volume de infusão máximo 62,5mL/h, equivalente a aproximadamente 21 gotas/min. Considerar o limite de volume conforme o sítio de punção escolhido.',
     reference: "4, 20",
   },
 };
